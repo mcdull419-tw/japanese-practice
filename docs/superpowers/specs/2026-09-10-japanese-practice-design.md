@@ -58,7 +58,7 @@
 │      ↓                                          │
 │  data/lessons/NN.json   單字・句子・振假名・代入表 │
 │  data/concepts.json     概念定義（人工維護）      │
-│  data/patterns.json     句型模板（抽取＋校正）    │
+│  data/images/           課本插畫                  │
 └─────────────────────────────────────────────────┘
                     ↓ 靜態檔部署
 ┌─ 瀏覽器（PWA，離線可用）──────────────────────┐
@@ -562,7 +562,8 @@ app/
     player.js              單字循環播放
 data/
   lessons/01.json … 15.json
-  concepts.json  patterns.json  verbs.json  corrections.json
+  concepts.json  verbs.json  corrections.json  illustrations.json
+  images/                  課本插畫（Phase 0 抽出）
 tools/
   extract/                 Python 抽取管線（不部署）
   render.swift             PDF 頁面算繪，供視覺驗證（macOS PDFKit，零依賴）
@@ -588,7 +589,7 @@ tests/                     node --test
 ### Phase 0 — 抽取管線
 - 重寫為三階段架構（座標中介表示）
 - 修復：文法解說日文遺失、`会話` 標題重複、練習Ａ 欄位對齊、練習Ｂ 順序、單字搭配用法子行遺失、角括號被誤過濾
-- 產出第 1 ~ 15 課 `data/lessons/*.json` 與 `patterns.json`
+- 產出第 1 ~ 15 課 `data/lessons/*.json`（代入表隨課存於同一檔，不另立 `patterns.json`——句型模板本就是課次範圍的資料）
 - 抽出課本插畫影像與其頁碼座標（供 Phase 4 關聯使用）
 - **驗收**：以自動不變式檢查為主，逐課全數通過：
   - 15 課皆成功抽取，無例外中斷

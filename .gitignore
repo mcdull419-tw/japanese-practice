@@ -3,6 +3,10 @@
 *.jpeg
 *.jpg
 
+# 例外：抽取自課本的插畫需納入版控（網站需要）
+!data/images/
+!data/images/**
+
 # macOS
 .DS_Store
 

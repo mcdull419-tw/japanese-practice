@@ -154,12 +154,33 @@ class PDFDoc:
         body = self._objects.get(num)
         if body is None:
             return
-        kids_match = re.search(rb"/Kids\s*\[(.*?)\]", body, re.S)
-        if kids_match:
-            for ref in _REF_RE.finditer(kids_match.group(1)):
+        kids_array = self._resolve_kids_array(body)
+        if kids_array is not None:
+            for ref in _REF_RE.finditer(kids_array):
                 self._collect_kids(int(ref.group(1)), out)
         else:
             out.append(num)
+
+    def _resolve_kids_array(self, body: bytes) -> Optional[bytes]:
+        """回傳 /Kids 陣列內容（不含中括號），若此節點無 /Kids 則回傳 None。
+
+        /Kids 的值可以是內嵌陣列（`/Kids [ 1 0 R 2 0 R ]`），也可以是指向
+        陣列物件的間接參照（`/Kids 9 0 R`）——兩者皆為合法 PDF 語法，
+        後者常見於頁數多、由不同工具產生的檔案。
+        """
+        m = re.search(rb"/Kids\s*\[(.*?)\]", body, re.S)
+        if m:
+            return m.group(1)
+        ref_m = re.search(rb"/Kids\s+(\d+)\s+0\s+R", body)
+        if ref_m:
+            arr_body = self._objects.get(int(ref_m.group(1)))
+            if arr_body is None:
+                return None
+            arr_m = re.search(rb"\[(.*?)\]", arr_body, re.S)
+            if arr_m:
+                return arr_m.group(1)
+            return None
+        return None
 
     # ------------------------------------------------------------------
     # 內容流

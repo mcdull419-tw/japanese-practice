@@ -7,6 +7,8 @@ _ENCODING_RULES = (
     (("WINANSI",), "cp1252"),
 )
 
+_CHINESE_FONTS = ("SIMSUN", "SIMHEI", "STSONG", "FANGSONG", "KAITI")
+
 
 def _encoding_from_name(name: str) -> str:
     upper = name.upper()
@@ -14,6 +16,17 @@ def _encoding_from_name(name: str) -> str:
         for needle in needles:
             if needle in upper:
                 return enc
+    return "cp1252"
+
+
+def _encoding_from_basefont(name: str) -> str:
+    """由 /BaseFont 推導編碼，用於缺少 /Encoding 的情況。"""
+    upper = name.upper()
+    if "GOTHIC" in upper or "MINCHO" in upper:
+        return "cp932"
+    for font in _CHINESE_FONTS:
+        if font in upper:
+            return "gb18030"
     return "cp1252"
 
 
@@ -32,7 +45,7 @@ def font_encodings(doc, page) -> Dict[str, str]:
         else:
             base = re.search(rb"/BaseFont\s*/([^\s/>\]]+)", body)
             name = base.group(1).decode("latin-1") if base else ""
-            result[res_name] = "cp932" if "Gothic" in name or "Mincho" in name else "cp1252"
+            result[res_name] = _encoding_from_basefont(name)
     return result
 
 

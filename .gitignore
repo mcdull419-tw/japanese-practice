@@ -1,0 +1,10 @@
+# 課本原始檔：受著作權保護，留在工作目錄但不納入版控
+*.pdf
+*.jpeg
+*.jpg
+
+# macOS
+.DS_Store
+
+# 開發暫存
+node_modules/

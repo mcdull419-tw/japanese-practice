@@ -30,10 +30,25 @@ class TestFragments(unittest.TestCase):
         self.assertTrue(any(s >= 10.0 for s in sizes), "找不到正文字級")
 
     def test_no_misdecoding_fingerprint(self):
-        """Shift-JIS 被誤讀為 GB18030 會產生這些罕見漢字。"""
-        text = "".join(f.text for f in self.frags)
-        for bad in "偁偄偆偊偍偐偑偒偓偔偕偖偗偘偙偠偡偣偤偦偨偩偪偭偮偯偰偱偲偵偼":
-            self.assertNotIn(bad, text, "偵測到誤解碼指紋：%s" % bad)
+        """Shift-JIS 被誤讀為 GB18030 會產生這些罕見漢字。
+
+        原本只掃第 7 課，防護不足——誤解碼指紋偵測的是「靜默資料損毀」，
+        任何一課的字型編碼判斷錯誤都可能只在該課出現，只掃一課無法涵蓋
+        其餘 14 課各自獨立的 /Encoding、/BaseFont 判斷路徑。改成掃全
+        1~15 課，逐課分別回報，一次就能鎖住整類「字型編碼誤判」的臭蟲，
+        不需要為每一課各寫一個重複的測試方法。
+        """
+        offenders = []
+        for n in range(1, 16):
+            frags = extract_fragments(PDFDoc.from_path("%02d.pdf" % n))
+            text = "".join(f.text for f in frags)
+            for bad in "偁偄偆偊偍偐偑偒偓偔偕偖偗偘偙偠偡偣偤偦偨偩偪偭偮偯偰偱偲偵偼":
+                if bad in text:
+                    offenders.append((n, bad))
+        self.assertEqual(
+            offenders, [],
+            "偵測到誤解碼指紋（課號, 字元）：%r" % (offenders[:10],)
+        )
 
 
 class _MockPage:

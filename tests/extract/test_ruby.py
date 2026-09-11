@@ -220,15 +220,35 @@ class TestRubyReviewFixes(unittest.TestCase):
         self.assertNotIn("今  何", pairs2, "今／何是兩個獨立詞，不該被合併成一個 RubyPair")
 
     def test_tie_break_not_swayed_by_subpixel_float_noise(self):
-        """毎朝 → まいあさ，不能因為浮點誤差選錯起點而被拉去跟後面的
-        「7時半」「英語」錯誤合併。
+        """週末 → しゅうまつ，不能因為浮點誤差選到「末」當起點而截斷成
+        base='末'。
 
-        「毎」「朝」離振假名錨點在視覺上都恰好是半個字寬，理應平手，但
-        `char_width` 累加造成的次像素浮點誤差（實測差 0.00072pt）會讓
-        「朝」看起來嚴格更近。允許跳過連接假名的 `_find_run` 若因此選到
-        「朝」當起點，會沿著空白一路跳到後面完全不相干的「7時半」或
-        「英語」，產生 base='朝  7時半'、kana='まいあさじはん' 這種錯誤
-        合併（06.pdf 實測案例）。
+        振假名 `'しゅうまつ'` 是單一未分段區段（n=1），「週」「末」離
+        錨點（x=302.4）在視覺上都恰好是半個字寬，理應平手；用目前實際
+        跑的演算法量兩者的距離：週=6.60000000000008、
+        末=6.599999999999909，差了約 1.7e-13，是雙精度浮點連加幾十次後
+        的正常捨入誤差，不具備「誰真的比較近」的意義。n=1 時任何單一候
+        選都天生湊得出合法的 1 個底字（沒有「連續底字數」這道保護），
+        所以這個次像素差異如果不擋，會真的讓「末」單獨中選，產生
+        `base='末'、kana='しゅうまつ'`（「末」不讀 しゅうまつ，那是
+        「週末」的讀音——跟「太郎君」「980円」同一類「base 被截短、
+        kana 卻是完整讀音」的錯誤，13.pdf 實測案例）。
+
+        驗收：把 `tools.extract.ruby._TIE_EPS` 設回 `0.0` 重新執行本測
+        試必須變紅（`base` 會變成 `'末'`）——已手動驗證過，見
+        task-5-report.md 附加段落。
+        """
+        pairs = self._pairs_for(
+            "13.pdf", "3) （ × ）サントスさんの  家族は  週末  公園へ"
+        )
+        self.assertEqual(pairs.get("週末"), "しゅうまつ")
+        self.assertNotIn("末", pairs)
+
+    def test_tie_break_does_not_merge_unrelated_words_via_skip(self):
+        """毎朝 → まいあさ，不能被拉去跟後面的「7時半」「英語」錯誤合
+        併（跟上面的「週末」是不同機制：這裡是 n=2 的「連續底字數」驗
+        證本身就會擋掉「朝」這個錯誤起點，不特別依賴 `_TIE_EPS`——即使
+        把 `_TIE_EPS` 設回 0，這兩個斷言依然成立，已手動驗證過）。
         """
         pairs = self._pairs_for("06.pdf", "毎朝  7時半に  起きます")
         self.assertEqual(pairs.get("毎朝"), "まいあさ")
@@ -244,7 +264,8 @@ class TestRubyReviewFixes(unittest.TestCase):
 
         振假名 fragment 只有一個區段「えん」，前面帶 9 個前導半形空白把
         它推到「円」正上方——這些空白的寬度剛好讓 fragment 原始錨點跟
-        「9」（980 的第一位數字）的 x 座標幾乎重合（差 0.0006pt），比離
+        「9」（980 的第一位數字）的 x 座標幾乎重合（實測差約 1.1e-13pt，
+        雙精度浮點捨入誤差量級），比離
         「円」的距離（19.8pt）近得多。若只用原始錨點找最近底字，會誤判
         成 base='9'、kana='えん'（宣稱數字「9」讀作 えん，這是可驗證為
         假的錯誤讀音，比「配不到」更需要避免）。
@@ -267,6 +288,32 @@ class TestRubyReviewFixes(unittest.TestCase):
         pairs = self._pairs_for("06.pdf", "例2： （ × ）ミラーさんは")
         self.assertEqual(pairs.get("例"), "れい")
         self.assertNotIn("例2", pairs)
+
+    def test_multi_digit_date_not_truncated_to_bare_digit(self):
+        """14日 → じゅうよっか、24日 → にじゅうよっか——多位數字不能被
+        截斷成單一個數字配到整個複合詞的讀音。
+
+        「14 日」（05.pdf）跟「24 日」（15.pdf）的振假名都只有一個（或
+        比實際字數更少的）區段，原始錨點最近的候選是多位數字裡的第一
+        位（05 課的「1」、15 課的「2」），若只配到那一位數字，會產生
+        `base='1'、kana='じゅうよっ'`／`base='2'、kana='にじゅうよっ'`
+        這種錯誤宣稱——「1」不讀 じゅうよっ、「24」單獨也不讀
+        にじゅうよっか，那是「14日」「24日」整個複合詞的讀音，跟
+        980円 的「9」偷走「円」的讀音是同一類缺陷。
+
+        這兩個實例源文字裡數字跟「日」之間都有一個半形空白（「14 日」
+        「24 日」，排版留白，不是刻意分隔），所以合併後的 base 也包含
+        這個空白字元——跟「店の人」的「の」一樣，base 涵蓋連接用的字
+        元，不是只有漢字/數字本身。
+        """
+        pairs = self._pairs_for("05.pdf", "さくら大学（ 9月 14 日 ）")
+        self.assertEqual(pairs.get("14 日"), "じゅうよっか")
+        self.assertNotIn("1", pairs)
+
+        pairs2 = self._pairs_for("15.pdf", "それは  12月  24 日です")
+        self.assertEqual(pairs2.get("24 日"), "にじゅうよっか")
+        self.assertNotIn("24", pairs2)
+        self.assertNotIn("2", pairs2)
 
 
 if __name__ == "__main__":

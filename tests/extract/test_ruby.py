@@ -138,5 +138,136 @@ class TestRubyRegressions(unittest.TestCase):
         self.assertNotIn("きむらきむら", pairs.values())
 
 
+class TestRubyReviewFixes(unittest.TestCase):
+    """審查回合找出的三個系統性根因（々、字距排版人名／假名連接複合
+    詞、純數字底字）以及審查過程中額外發現的兩個交互作用臭蟲（浮點誤差
+    導致的平手誤判、數字底字與清單編號的交互作用）。每個都斷言具體的配
+    對結果，涵蓋 04/06/11/13.pdf。詳見 task-5-report.md 附加段落的
+    RED/GREEN 證據與否證驗證。
+    """
+
+    _docs = {}
+
+    @classmethod
+    def _lines_for(cls, lesson):
+        if lesson not in cls._docs:
+            frags = extract_fragments(PDFDoc.from_path(lesson))
+            cls._docs[lesson] = (frags, group_lines(frags))
+        return cls._docs[lesson]
+
+    def _pairs_for(self, lesson, needle):
+        frags, lines = self._lines_for(lesson)
+        for ln in lines:
+            if needle in ln.text():
+                return {p.base: p.kana for p in pair_ruby(frags, ln)}
+        self.fail("在 %s 找不到含『%s』的行" % (lesson, needle))
+
+    def test_iteration_mark_gets_own_reading(self):
+        """時々 → ときどき、別々 → べつべつ。
+
+        々（U+3005 IDEOGRAPHIC ITERATION MARK）的 `unicodedata.name` 是
+        `IDEOGRAPHIC ITERATION MARK`，不含 `CJK UNIFIED`/`CJK
+        COMPATIBILITY`，第一版 `_is_cjk_ideograph` 因此不承認它是底
+        字，「々」永遠配不到、整組振假名連前一個漢字也跟著漏配（得到
+        base='時'、kana='ときどき'，四個假名全部錯配給單一個「時」字）。
+        """
+        pairs = self._pairs_for("06.pdf", "わたしも  時々  ここで")
+        self.assertEqual(pairs.get("時々"), "ときどき")
+        self.assertNotIn("時", pairs)
+
+        pairs2 = self._pairs_for("13.pdf", "ミラー：すみません。  別々に")
+        self.assertEqual(pairs2.get("別々"), "べつべつ")
+
+    def test_digit_gets_own_reading(self):
+        """7つ 的「7」→ なな。
+
+        第一版 `_is_cjk_ideograph` 只認漢字，數字結構性不可能當底字——
+        這是第 11 課（量詞、數字課）配對率偏低的主因，直接對應使用者
+        must-have 需求（數字、時間、日期／量詞練習）。
+        """
+        pairs = self._pairs_for("11.pdf", "会議室に  テーブルが   7つ")
+        self.assertEqual(pairs.get("7"), "なな")
+
+    def test_particle_connected_compound_not_missed(self):
+        """店の人 → みせひと。
+
+        振假名 fragment `' みせ       ひと'` 涵蓋「店」「人」兩個區段，
+        中間隔著正文裡本來就有、不需要振假名的助詞「の」。第一版要求
+        `reading[i+k]` 逐一緊鄰、都是漢字，看到「店」後面接的是假名「の」
+        就直接判定整組配不到。
+        """
+        pairs = self._pairs_for("13.pdf", "店の人：ご注文は")
+        self.assertEqual(pairs.get("店の人"), "みせひと")
+
+    def test_name_letter_spacing_not_merged_across_word_boundary(self):
+        """對話人名字距排版（山　田、佐　藤）刻意選擇不修——這是否證測
+        試，鎖住這個決定，不是遺漏。
+
+        對話人名常用 2~4 個半形空白把姓跟名拉開純做視覺效果（山　田：），
+        但這個字距慣例跟全書內文任何兩個獨立單字之間的間隔（也是雙半形
+        空白，例如「今　何」「来年　結婚」）在幾何上無法區分。13.pdf
+        「今　何」剛好被 PDF 原始內容流編碼成單一個振假名 fragment，若
+        放行「跳過任意數量純空白」，這兩個無關的獨立詞會被錯誤合併成一
+        個 RubyPair——這比「人名配不到振假名」更糟（讀音練習題型會找不
+        到獨立的「今」「何」）。因此人名字距排版目前保持配不到（不是配
+        錯），這裡斷言兩件事：(1) 人名確實還是配不到，(2) 兩個獨立詞
+        `今`／`何` 沒有被錯誤合併。
+        """
+        pairs = self._pairs_for("01.pdf", "山  田：おはよう  ございます")
+        self.assertNotIn("山  田", pairs)   # 記錄殘留限制，不是本次要修的目標
+
+        pairs2 = self._pairs_for("13.pdf", "今  何が  いちばん")
+        self.assertNotIn("今  何", pairs2, "今／何是兩個獨立詞，不該被合併成一個 RubyPair")
+
+    def test_tie_break_not_swayed_by_subpixel_float_noise(self):
+        """毎朝 → まいあさ，不能因為浮點誤差選錯起點而被拉去跟後面的
+        「7時半」「英語」錯誤合併。
+
+        「毎」「朝」離振假名錨點在視覺上都恰好是半個字寬，理應平手，但
+        `char_width` 累加造成的次像素浮點誤差（實測差 0.00072pt）會讓
+        「朝」看起來嚴格更近。允許跳過連接假名的 `_find_run` 若因此選到
+        「朝」當起點，會沿著空白一路跳到後面完全不相干的「7時半」或
+        「英語」，產生 base='朝  7時半'、kana='まいあさじはん' 這種錯誤
+        合併（06.pdf 實測案例）。
+        """
+        pairs = self._pairs_for("06.pdf", "毎朝  7時半に  起きます")
+        self.assertEqual(pairs.get("毎朝"), "まいあさ")
+        self.assertEqual(pairs.get("時半"), "じはん")
+        self.assertNotIn("朝  7時半", pairs)
+
+        pairs2 = self._pairs_for("06.pdf", "毎朝  英語の  新聞を")
+        self.assertEqual(pairs2.get("毎朝"), "まいあさ")
+        self.assertNotIn("朝  英語", pairs2)
+
+    def test_digit_anchor_cross_validated_against_following_kanji(self):
+        """980円 的「円」→ えん，不能被前面的數字「9」偷走。
+
+        振假名 fragment 只有一個區段「えん」，前面帶 9 個前導半形空白把
+        它推到「円」正上方——這些空白的寬度剛好讓 fragment 原始錨點跟
+        「9」（980 的第一位數字）的 x 座標幾乎重合（差 0.0006pt），比離
+        「円」的距離（19.8pt）近得多。若只用原始錨點找最近底字，會誤判
+        成 base='9'、kana='えん'（宣稱數字「9」讀作 えん，這是可驗證為
+        假的錯誤讀音，比「配不到」更需要避免）。
+        """
+        pairs = self._pairs_for("13.pdf", "980円、牛どんは  700円です")
+        self.assertEqual(pairs.get("円"), "えん")
+        self.assertNotIn("9", pairs)
+        self.assertNotIn("7", pairs)
+
+    def test_digit_extension_does_not_swallow_list_numbering(self):
+        """例2 的「例」→ れい，不能因為熟字訓擴張機制把緊接著的題號
+        「2」一起吃進 base。
+
+        數字廣泛用於清單編號、例句題號（例1、例2……），緊接在有振假名
+        的漢字後面、自己沒有振假名是常態。把數字納入底字集合之後，如果
+        熟字訓擴張（本來是為了處理「時計」「誕生日」這類讀音跨漢字未分
+        段的情形）跟漢字一視同仁地把數字也吃進去，會產生 base='例2'
+        （宣稱「2」是「例」讀音的一部分）。
+        """
+        pairs = self._pairs_for("06.pdf", "例2： （ × ）ミラーさんは")
+        self.assertEqual(pairs.get("例"), "れい")
+        self.assertNotIn("例2", pairs)
+
+
 if __name__ == "__main__":
     unittest.main()

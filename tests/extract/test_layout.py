@@ -98,12 +98,23 @@ def _spec_is_descendant(f, ancestor, host_of):
 class TestCharLevelReadingOrder(unittest.TestCase):
     """回歸測試：課本把日文詞彙插進中文說明的字元之間（反之亦然），依
     fragment 起點 x 排序、逐 fragment 串接文字會把穿插的 fragment 整批
-    插在錯誤位置（07 課「打電話」）。但「兩個 fragment 錨點 x 完全相等」
-    不是穿插，是兩段獨立文字恰好從同一點畫起，各自必須保持連續整塊
-    （14 課「ます」/「視」——第一輪修正曾經誤判這種情形也需要拆開插入，
-    造成真實回歸，見 Task 4 report 第二輪修正）。這裡用一個涵蓋全 15 課
-    的量化不變量鎖住「插入 vs. 原子性」這條規則本身，不是只測下面幾個
-    具體案例。
+    插在錯誤位置（07 課「打電話」，這是真正的穿插：`〔` 的錨點嚴格落在
+    `打電` 的跨距內部，見 `_find_host`）。
+
+    另一類先前被誤判為「需要 tie-break」的打平（14 課「ます」/「視」、
+    01 課「だれ」/「是」），第三輪修正查出根因其實是 `fonts.char_width`
+    把空白字元的前進寬度算成 0，導致 `fragments.py` 算出的座標系統性
+    少算了「空白數 × 半形字寬」，才讓兩段本來不該重疊的獨立文字意外
+    算到同一個 x。修正 `char_width` 後，這兩個案例都不再打平，全 15 課
+    的 fragment 錨點打平數從 55 降到 9（見 Task 4 report 第三輪修正的
+    量化結果），單純依 x 排序即可得到正確答案，不需要任何 tie-break
+    啟發式——`_find_host`／`render()` 仍保留「錨點相等→兩個 fragment
+    各自保持連續、依內容流順序排放」這個原子性 fallback，只是現在只會
+    在真正獨立、巧合共用同一個文件錨點的少數情形觸發（例如 05/10 課
+    「1)」/「①」這類刻意對齊的清單標記；不是座標算錯的症狀）。
+
+    這裡用一個涵蓋全 15 課的量化不變量鎖住「插入 vs. 原子性」這條規則
+    本身，不是只測下面幾個具體案例。
     """
 
     def test_lesson07_entry9_chinese_gloss_reconstructs_with_bracket_inside(self):
@@ -123,13 +134,20 @@ class TestCharLevelReadingOrder(unittest.TestCase):
         self.assertIn("打〔電話〕", text)
         self.assertNotIn("打電〔話〕", text)
 
-    def test_lesson14_masu_and_shi_stay_atomic_not_interleaved(self):
-        """回歸測試（第二輪修正的直接原因）：14 課 p.8「Ⅰ類動詞ます形」
-        說明列，`ます`（TT2）與 `視`（TT4）兩個 fragment 的錨點 x 完全
-        相等（150.6）。這不是穿插——兩者是各自獨立、恰好從同一點畫起的
-        文字段，正確讀法要求 `ます` 兩個字連續出現、`視` 完整接在後面
-        （或前面，但不能插進 `ます` 中間）：「ます視」，不是被硬插成
-        「ま視す」。
+    def test_lesson14_masu_and_shi_no_longer_tie_and_read_correctly(self):
+        """回歸測試（第三輪修正的根因案例）：14 課 p.8「Ⅰ類動詞　視ます形」
+        說明列，`ます`（TT2）與 `視`（TT4）兩個 fragment 先前被誤判為
+        錨點 x 完全相等（150.6）而觸發「原子性」tie-break。用
+        `tools/render.swift` 算繪 14.pdf 第 8 頁並逐像素量測後確認：
+        (a) 課本正確讀法是「視ます形」（`視` 在前，不是先前兩輪都誤判
+        的「ます視」或「ま視す」）；(b) 兩者其實**根本不該打平**——真正
+        的根因是 `fonts.char_width` 把空白字元的前進寬度算成 0，導致
+        `ます` 前面兩個半形空白的前進量被低估了整整一個字寬，`ます` 的
+        座標因此少算了 13.2pt、意外跟 `視` 重合。修正 `char_width` 後，
+        `視` 的錨點 150.6、`ます` 的錨點變成 163.8（`視` 的估計結束
+        位置），兩者不再打平，單純依 x 排序就會得到正確的「視ます」，
+        不需要任何 tie-break。這裡同時鎖住「不再打平」與「讀法正確」
+        兩件事。
         """
         lines = group_lines(extract_fragments(PDFDoc.from_path("14.pdf")))
         target = None
@@ -138,27 +156,39 @@ class TestCharLevelReadingOrder(unittest.TestCase):
                 target = ln
                 break
         self.assertIsNotNone(target, "找不到 14 課「Ⅰ類動詞ます形」說明列（page=8, y≈625.46）")
+
+        masu = next(f for f in target.frags if f.text == "ます")
+        shi = next(f for f in target.frags if f.text == "視")
+        self.assertNotEqual(
+            masu.x, shi.x,
+            "「ます」與「視」的錨點不應再打平（根因已修正：空白前進寬度）"
+        )
+        self.assertLess(shi.x, masu.x, "「視」的錨點必須在「ます」之前")
+
         text = target.text()
-        self.assertIn("ます視", text)
+        self.assertIn("視ます形", text)
+        self.assertNotIn("ます視", text)
         self.assertNotIn("ま視す", text)
 
-    def test_lesson01_dare_row_keeps_quoted_terms_atomic_in_stream_order(self):
-        """01 課「だれ」列：中文「誰（哪位）（」＋字距調整＋「是」與日文
-        引號詞「“だれ”」的錨點 x 完全相等（529.79988，逐位元相同，兩條
-        獨立的座標計算路徑剛好收斂在同一點，不是巧合的四捨五入）。這不
-        是穿插——依「插入 vs. 原子性」規則，兩個 fragment 各自保持完整
-        連續，先後依內容流原始順序：實測「“だれ”」（在同一個 TT2 TJ
-        陣列內、與「“どなた”」一起）在內容流中先於「是」（在後面另一個
-        BT 區塊的 TT4 TJ 陣列裡）被畫出，所以「“だれ”」整塊排在「是」
-        整塊之前，得到「“どなた”“だれ”是」。
+    def test_lesson01_dare_row_no_longer_ties_and_reads_correctly(self):
+        """回歸測試（第三輪修正的根因案例）：01 課「だれ」列，中文
+        「誰（哪位）（」＋字距調整＋「是」與日文引號詞「“だれ”」的錨點
+        先前被誤判為 x 完全相等（529.79988）。用 `tools/render.swift`
+        算繪 01.pdf 第 1 頁並裁切這一列後確認：課本正確讀法是
+        「誰（哪位）（“どなた”是“だれ”」——「是」夾在兩個引號詞中間，
+        不是第二輪判定的「“どなた”“だれ”是」。
 
-        第一輪修正曾經用「開頭標點在錨點對錨點打平時排後面」的啟發式把
-        這裡排成「“どなた”是“だれ”」——複審指出這條啟發式只有這一個
-        案例佐證（n=1），套到 14 課「ます」/「視」等其他打平案例上會出錯
-        （見 Task 4 report 第二輪修正）。改用「錨點相等即原子性、依內容
-        流順序」這條有多個獨立案例佐證的規則後，這裡的正確輸出也隨之
-        修正為「“どなた”“だれ”是」——這是我們對這一行語意的重新判斷，
-        不是規則的例外；細節見 Task 4 report。
+        根因同 14 課案例：「だれ（ どなた ）“どなた”“だれ”」是同一個
+        TJ 陣列內連續畫出的四個字串，「（ どなた ）」自己內部有兩個半形
+        空白；先前空白前進寬度算成 0，這兩個空白的前進量被低估
+        2×0.5×13.2=13.2pt，使得陣列裡「“どなた”」「“だれ”」都往左少
+        算了 13.2pt，「“だれ”」因此意外跟另一條完全獨立路徑算出的
+        「是」（誰（哪位）（＋字距調整，不含空白，這條路徑本身沒變）
+        重合在 529.79988。修正 `char_width` 後，「“どなた”」變成
+        463.79988、「“だれ”」變成 542.99988，「是」仍是 529.79988，
+        三者不再打平：529.8 介於「“どなた”」結束位置與「“だれ”」新
+        錨點之間，單純依 x 排序即可得到「“どなた”是“だれ”」，不需要
+        任何 tie-break 啟發式。
         """
         lines = group_lines(extract_fragments(PDFDoc.from_path("01.pdf")))
         target = None
@@ -167,9 +197,18 @@ class TestCharLevelReadingOrder(unittest.TestCase):
                 target = ln
                 break
         self.assertIsNotNone(target, "找不到「だれ（どなた）」單字所在列")
+
+        shi = next(f for f in target.frags if f.text == "是")
+        dare_quoted = next(f for f in target.frags if f.text == "“だれ”")
+        self.assertNotEqual(
+            shi.x, dare_quoted.x,
+            "「是」與「“だれ”」的錨點不應再打平（根因已修正：空白前進寬度）"
+        )
+        self.assertLess(shi.x, dare_quoted.x, "「是」的錨點必須在「“だれ”」之前")
+
         text = target.text()
-        self.assertIn("“どなた”“だれ”是", text)
-        self.assertNotIn("“どなた”是“だれ”", text)
+        self.assertIn("“どなた”是“だれ”", text)
+        self.assertNotIn("“どなた”“だれ”是", text)
 
     def test_char_level_reconstruction_respects_insertion_rule_across_all_lessons(self):
         """量化不變量（涵蓋 1~15 課全書，不是只測上面幾個個案）：

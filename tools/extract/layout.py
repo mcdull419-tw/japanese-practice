@@ -10,25 +10,10 @@ min_gap 即視為換欄。
 
 ## 右端估算：為何不是單一係數
 
-右端估算需要「這段文字大概畫到哪裡」。逐字元檢視發現寬度並非單一比例：
-
-- 全形字元（假名、漢字、全形標點如「，」「〔」）：實測本課字型的內嵌
-  CIDFont 皆宣告 `/DW 1000`（預設字寬 = 100% 字級）——例如 TT2
-  （MSGothic, `90ms-RKSJ-H`）的 descendant font 物件與 TT4（SimSun,
-  `GBK-EUC-H`）皆是 `/DW 1000`。
-- 半形字元（ASCII 字母、數字、標點）：TT2 的 descendant font 另外宣告了
-  `/W` 陣列，明確把一批 CID（涵蓋單字表中「   1.」「  10.」這類半形數字
-  標籤所用的字碼）覆寫為寬度 500（= 50% 字級）。這正是課本裡「單字表
-  行號標籤與假名/漢字之間留白很窄」的成因——若誤用全形寬度估計，行號
-  標籤的右端會被高估，導致無法切開。
-- 空白字元不佔可視墨水，切欄只在乎「看得到的內容延伸到哪裡」，因此空白
-  一律計為零寬——這對行號標籤（如「   1.」有 3 個前導空白）尤其關鍵：
-  若比照半形字元給 0.5 倍字級，前導空白仍會把估計右端推得過遠，導致
-  01 行的「   1.」與「切ります」無法正確切開。
-
-以上三類寬度（全形 1.0、半形 0.5、空白 0）皆可由內嵌字型物件（`/DW`、
-`/W`）與「空白無墨水」的物理事實佐證，而非「調到測試變綠」的單一
-折衷係數。
+右端估算需要「這段文字大概畫到哪裡」，用的是 `tools.extract.fonts.text_width`
+（全形 1.0 倍字級、半形 0.5 倍字級、空白 0——依課本內嵌 CIDFont 的 `/DW`、
+`/W` 度量分類，完整依據見該函式旁的說明）。`fragments.py` 抽 TJ 陣列內字串
+的自然前進寬度也是同一份邏輯，避免兩處各自維護、可能漂移的字寬常數。
 
 **已知殘留限制**（詳見 Task 4 report）：本估算法仍是「標稱前進寬度」
 （advance width），不是字形實際墨水外框（ink extent）。在少數欄位緊貼
@@ -40,6 +25,7 @@ min_gap 即視為換欄。
 from dataclasses import dataclass
 from typing import List
 
+from tools.extract.fonts import text_width
 from tools.extract.fragments import Fragment
 
 _MIN_BODY_SIZE = 8.0
@@ -71,25 +57,10 @@ class Line:
                 out.append(Cell(x=cur[0].x, text="".join(g.text for g in cur), frags=cur))
                 cur = []
             cur.append(f)
-            prev_right = f.x + _text_width(f.text, f.size)
+            prev_right = f.x + text_width(f.text, f.size)
         if cur:
             out.append(Cell(x=cur[0].x, text="".join(g.text for g in cur), frags=cur))
         return out
-
-
-def _char_width(ch: str, size: float) -> float:
-    """單一字元的估計前進寬度（見模組說明的三類寬度依據）。"""
-    if ch.isspace():
-        return 0.0
-    if ord(ch) < 0x100:
-        # 半形（ASCII / Latin-1）：課本內嵌字型 /W 覆寫為 500（0.5 倍字級）。
-        return 0.5 * size
-    # 全形（假名、漢字、全形標點）：內嵌字型 /DW 1000（1.0 倍字級）。
-    return 1.0 * size
-
-
-def _text_width(text: str, size: float) -> float:
-    return sum(_char_width(c, size) for c in text)
 
 
 def group_lines(frags: List[Fragment], y_tol: float = 2.0) -> List[Line]:

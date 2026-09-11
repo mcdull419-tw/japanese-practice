@@ -53,3 +53,31 @@ def decode_hex(hex_str: str, encoding: str) -> str:
     if len(hex_str) % 2:
         hex_str += "0"
     return bytes.fromhex(hex_str).decode(encoding, errors="replace")
+
+
+# ----------------------------------------------------------------------
+# 字寬估計（見 tools/extract/layout.py 模組說明的完整依據）
+# ----------------------------------------------------------------------
+#
+# 依課本內嵌 CIDFont 實測：全形字元（假名、漢字、全形標點）走 /DW 預設
+# 1000（1.0 倍字級）；半形字元（ASCII/Latin-1，課本用於行號標籤如「  1.」）
+# 走 TT2 descendant font 的 /W 覆寫 500（0.5 倍字級）；空白不佔可視墨水，
+# 估計寬度為 0。這三類寬度由實際檢視內嵌字型物件的 /DW、/W 得出，不是
+# 憑空猜測的折衷係數。
+#
+# 這裡是唯一實作：`fragments.py`（TJ 陣列內字串的自然前進寬度、供下個
+# 字距調整數字疊加）與 `layout.py`（欄位切分的右端估算）都呼叫這裡，
+# 避免兩份重複、可能各自漂移的字寬邏輯。
+
+def char_width(ch: str, size: float) -> float:
+    """單一（已解碼）字元的估計前進寬度。"""
+    if ch.isspace():
+        return 0.0
+    if ord(ch) < 0x100:
+        return 0.5 * size
+    return 1.0 * size
+
+
+def text_width(text: str, size: float) -> float:
+    """已解碼文字的估計前進寬度總和。"""
+    return sum(char_width(c, size) for c in text)

@@ -1,6 +1,7 @@
 import unittest
 from tools.extract.pdfobj import PDFDoc
 from tools.extract.fragments import extract_fragments, page_fragments, UnresolvedFontError
+from tools.extract.layout import group_lines
 
 
 class TestFragments(unittest.TestCase):
@@ -211,6 +212,38 @@ class TestFragmentCoordinates(unittest.TestCase):
         stray_zh_char = next((f for f in row if f.text == "等"), None)
         self.assertIsNotNone(stray_zh_char, "找不到獨立的「等」Fragment")
         self.assertAlmostEqual(stray_zh_char.x, 368.4, places=1)
+
+    def test_grammar_page_reading_order_not_scrambled_by_large_tc(self):
+        """回歸測試（複審發現）：Tc 逐字元拆分修正的影響範圍遠不只
+        `ことば` 單字表——複審用 scratch 副本比對修正前後全 15 課的
+        `extract_fragments` 輸出，發現全書共 232 次拆分事件、115 行
+        `Line.text()` 的內容因此改變，幾乎全部落在各課的文法說明頁
+        （這些頁面同樣大量使用大 `Tc` 把說明句子裡的關鍵詞跟前後文撐
+        開，例如把「時」「分」兩個獨立名詞的位置往右移出正確順序），
+        是 Task 4~6 遺留、先前 82 個測試完全沒發現的大規模閱讀順序錯
+        亂——不是本次修正才造成，而是本次修正才修好。
+
+        04.pdf 第 8 頁（文法說明頁）y≈131.6 這一行是具體例子：修正前
+        `Line.text()` 是 `'數字後面加上量詞「時分」「」表示時刻。'`
+        ——「時」「分」兩個字被大 Tc 撐開的量誤估後擠在一起、後面留下
+        一對空的「」，讀起來語序錯亂且有語病；修正後正確還原成
+        `'數字後面加上量詞「時」「分」表示時刻。'`，「時」「分」分別
+        留在各自的引號裡，才是課本原意（「時」「分」是兩個各自獨立、
+        用引號框起來的量詞範例）。這裡直接鎖定修正後的正確語序，防止
+        `fragments.py` 或 `layout.py` 未來的修改讓這類文法頁大規模退
+        回錯亂狀態而不被任何測試發現（跟本次修正前的狀態一樣）。"""
+        frags = extract_fragments(PDFDoc.from_path("04.pdf"))
+        row = [f for f in frags if f.page == 8 and abs(f.y - 131.6) < 0.5]
+        self.assertTrue(row, "找不到 04.pdf 第 8 頁 y≈131.6 這一行的 fragment")
+
+        lines = group_lines(frags)
+        target = next(
+            (ln for ln in lines if ln.page == 8 and abs(ln.y - 131.6) < 0.5), None
+        )
+        self.assertIsNotNone(target)
+        text = target.text()
+        self.assertEqual(text, "數字後面加上量詞「時」「分」表示時刻。")
+        self.assertNotIn("「時分」", text, "「時」「分」不應該被誤估的 Tc 擠在同一組引號裡")
 
 
 class TestFontResolution(unittest.TestCase):

@@ -1,6 +1,8 @@
 import re
 from typing import Dict
 
+from tools.extract.pdfobj import PDF_NAME_TOKEN, decode_pdf_name
+
 _ENCODING_RULES = (
     (("RKSJ", "90MS", "90MSP"), "cp932"),
     (("GBK", "GB-", "GBPC", "GBKP"), "gb18030"),
@@ -31,13 +33,24 @@ def _encoding_from_basefont(name: str) -> str:
 
 
 def font_encodings(doc, page) -> Dict[str, str]:
-    """回傳 {字型資源名(去掉斜線): python 編碼名}。"""
+    """回傳 {字型資源名(去掉斜線): python 編碼名}。
+
+    列舉 `/Font` 資源字典 key 用 `pdfobj.PDF_NAME_TOKEN`（依規格定義的
+    合法 PDF 名稱字元，含底線、`+`、`-`、`.`、`#xx` 逃脫序列），不是只
+    認英數字加底線的 `\\w+`——這裡跟 `fragments.py` 解析 `Tf` 運算子字
+    型名用同一個字元類別、同一個 `decode_pdf_name` 還原 `#xx` 逃脫序
+    列，兩邊對同一個字型資源名稱保證得到完全相同的字串，`Tf` 設定的
+    `state.font` 才查得到這裡建出來的編碼表（見 `fragments.py` 模組說
+    明「字型名解析失敗必須大聲失敗」；Task 6 複審發現的真實案例是
+    13.pdf 的 `/C2_0`、`/C2_1`——這兩個字型名本身用 `\\w+` 就已經能完
+    整比對到，這裡改用更寬的字元類別是為了避免兩邊字元類別不一致，未
+    來換成別的合法字元時再次出現同一種 key 對不上的臭蟲）。"""
     result = {}
     block = re.search(rb"/Font\s*(<<.*?>>)", page.resources, re.S)
     if not block:
         return result
-    for m in re.finditer(rb"/(\w+)\s+(\d+)\s+0\s+R", block.group(1)):
-        res_name = m.group(1).decode("latin-1")
+    for m in re.finditer(rb"/(" + PDF_NAME_TOKEN + rb")\s+(\d+)\s+0\s+R", block.group(1)):
+        res_name = decode_pdf_name(m.group(1)).decode("latin-1")
         body = doc.get_object(int(m.group(2)))
         enc = re.search(rb"/Encoding\s*/([\w-]+)", body)
         if enc:

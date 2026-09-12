@@ -19,6 +19,50 @@ class Page:
     resources: bytes    # /Resources 字典的原始位元組（含外層 << >>）
 
 
+# PDF 名稱物件（ISO 32000-1 §7.3.5）的合法字元：除了空白與定界字元
+# `( ) < > [ ] { } / %` 之外的任何位元組都合法；`#xx`（兩位十六進位）
+# 是逃脫序列，代表單一實際位元組（可能剛好是定界字元或空白本身）。
+#
+# Task 6 複審時發現的真實臭蟲：`tools/extract/fragments.py` 原本的 `Tf`
+# 字型名正則只認 `[A-Za-z0-9]+`，13.pdf 用底線命名的字型資源（`C2_0`、
+# `C2_1`）完全匹配不到——正則不匹配時 `Tf` 這個 token 整個被
+# `_TOKEN.finditer` 跳過，字型狀態 `state.font` 永遠停留在初始值 `""`，
+# 之後查編碼表用 `encodings.get(state.font, _DEFAULT_ENCODING)` 找不到
+# 空字串這個 key，靜默退回 `cp1252`，把日文 Shift-JIS 位元組硬讀成西歐
+# 字元，整課變亂碼卻不報錯。這裡把「PDF 合法名稱字元」定義成一個共用
+# 常數，讓 `fragments.py`（解析 `Tf` 運算子）與 `fonts.py`（列舉
+# `/Font` 資源字典的 key）用同一套規則比對，避免兩邊字元類別不一致造成
+# 新的、更隱蔽的 key 對不上的臭蟲。
+#
+# 這裡把 `#` 寫成 `\#`：這個常數會被嵌入 `fragments.py` 用 `re.X`
+# （verbose）模式編譯的大型 token 正則裡，verbose 模式下未跳脫的 `#`
+# 會被當成註解起始字元，吃掉到行尾的所有內容，把逃脫序列這段規則整個
+# 弄壞。跳脫成 `\#` 在 verbose 與非 verbose 模式下都正確比對字面上的
+# `#`，兩邊嵌入都安全。
+PDF_NAME_TOKEN = rb"(?:\#[0-9A-Fa-f]{2}|[^#\s()<>\[\]{}/%])+"
+
+
+def decode_pdf_name(raw: bytes) -> bytes:
+    """把一個 PDF 名稱物件的原始位元組（不含開頭的 `/`，通常就是用
+    `PDF_NAME_TOKEN` 比對出來的那段）解析成實際位元組序列：把 `#xx`
+    十六進位逃脫序列還原成它代表的單一位元組，其餘位元組原樣保留。"""
+    out = bytearray()
+    i = 0
+    n = len(raw)
+    while i < n:
+        if raw[i:i + 1] == b"#" and i + 2 < n:
+            hex_part = raw[i + 1:i + 3]
+            try:
+                out.append(int(hex_part, 16))
+                i += 3
+                continue
+            except ValueError:
+                pass
+        out.append(raw[i])
+        i += 1
+    return bytes(out)
+
+
 def extract_balanced_dict(data: bytes, start: int) -> bytes:
     """從 data[start] 的 '<<' 開始，回傳含外層 << >> 的完整字典位元組。"""
     assert data[start:start + 2] == b"<<"

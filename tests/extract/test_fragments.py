@@ -1,6 +1,6 @@
 import unittest
 from tools.extract.pdfobj import PDFDoc
-from tools.extract.fragments import extract_fragments, page_fragments
+from tools.extract.fragments import extract_fragments, page_fragments, UnresolvedFontError
 
 
 class TestFragments(unittest.TestCase):
@@ -48,6 +48,38 @@ class TestFragments(unittest.TestCase):
         self.assertEqual(
             offenders, [],
             "偵測到誤解碼指紋（課號, 字元）：%r" % (offenders[:10],)
+        )
+
+    def test_no_cp1252_misdecoding_fingerprint(self):
+        """Shift-JIS 被誤讀為 cp1252 會產生這些字元——這是 Task 6 複審
+        揪出的第四次「測試全綠但資料是壞的」：上面 `test_no_
+        misdecoding_fingerprint` 的指紋集只涵蓋「Shift-JIS 被當成
+        GB18030」的特徵字元，13.pdf 實際發生的是「Shift-JIS 被當成
+        cp1252」（根因見 `fragments.py` 的 `UnresolvedFontError` 說
+        明），指紋完全不同，原本的測試因此對這個真實存在的整課亂碼視而
+        不見，15 課全綠卻有一課是壞的。
+
+        Shift-JIS 雙位元組假名/漢字的第一個位元組幾乎都落在 0x81~0x9F
+        這個範圍（平假名幾乎全部是 0x82、片假名幾乎全部是 0x83），這個
+        範圍被 cp1252 解碼會變成一批固定的西歐標點符號（0x82→'‚'
+        U+201A、0x83→'ƒ' U+0192 等）。這裡刻意**不**把整個 0x80~0x9F
+        range 都當指紋——0x85（'…'）、0x93/0x94（'“'/'”'）這幾個是這套
+        課本正常會用到的排版符號（省略號、引號），全 15 課逐一實測掃過
+        confirm 這幾個字元在正常課文裡合法出現、必須排除，否則會誤判。
+        排除這幾個之後的字元集合，實測 01~15.pdf 掃過，只有 13.pdf（修
+        正前）命中，其餘 14 課全部乾淨——是可靠、不誤判的指紋。
+        """
+        fingerprint = set("€‚ƒ„†‡ˆ‰ŠŒ‹ŽŽ‘’–—˜™š›œžŸ")
+        offenders = []
+        for n in range(1, 16):
+            frags = extract_fragments(PDFDoc.from_path("%02d.pdf" % n))
+            text = "".join(f.text for f in frags)
+            for bad in fingerprint:
+                if bad in text:
+                    offenders.append((n, bad))
+        self.assertEqual(
+            offenders, [],
+            "偵測到 cp1252 誤解碼指紋（課號, 字元）：%r" % (offenders[:10],)
         )
 
 
@@ -147,6 +179,118 @@ class TestFragmentCoordinates(unittest.TestCase):
         self.assertAlmostEqual(kana.y, 768.26, places=1)
         self.assertAlmostEqual(kanji_verb.y, kana.y, places=6)
         self.assertAlmostEqual(chinese_gloss.y, kana.y, places=6)
+
+
+class TestFontResolution(unittest.TestCase):
+    """Task 6 複審發現：`Tf` 字型名正則只認 `[A-Za-z0-9]+`，13.pdf 用底
+    線命名的字型資源（`/C2_0`、`/C2_1`）完全匹配不到，`state.font` 永
+    遠留空、靜默退回預設編碼 cp1252，整課日文（含 `ことば` 標題本身）
+    變成亂碼卻不報錯——15 課全綠的測試套件完全沒發現這一課壞掉。
+
+    這裡鎖住兩件事：(1) 合法但先前漏接的字型名稱字元（底線）現在能正
+    確解析；(2) 字型名真的解析不到對應編碼時，必須丟出例外，不能再靜
+    默回退——第 (2) 點比第 (1) 點更根本：正則的疏漏只是這次觸發的其中
+    一個原因，日後還會有別的原因（資源字典缺項、內容流損毀……）觸發同
+    一種「找不到編碼卻假裝沒事」的靜默失敗，只堵正則這一個洞不夠。
+    """
+
+    def test_tf_font_name_with_underscore(self):
+        """13.pdf 實際使用的字型命名慣例：`/C2_0`（含底線）。"""
+        content = (
+            b"BT\n"
+            b"/C2_0 1 Tf\n"
+            b"13.2 0 0 13.2 67.2 829.46 Tm\n"
+            b"<82b1>Tj\n"
+            b"ET\n"
+        )
+        resources = b"<< /Font << /C2_0 1 0 R >> >>"
+        objects = {1: b"<< /Type /Font /BaseFont /MSGothic >>"}
+        page = _MockPage(number=1, content=content, resources=resources)
+        doc = _MockPDFDoc(objects)
+
+        frags = page_fragments(doc, page)
+
+        self.assertEqual(len(frags), 1)
+        self.assertEqual(frags[0].font, "C2_0")
+        self.assertEqual(frags[0].text, "こ")
+
+    def test_tf_font_name_with_hash_escape(self):
+        """PDF 名稱可以用 `#xx` 十六進位逃脫字元（ISO 32000-1
+        §7.3.5）——這裡合成一個字型資源名 `A#42`（解碼後是 `AB`），驗證
+        `Tf` 解析跟 `/Font` 資源字典列舉用同一套規則，兩邊都能正確還原
+        逃脫序列、彼此對得上。"""
+        content = (
+            b"BT\n"
+            b"/A#42 1 Tf\n"
+            b"13.2 0 0 13.2 67.2 829.46 Tm\n"
+            b"<82b1>Tj\n"
+            b"ET\n"
+        )
+        resources = b"<< /Font << /A#42 1 0 R >> >>"
+        objects = {1: b"<< /Type /Font /BaseFont /MSGothic >>"}
+        page = _MockPage(number=1, content=content, resources=resources)
+        doc = _MockPDFDoc(objects)
+
+        frags = page_fragments(doc, page)
+
+        self.assertEqual(len(frags), 1)
+        self.assertEqual(frags[0].font, "AB")
+        self.assertEqual(frags[0].text, "こ")
+
+    def test_unresolved_font_raises(self):
+        """`Tf` 選用的字型名，如果在該頁 `/Font` 資源字典裡完全找不到對
+        應項目，必須大聲失敗（丟例外），不能靜默退回預設編碼產出亂碼。
+
+        這裡合成一個 `/Ghost` 字型——正則本身能正確解析出名稱
+        `'Ghost'`，但頁面 `/Font` 資源字典根本沒有這個 key（模擬「內容
+        流引用了一個未宣告的字型資源」這種真實可能發生、正則修好也擋
+        不住的錯誤狀態），驗證這種情形會丟出 `UnresolvedFontError`，
+        而不是回傳一個帶著亂碼文字的 `Fragment`。
+        """
+        content = (
+            b"BT\n"
+            b"/Ghost 1 Tf\n"
+            b"13.2 0 0 13.2 67.2 829.46 Tm\n"
+            b"<82b1>Tj\n"
+            b"ET\n"
+        )
+        resources = b"<< /Font << /TT2 1 0 R >> >>"   # 沒有 /Ghost
+        objects = {1: b"<< /Type /Font /BaseFont /MSGothic >>"}
+        page = _MockPage(number=1, content=content, resources=resources)
+        doc = _MockPDFDoc(objects)
+
+        with self.assertRaises(UnresolvedFontError):
+            page_fragments(doc, page)
+
+    def test_lesson13_kotoba_heading_recovered(self):
+        """修正後，13.pdf 的 `ことば` 標題應該正確解碼出現——修正前這裡
+        是亂碼 `'‚±‚Æ‚Î'`（Shift-JIS 位元組被當成 cp1252 讀），整課
+        `ことば` 內容（單字表、例句）連帶全部遺失，Task 6 的
+        `split_sections` 因此少一個區段，症狀完全看不出來是
+        `fragments.py` 的問題。"""
+        frags = extract_fragments(PDFDoc.from_path("13.pdf"))
+        heads = [f for f in frags if f.text.strip() == "ことば"]
+        self.assertTrue(heads, "13.pdf 找不到『ことば』標題（修正未生效或迴歸）")
+
+    def test_no_fragment_has_empty_font_across_all_lessons(self):
+        """全 15 課：不得有任何 fragment 的 `font` 欄位是空字串。
+
+        `state.font` 只有在從未成功解析出任何 `Tf` 字型名時才會維持初
+        始值 `''`——這個不變量把「字型名解析失敗」這整類問題（不管未來
+        是正則疏漏、資源字典缺項、還是別的原因）收斂成一行斷言，涵蓋全
+        書而不是只鎖 13.pdf 這一個已知案例。搭配 `_emit` 的
+        `UnresolvedFontError`，理論上『解析成功但 font 是空字串』不可
+        能發生（一旦發生就會在 extract_fragments 這一步直接丟例外、根
+        本跑不到這裡的斷言）——這裡額外顯式檢查一次，作為不依賴例外訊
+        息、更直接的第二道防線。
+        """
+        for n in range(1, 16):
+            frags = extract_fragments(PDFDoc.from_path("%02d.pdf" % n))
+            empty = [f for f in frags if not f.font]
+            self.assertEqual(
+                empty, [],
+                "第 %d 課有 %d 個 fragment 的 font 欄位是空字串" % (n, len(empty))
+            )
 
 
 class TestFragmentPageBounds(unittest.TestCase):

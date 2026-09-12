@@ -16,13 +16,61 @@
 若誤把兩者合併成同一個 x/y，`TJ` 陣列顯示文字造成的畫筆漂移會被下一個
 `Td`/`TD` 誤當成行首疊加位移，座標可能暴衝到頁面外——中文釋義常見於
 「同一個 TJ 陣列顯示＋稍後用 Td/TD 換行」的組合，因此最容易踩到這個坑。
+
+## 字型名解析失敗必須大聲失敗，不能靜默退回預設編碼
+
+Task 6 複審（`task-6-report.md` 附加段落）發現：`Tf` 字型名正則原本只
+認 `[A-Za-z0-9]+`，13.pdf 用底線命名的字型資源（`/C2_0`、`/C2_1`）完
+全匹配不到——正則不匹配時整個 `Tf` token 被 `_TOKEN.finditer` 跳過，
+`state.font` 永遠停留在初始值 `""`；之後每個 `Tj`/`TJ` 顯示文字時，
+`encodings.get(state.font, _DEFAULT_ENCODING)` 找不到 `""` 這個 key，
+靜默退回 `cp1252`，把 Shift-JIS 位元組硬讀成西歐字元。13.pdf 第 1 頁
+（`ことば` 標題與大部分單字表所在頁）因此整頁變成亂碼（`'ことば'` 變
+成 `'‚±‚Æ‚Î'`），但沒有任何例外或錯誤訊息——15 課全綠的測試套件完全
+沒發現這一課壞掉，這是這條管線第四次出現「測試全綠但資料是壞的」。
+
+兩處修正：
+
+1. **字型名正則改用 `pdfobj.PDF_NAME_TOKEN`**（依 ISO 32000-1 §7.3.5
+   定義的合法名稱字元，含底線、`+`、`-`、`.`、`#xx` 逃脫序列等），不
+   是簡報字面上「補一個底線」這種頭痛醫頭的修法——正則的疏漏只是這次
+   觸發靜默失敗的其中一個原因，這裡把名稱字元集合一次做對，減少日後
+   再被別的合法字元踩到同一種洞的機會。`fonts.py` 列舉 `/Font` 資源
+   字典 key 的正則也改用同一個常數並套用 `decode_pdf_name`，確保兩邊
+   對同一個字型名稱有完全一致的解讀，不會因為字元類別不一致而彼此對
+   不上（見 `pdfobj.PDF_NAME_TOKEN` 說明）。
+2. **`_emit()` 查不到字型的編碼時，直接丟 `UnresolvedFontError`**，不
+   再 `encodings.get(state.font, _DEFAULT_ENCODING)` 靜默回退。理由：
+   `encodings` 這個字典是 `font_encodings()` 對「這一頁 `/Font` 資源
+   字典裡真實宣告的每一個字型」各自決定編碼後產生的（決策不到的字型
+   會在 `font_encodings()` 那一層就有自己的 fallback 邏輯，見
+   `fonts.py`），所以只要 `state.font` 是這一頁真的宣告過的字型，就一
+   定找得到對應的編碼；找不到，代表 `state.font` 本身有問題——可能是
+   字型名解析失敗（這次的根因）、可能是內容流引用了未宣告的字型資
+   源、也可能是 `Tj`/`TJ` 出現在任何 `Tf` 之前（`state.font` 還停在初
+   始值）。這三種情形都是「不知道該用什麼編碼解碼」，猜一個預設值產
+   出來的文字沒有任何正確性保證，必須讓呼叫方立刻知道，而不是悄悄產
+   出一個看起來像 `Fragment`、實際上文字是亂碼的物件。選擇「立刻丟例
+   外」而非「記錄後由驗證層事後攔截」，是因為 `extract_fragments()`
+   幾乎是所有下游模組與測試共同的進入點——例外會讓對應那一課的萃取立
+   刻整個失敗、無法被忽略；若改成收集錯誤清單、事後才檢查，還是要靠
+   額外寫的驗證測試才會被看到，等於把「這個模組本來就該保證的不變量」
+   外包給呼叫方，跟這次的問題（不變量被默默違反卻沒人檢查）是同一種
+   結構性風險。
 """
 import re
 from dataclasses import dataclass
 from typing import List
 
 from tools.extract.fonts import font_encodings, decode_hex, text_width
-from tools.extract.pdfobj import Page, PDFDoc
+from tools.extract.pdfobj import Page, PDFDoc, PDF_NAME_TOKEN, decode_pdf_name
+
+
+class UnresolvedFontError(RuntimeError):
+    """`Tf` 選用的字型名，在這一頁 `/Font` 資源字典解析出的編碼表裡找
+    不到對應項目——這是錯誤狀態（字型名解析失敗、內容流引用未宣告的字
+    型資源、或文字顯示運算子出現在任何 `Tf` 之前），不可以靜默退回預
+    設編碼產出亂碼。見模組說明「字型名解析失敗必須大聲失敗」。"""
 
 
 @dataclass
@@ -38,7 +86,7 @@ class Fragment:
 _NUM = rb"[-\d.]+"
 
 _TOKEN = re.compile(rb"""
-    /(?P<font>[A-Za-z0-9]+)\s+""" + _NUM + rb"""\s+Tf
+    /(?P<font>""" + PDF_NAME_TOKEN + rb""")\s+""" + _NUM + rb"""\s+Tf
   | (?P<tm>""" + _NUM + (rb"\s+" + _NUM) * 5 + rb""")\s+Tm
   | (?P<td>""" + _NUM + rb"\s+" + _NUM + rb""")\s+(?P<tdop>TD|Td)
   | <(?P<tj>[0-9A-Fa-f]*)>\s*Tj
@@ -52,8 +100,6 @@ _TOKEN = re.compile(rb"""
 
 # 元素於 TJ 陣列內：十六進位字串或字距調整數字。
 _TJ_ITEM = re.compile(rb"<(?P<hex>[0-9A-Fa-f]*)>|(?P<num>[-\d.]+)")
-
-_DEFAULT_ENCODING = "cp1252"
 
 
 class _TextState:
@@ -132,7 +178,11 @@ def page_fragments(doc: PDFDoc, page: Page) -> List[Fragment]:
         # group explicitly (with `is not None`, since `tj`/`tjarr` can
         # legitimately capture an empty string, which is falsy).
         if m.group("font") is not None:
-            state.font = m.group("font").decode("ascii")
+            # latin-1（不是 ascii）：`decode_pdf_name` 還原 `#xx` 逃脫序
+            # 列後可能產生 0x80~0xFF 的位元組，跟 `fonts.py` 列舉
+            # `/Font` 資源字典 key 時的解碼方式一致（見該模組），確保兩
+            # 邊對同一個字型名稱得到完全相同的字串，查表時 key 對得上。
+            state.font = decode_pdf_name(m.group("font")).decode("latin-1")
         elif m.group("tdop") is not None:
             tx_str, ty_str = m.group("td").split()
             tx, ty = float(tx_str), float(ty_str)
@@ -182,7 +232,17 @@ def _emit(frags: List[Fragment], state: _TextState, encodings, hex_bytes: bytes,
     到頁面外（實測：01.pdf 第 7 頁一段裝飾文字曾因此算出 x<0）。
     """
     hex_str = hex_bytes.decode("ascii", errors="replace")
-    encoding = encodings.get(state.font, _DEFAULT_ENCODING)
+    if state.font not in encodings:
+        raise UnresolvedFontError(
+            "page %d: current font %r has no resolvable encoding in this "
+            "page's /Font resource dict (known fonts: %r) — a Tf name "
+            "may have failed to parse, referenced an undeclared font "
+            "resource, or no Tf appeared before this text-showing "
+            "operator. Refusing to guess an encoding and silently "
+            "produce mis-decoded text (see module docstring)."
+            % (page_number, state.font, sorted(encodings))
+        )
+    encoding = encodings[state.font]
     text = decode_hex(hex_str, encoding)
     frags.append(Fragment(
         text=text,

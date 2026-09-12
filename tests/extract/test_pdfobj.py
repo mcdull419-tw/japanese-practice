@@ -1,5 +1,5 @@
 import unittest
-from tools.extract.pdfobj import PDFDoc
+from tools.extract.pdfobj import PDFDoc, decode_pdf_name
 
 
 class TestPDFDoc(unittest.TestCase):
@@ -72,6 +72,31 @@ endobj
         self.assertIn(b"BT", doc.pages[0].content)
         self.assertIn(b"/Font", doc.pages[0].resources)
         self.assertIn(b"BT", doc.pages[1].content)
+
+
+class TestDecodePdfName(unittest.TestCase):
+    """`decode_pdf_name` 還原 PDF 名稱物件裡的 `#xx` 十六進位逃脫序列
+    （ISO 32000-1 §7.3.5）。Task 6 複審發現 `fragments.py` 的 `Tf` 字型
+    名正則只認 `[A-Za-z0-9]+`，13.pdf 用底線命名的字型資源（`C2_0`、
+    `C2_1`）完全匹配不到，導致 `state.font` 永遠留空、靜默退回預設編
+    碼、整課日文變亂碼。修正時一併依規格處理 `#xx` 逃脫，不只是加一個
+    底線了事。"""
+
+    def test_plain_name_passthrough(self):
+        self.assertEqual(decode_pdf_name(b"C2_0"), b"C2_0")
+        self.assertEqual(decode_pdf_name(b"TT2"), b"TT2")
+
+    def test_hex_escape_decoded(self):
+        """`#42` 是位元組 0x42 = 'B' 的逃脫序列。"""
+        self.assertEqual(decode_pdf_name(b"A#42"), b"AB")
+
+    def test_hex_escape_for_hash_itself(self):
+        """`#23` 還原成 '#' 本身（0x23），驗證逃脫序列不是單純刪除。"""
+        self.assertEqual(decode_pdf_name(b"Na#23me"), b"Na#me")
+
+    def test_subset_prefix_and_plus_sign_untouched(self):
+        """子集化字型名常見的 `ABCDEF+` 前綴：'+' 不是逃脫字元，原樣保留。"""
+        self.assertEqual(decode_pdf_name(b"ABCDEF+SimSun"), b"ABCDEF+SimSun")
 
 
 if __name__ == "__main__":

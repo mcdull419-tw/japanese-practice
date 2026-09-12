@@ -210,9 +210,19 @@ def page_fragments(doc: PDFDoc, page: Page) -> List[Fragment]:
     return frags
 
 
+# `state.tc * state.a` 超過這個值（pt）才逐字元拆分 Fragment，見 `_emit`
+# 說明「Tc 大到造成真實視覺分離時逐字元拆分」。一般行內justify用的 Tc
+# 極小（實測 0.0048~0.0057，換算貢獻僅約 0.05~0.08pt，是為了讓齊行文
+# 字均勻分散所加的次像素級修正，不代表任何真實視覺分離），而造成本模
+# 組說明那種真實跳欄效果的 Tc 實測落在 14~18.5（貢獻 185~244pt，遠遠
+# 超過一個字寬）。1.0pt 遠大於前者、遠小於後者，兩類資料在全 15 課裡
+# 從未接近過這個門檻兩側。
+_TC_SPLIT_THRESHOLD = 1.0
+
+
 def _emit(frags: List[Fragment], state: _TextState, encodings, hex_bytes: bytes, page_number: int) -> None:
-    """解碼一個十六進位字串、產生一個 Fragment，並依 ISO 32000-1 §9.4.3
-    讓目前 x 前進該字串顯示後的位移總和。
+    """解碼一個十六進位字串、產生 Fragment，並依 ISO 32000-1 §9.4.3 讓
+    目前 x 前進該字串顯示後的位移總和。
 
     這一步是 Tj/TJ 都必須做的一半：畫出文字後，筆的位置本來就會移動到
     文字結束處，接下來（若在 TJ 陣列中）才疊加字距調整數字；若漏掉這一步，
@@ -230,6 +240,37 @@ def _emit(frags: List[Fragment], state: _TextState, encodings, hex_bytes: bytes,
     `Tc` 與很大的 TJ 字距調整數字，兩者互相抵銷、視覺上幾乎疊在同一點；
     若沒有把 `Tc` 一併算進來，只看到 TJ 調整數字的那一半，會讓筆座標暴衝
     到頁面外（實測：01.pdf 第 7 頁一段裝飾文字曾因此算出 x<0）。
+
+    ## Tc 大到造成真實視覺分離時逐字元拆分（Task 7 複審修正）
+
+    以上「一個字串一個 Fragment」的作法假設字串內部字元彼此緊鄰，字串
+    結束後才由 `Tc`/TJ 調整數字讓下一個字串的位置正確——但這個假設在
+    `Tc` 本身很大時不成立：14.pdf／15.pdf 的動詞分類欄位（Ⅰ／Ⅱ／Ⅲ）
+    有 10 筆單字，課本用 `Tc≈14~18.5`（未縮放文字空間單位，乘上
+    `state.a`≈13.2 後每字元貢獻 185~244pt）把同一個字串裡的兩個字元
+    （例如動詞分類羅馬數字＋中文釋義的第一個字，解碼後合併成單一字串
+    `"Ⅰ等"`）在視覺上撐開一整個欄位的距離。
+
+    先前版本把 `"Ⅰ等"` 當成一個 Fragment、只把 `Tc` 計入「這個字串結
+    束後」的總前進量，`layout.py` 需要估計字串內部個別字元位置時用的是
+    `fonts.char_width`（不含 `Tc`），完全不知道字元之間其實隔著
+    244pt，導致「等」被估計成緊跟在「Ⅰ」後面（漢字欄附近），而不是它
+    實際所在的中文欄（詳見 `tools/extract/vocab.py` 模組說明「已知限
+    制」的根因分析與逐筆核對）。
+
+    修法：`state.tc * state.a`（每個字元從 `Tc` 得到的實際 pt 貢獻）超
+    過 `_TC_SPLIT_THRESHOLD` 時，不再把整個字串包成一個 Fragment，改為
+    逐字元展開、各自帶正確累積後的 x——這樣每個字元的 `Fragment.x` 本
+    身就是真實位置，`layout.py` 不需要再對它做任何字寬估計。門檻刻意
+    設得遠低於這批真正需要拆分的資料（185pt 起）、遠高於一般齊行用途
+    的極小 `Tc`（見 `_TC_SPLIT_THRESHOLD` 常數說明），因此對其餘全部
+    內容（包含全部齊行 justify 文字）零影響：一般 `Tj`/`TJ` 字串繼續
+    產生跟先前完全相同的單一 Fragment。用這個修正過的
+    `extract_fragments` 重新算過上面「Ⅰ等」的例子：「Ⅰ」Fragment 落在
+    x=111.0（不變），「等」Fragment 落在 x=368.4——跟同一課其他單字的
+    中文欄名目起點（見 `vocab.py` 對 14 課學出來的 `zh_ref`）完全吻
+    合，不再落在漢字欄附近。這個推算已對照原始內容流的 `Tc`／TJ 調整
+    數字逐項驗證過（見 `task-7-report.md`），不是憑空假設。
     """
     hex_str = hex_bytes.decode("ascii", errors="replace")
     if state.font not in encodings:
@@ -244,6 +285,24 @@ def _emit(frags: List[Fragment], state: _TextState, encodings, hex_bytes: bytes,
         )
     encoding = encodings[state.font]
     text = decode_hex(hex_str, encoding)
+
+    if len(text) > 1 and abs(state.tc * state.a) > _TC_SPLIT_THRESHOLD:
+        # 見 `_emit` 說明「Tc 大到造成真實視覺分離時逐字元拆分」。
+        for ch in text:
+            frags.append(Fragment(
+                text=ch,
+                x=state.x,
+                y=state.y,
+                size=state.size,
+                font=state.font,
+                page=page_number,
+            ))
+            extra = state.tc * state.a
+            if ch == " ":
+                extra += state.tw * state.a
+            state.advance(text_width(ch, state.size) + extra)
+        return
+
     frags.append(Fragment(
         text=text,
         x=state.x,

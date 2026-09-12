@@ -92,11 +92,61 @@ class TestVocabVerbGroup(unittest.TestCase):
         self.assertEqual(v["kana"], "コピーします")
         self.assertEqual(v["group"], "III")
 
+    def test_loanword_verb_has_no_fabricated_kanji(self):
+        """第 18 筆「コピーします」是外來語動詞，本來就沒有漢字讀音。
+
+        Task 7 複審修正前：課本用巨大 Tc 把動詞分類羅馬數字「Ⅲ」跟中
+        文釋義「影印」的第一個字「影」編碼進同一個 Fragment（文字
+        `"Ⅲ影"`），`layout.py` 估計字元位置時把「影」誤判成緊跟在
+        「Ⅲ」後面、落入漢字欄，導致題庫會教使用者「コピーします 寫
+        作 影します」——不是缺漏，是捏造出一個根本不存在的漢字讀音。
+        修正 `fragments.py`（Tc 大到造成真實視覺分離時逐字元拆分）後，
+        「影」正確前進到中文欄，kanji 應為 None、zh 應為完整的
+        "影印"。"""
+        v = self.by_no[18]
+        self.assertIsNone(v["kanji"], "外來語動詞不應該有捏造出來的漢字：%r" % v["kanji"])
+        self.assertEqual(v["zh"], "影印")
+
+    def test_matsu_verb_kanji_and_zh_not_glued(self):
+        """第 6 筆「まちます」：先前 bug 把中文釋義「等待」的「等」字
+        黏進漢字欄，變成 kanji='等待ちます'、zh='待'（見模組說明與
+        `tools/extract/fragments.py` 模組說明的根因分析）。修正後
+        kanji 應為乾淨的「待ちます」，zh 應為完整的「等待」。"""
+        v = self.by_no[6]
+        self.assertEqual(v["kana"], "まちます")
+        self.assertEqual(v["group"], "I")
+        self.assertEqual(v["kanji"], "待ちます")
+        self.assertEqual(v["zh"], "等待")
+
     def test_kana_has_no_leading_or_trailing_whitespace(self):
         """全課 kana 欄位不應有前後空白殘留（見任務要求 2）。"""
         for v in self.vocab:
             self.assertEqual(v["kana"], v["kana"].strip(),
                               "第 %d 筆 kana 有前後空白殘留：%r" % (v["no"], v["kana"]))
+
+
+class TestVocabLesson15TcFix(unittest.TestCase):
+    """15 課同樣受課本大 Tc 撐開動詞分類標記與中文釋義首字的根因影響
+    （4 筆：#2、7、8、9），這裡鎖住其中最早發現、已算繪核對過視覺位置
+    的第 2 筆。"""
+
+    @classmethod
+    def setUpClass(cls):
+        lines = group_lines(extract_fragments(PDFDoc.from_path("15.pdf")))
+        section = [s for s in split_sections(lines) if s.name == "ことば"][0]
+        cls.vocab = parse_vocab(section)
+        cls.by_no = {v["no"]: v for v in cls.vocab}
+
+    def test_suwarimasu_kanji_and_zh_not_glued(self):
+        """第 2 筆「すわります」：算繪 15.pdf 第 1 頁核對過視覺位置，
+        正確答案是 kana='すわります'、kanji='座ります'、zh='坐'。修正
+        前 kanji 混進了中文釋義的「坐」字（'座ります坐'），zh 變成空
+        字串。"""
+        v = self.by_no[2]
+        self.assertEqual(v["kana"], "すわります")
+        self.assertEqual(v["group"], "I")
+        self.assertEqual(v["kanji"], "座ります")
+        self.assertEqual(v["zh"], "坐")
 
 
 if __name__ == "__main__":

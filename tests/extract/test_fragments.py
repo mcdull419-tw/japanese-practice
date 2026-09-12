@@ -180,6 +180,38 @@ class TestFragmentCoordinates(unittest.TestCase):
         self.assertAlmostEqual(kanji_verb.y, kana.y, places=6)
         self.assertAlmostEqual(chinese_gloss.y, kana.y, places=6)
 
+    def test_large_tc_splits_verb_marker_from_glued_chinese_char(self):
+        """14 課第 6 筆「まちます」（Task 7 複審修正的根因案例）：課本
+        用 `Tc≈18.5`（乘上文字矩陣縮放 13.2 後每字元貢獻約 244pt）把
+        動詞分類羅馬數字「Ⅰ」跟中文釋義「等待」的第一個字「等」硬撐
+        開到中文欄的位置，但兩者原本被解碼進同一個十六進位字串（單一
+        `Fragment` 文字 `"Ⅰ等"`）。`_emit()` 先前只把整個字串當一個
+        Fragment、`Tc` 只用來推進「這個字串結束後」的總前進量，內部
+        兩個字元之間真正相距的 244pt 完全沒有反映在座標上，導致
+        `layout.py` 事後用字寬估計字元位置時把「等」誤判成緊跟在
+        「Ⅰ」後面（見 `tools/extract/vocab.py` 模組說明「已知限制」
+        的完整根因分析與逐筆核對，`task-7-report.md` 有更新記錄）。
+
+        逐字元拆分後：「Ⅰ」單獨一個 Fragment（x=111.0，這一課其他乾
+        淨案例——例如同一頁「Ⅱ」單獨 Fragment——也是同一個 x），
+        「等」單獨一個 Fragment、前進到 x=368.4（跟這一課其他單字中
+        文欄的名目起點一致，見 `vocab.py` 對 14 課學出來的 `zh_ref`），
+        不再疊在漢字欄附近；也不應該再有任何文字剛好是 `"Ⅰ等"`（合併
+        後的舊錯誤值）的 Fragment。"""
+        frags = extract_fragments(PDFDoc.from_path("14.pdf"))
+        row = [f for f in frags if f.page == 1 and abs(f.y - 666.2603) < 0.01]
+
+        merged = [f for f in row if f.text == "Ⅰ等"]
+        self.assertEqual(merged, [], "「Ⅰ」與「等」不應再合併成同一個 Fragment：%r" % merged)
+
+        marker = next((f for f in row if f.text == "Ⅰ"), None)
+        self.assertIsNotNone(marker, "找不到獨立的「Ⅰ」Fragment")
+        self.assertAlmostEqual(marker.x, 111.0, places=1)
+
+        stray_zh_char = next((f for f in row if f.text == "等"), None)
+        self.assertIsNotNone(stray_zh_char, "找不到獨立的「等」Fragment")
+        self.assertAlmostEqual(stray_zh_char.x, 368.4, places=1)
+
 
 class TestFontResolution(unittest.TestCase):
     """Task 6 複審發現：`Tf` 字型名正則只認 `[A-Za-z0-9]+`，13.pdf 用底

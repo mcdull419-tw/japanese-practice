@@ -52,9 +52,10 @@ def font_encodings(doc, page) -> Dict[str, str]:
     for m in re.finditer(rb"/(" + PDF_NAME_TOKEN + rb")\s+(\d+)\s+0\s+R", block.group(1)):
         res_name = decode_pdf_name(m.group(1)).decode("latin-1")
         body = doc.get_object(int(m.group(2)))
-        enc = re.search(rb"/Encoding\s*/([\w-]+)", body)
+        enc = re.search(rb"/Encoding\s*/(" + PDF_NAME_TOKEN + rb")", body)
         if enc:
-            result[res_name] = _encoding_from_name(enc.group(1).decode("latin-1"))
+            enc_name = decode_pdf_name(enc.group(1)).decode("latin-1")
+            result[res_name] = _encoding_from_name(enc_name)
         else:
             base = re.search(rb"/BaseFont\s*/([^\s/>\]]+)", body)
             name = base.group(1).decode("latin-1") if base else ""

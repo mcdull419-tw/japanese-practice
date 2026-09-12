@@ -14,17 +14,18 @@ def _load(lesson):
 
 class TestVocab(unittest.TestCase):
     """07 課：任務簡報原始的 8 個測試，一字不改地保留斷言內容。schema
-    後續擴充了 `group`／`supplementary` 兩個鍵，`test_entry_with_kanji`
+    後續擴充了 `group`／`category` 兩個鍵，`test_entry_with_kanji`
     的期望值已相應更新（見下方），但斷言的語意（第 1 筆的 kana/kanji/
-    zh/usage 分別是什麼）完全沒變。`cls.numbered` 只留編號單字（排除
-    補充單字，見 `TestVocabSupplementary`），維持原本「38 筆、編號連續
-    1..38」的測試語意——補充單字的 `no` 全部是 `None`，混進 `by_no`
-    字典會互相覆蓋，見模組說明「補充單字」。"""
+    zh/usage 分別是什麼）完全沒變。`cls.numbered` 只留編號單字
+    （`category == "numbered"`，排除補充單字與会話小框內容，見
+    `TestVocabSupplementary`／`TestVocabKaiwaBox`），維持原本「38 筆、
+    編號連續 1..38」的測試語意——非編號條目的 `no` 全部是 `None`，混
+    進 `by_no` 字典會互相覆蓋，見模組說明「補充單字」。"""
 
     @classmethod
     def setUpClass(cls):
         cls.vocab = _load("07")
-        cls.numbered = [v for v in cls.vocab if not v["supplementary"]]
+        cls.numbered = [v for v in cls.vocab if v["category"] == "numbered"]
         cls.by_no = {v["no"]: v for v in cls.numbered}
 
     def test_count(self):
@@ -38,7 +39,7 @@ class TestVocab(unittest.TestCase):
         self.assertEqual(self.by_no[1],
                          {"no": 1, "kana": "きります", "kanji": "切ります",
                           "zh": "剪，切", "usage": None, "group": None,
-                          "supplementary": False})
+                          "category": "numbered"})
 
     def test_entry_without_kanji(self):
         v = self.by_no[3]
@@ -62,7 +63,7 @@ class TestVocab(unittest.TestCase):
         """11 課第 36 筆「あに」/「兄」：緊排單字（`_first_ideograph`
         切點）仍在真實資料裡大量被觸發的例子——取代 07/10 作為這條程式
         碼路徑的鎖定範例（見 `test_tight_spaced_entry` 的說明）。"""
-        v11 = {x["no"]: x for x in _load("11") if not x["supplementary"]}
+        v11 = {x["no"]: x for x in _load("11") if x["category"] == "numbered"}
         self.assertEqual(v11[36]["kana"], "あに")
         self.assertEqual(v11[36]["kanji"], "兄")
 
@@ -90,9 +91,12 @@ class TestVocab(unittest.TestCase):
 
     def test_entry_38_zh_not_polluted_by_kaiwa_box(self):
         """複審修正續行機制時發現的自我迴歸：第 38 筆的 zh 曾經被
-        `■会話` 小框裡好幾句對話換行後的殘句（「嗎？（去別人家時
-        用）」等）誤黏進去，變成一團混亂的假資料。修正後（`last_entry`
-        在遇到無法辨識的內容時重設）應該只剩單字本身的中文釋義。"""
+        `■会話` 小框裡好幾句話換行後的殘句（「嗎？（去別人家時
+        用）」等）誤黏進去，變成一團混亂的假資料——當時 `■会話` 小框
+        內容還沒有自己的處理邏輯（`category="conversation"`），會落到
+        編號單字表的續行檢查路徑。修正後（小框內容有自己的分類，加上
+        `last_entry` 在遇到無法辨識的內容時重設當最後防線）應該只剩單
+        字本身的中文釋義。"""
         v = self.by_no[38]
         self.assertEqual(v["zh"], "〔～〕，好棒喲！")
 
@@ -104,7 +108,7 @@ class TestVocabSupplementary(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.vocab = _load("01")
-        cls.supplementary = [v for v in cls.vocab if v["supplementary"]]
+        cls.supplementary = [v for v in cls.vocab if v["category"] == "supplementary"]
 
     def test_country_names_extracted(self):
         """01 課十一個國名不可整批遺失——這是使用者需求「單字練習」的
@@ -113,7 +117,7 @@ class TestVocabSupplementary(unittest.TestCase):
         self.assertEqual(by_kana["アメリカ"]["zh"], "美國")
         self.assertIsNone(by_kana["アメリカ"]["kanji"])
         self.assertIsNone(by_kana["アメリカ"]["no"])
-        self.assertTrue(by_kana["アメリカ"]["supplementary"])
+        self.assertEqual(by_kana["アメリカ"]["category"], "supplementary")
         self.assertEqual(by_kana["ブラジル"]["zh"], "巴西")
 
     def test_kanji_only_proper_noun_not_split(self):
@@ -137,7 +141,69 @@ class TestVocabSupplementary(unittest.TestCase):
         """02 課完全沒有「以下單字」標記，補充單字機制永遠不會開啟，
         跟修正前行為一致（不應該無中生有）。"""
         v02 = _load("02")
-        self.assertEqual([v for v in v02 if v["supplementary"]], [])
+        self.assertEqual([v for v in v02 if v["category"] == "supplementary"], [])
+
+
+class TestVocabKaiwaBox(unittest.TestCase):
+    """`■会話` 小框：課本裡的定位是「本課會話會用到的詞彙／短句」，不
+    是對話本文（對話本文在獨立的 `会話` 區段，Task 8 負責），結構跟補
+    充單字同構，應該全數收錄成 `category="conversation"`。見模組說明
+    「会話小框」。"""
+
+    def test_lesson15_verb_with_group_marker_extracted(self):
+        """15 課「思い出します　Ⅰ」帶動詞分類記號，是協調者明確要求
+        的案例：group 應為 "I"，不可因為在 `■会話` 小框裡就被忽略動
+        詞分類。這個詞含表意文字（思、出），跟補充單字同一套規則，整
+        個詞放進 `kanji` 欄（沒有另外給假名讀音），`kana` 是 `None`。"""
+        v15 = [v for v in _load("15") if v["category"] == "conversation"]
+        by_kanji = {v["kanji"]: v for v in v15 if v["kanji"]}
+        self.assertIn("思い出します", by_kanji)
+        v = by_kanji["思い出します"]
+        self.assertEqual(v["group"], "I")
+        self.assertEqual(v["zh"], "想起來")
+        self.assertIsNone(v["no"])
+        self.assertIsNone(v["kana"])
+
+    def test_lesson15_second_verb_with_group_marker(self):
+        """15 課「いらっしゃいます　Ⅰ」交叉驗證不是只有一筆孤例，且
+        本身還帶了一個緊排的「います」（沒有分開的 Cell，同一種緊排
+        單字樣式）。"""
+        v15 = [v for v in _load("15") if v["category"] == "conversation"]
+        by_kana = {v["kana"]: v for v in v15 if v["kana"]}
+        matches = [k for k in by_kana if k.startswith("いらっしゃいます")]
+        self.assertTrue(matches, "找不到「いらっしゃいます」開頭的会話小框條目")
+        v = by_kana[matches[0]]
+        self.assertEqual(v["group"], "I")
+        self.assertIn("禮貌形", v["zh"])
+
+    def test_lesson07_greeting_with_cross_line_zh(self):
+        """07 課「いただきます。」是初級日語最核心的招呼語之一，中文
+        說明因為句子長被 PDF 自動換行成兩個物理行（「謝謝。／　我不客
+        氣了。（用在吃、喝」/「前）」），協調者明確要求的案例：完整
+        zh 不可斷在括號說明中途。"""
+        v07 = [v for v in _load("07") if v["category"] == "conversation"]
+        by_kana = {v["kana"]: v for v in v07 if v["kana"]}
+        self.assertIn("いただきます。", by_kana)
+        v = by_kana["いただきます。"]
+        self.assertIn("謝謝", v["zh"])
+        self.assertIn("我不客氣了", v["zh"])
+        self.assertIn("用在吃、喝", v["zh"])
+        self.assertIn("前）", v["zh"], "跨行的續行部分「前）」不可遺失")
+
+    def test_lesson07_multiline_greeting_phrase(self):
+        """07 課「ごめんください。」同一種跨行模式的第二個例子。"""
+        v07 = [v for v in _load("07") if v["category"] == "conversation"]
+        by_kana = {v["kana"]: v for v in v07 if v["kana"]}
+        self.assertIn("ごめんください。", by_kana)
+        v = by_kana["ごめんください。"]
+        self.assertIn("去別人家時用", v["zh"], "跨行續行部分不可遺失")
+
+    def test_lesson02_conversation_entries_from_kaiwa_box_only(self):
+        """02 課沒有「以下單字」標記，但仍然有 `■会話` 小框——這裡確認
+        `category="conversation"` 不需要依賴補充單字的標記機制也能獨
+        立運作。"""
+        v02 = [v for v in _load("02") if v["category"] == "conversation"]
+        self.assertTrue(v02, "02 課應該有 会話 小框內容被收錄")
 
 
 class TestVocabContinuationLines(unittest.TestCase):
@@ -147,7 +213,7 @@ class TestVocabContinuationLines(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.vocab = _load("01")
-        cls.by_no = {v["no"]: v for v in cls.vocab if not v["supplementary"]}
+        cls.by_no = {v["no"]: v for v in cls.vocab if v["category"] == "numbered"}
 
     def test_pure_zh_continuation_across_physical_lines(self):
         """第 14 筆「しゃいん」的中文釋義因為句子太長被 PDF 自動換行成
@@ -187,21 +253,21 @@ class TestVocabUsageAlignmentFix(unittest.TestCase):
     遺失。見模組說明「usage 子行對齊容差過嚴」。"""
 
     def test_lesson11_entry1_usage_preserved(self):
-        v11 = {v["no"]: v for v in _load("11") if not v["supplementary"]}
+        v11 = {v["no"]: v for v in _load("11") if v["category"] == "numbered"}
         v = v11[1]
         self.assertIsNotNone(v["usage"], "第 1 筆 usage 子行遺失")
         self.assertIn("こどもが", v["usage"]["kana"])
         self.assertIn("子どもが", v["usage"]["kanji"])
 
     def test_lesson11_entry4_usage_preserved(self):
-        v11 = {v["no"]: v for v in _load("11") if not v["supplementary"]}
+        v11 = {v["no"]: v for v in _load("11") if v["category"] == "numbered"}
         v = v11[4]
         self.assertIsNotNone(v["usage"], "第 4 筆 usage 子行遺失")
         self.assertIn("かいしゃを", v["usage"]["kana"])
         self.assertIn("会社を", v["usage"]["kanji"])
 
     def test_lesson13_usage_sublines_preserved(self):
-        v13 = {v["no"]: v for v in _load("13") if not v["supplementary"]}
+        v13 = {v["no"]: v for v in _load("13") if v["category"] == "numbered"}
         for no, kana_kw, kanji_kw in [
             (5, "てがみを", "手紙を"),
             (6, "きっさてんに", "喫茶店に"),
@@ -215,14 +281,14 @@ class TestVocabUsageAlignmentFix(unittest.TestCase):
 
     def test_lesson14_entry8_usage_preserved(self):
         """協調者明確要求的案例：14 課第 8 筆 usage 不可為 None。"""
-        v14 = {v["no"]: v for v in _load("14") if not v["supplementary"]}
+        v14 = {v["no"]: v for v in _load("14") if v["category"] == "numbered"}
         v = v14[8]
         self.assertIsNotNone(v["usage"], "14 課第 8 筆 usage 子行遺失")
         self.assertIn("みぎへ", v["usage"]["kana"])
         self.assertIn("右へ", v["usage"]["kanji"])
 
     def test_lesson14_entries_15_17_usage_preserved(self):
-        v14 = {v["no"]: v for v in _load("14") if not v["supplementary"]}
+        v14 = {v["no"]: v for v in _load("14") if v["category"] == "numbered"}
         v15 = v14[15]
         self.assertIsNotNone(v15["usage"])
         self.assertIn("じゅうしょを", v15["usage"]["kana"])
@@ -238,7 +304,7 @@ class TestVocabVerbGroup(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.vocab = _load("14")
-        cls.numbered = [v for v in cls.vocab if not v["supplementary"]]
+        cls.numbered = [v for v in cls.vocab if v["category"] == "numbered"]
         cls.by_no = {v["no"]: v for v in cls.numbered}
 
     def test_group_ii_extracted_and_removed_from_kana(self):
@@ -305,7 +371,7 @@ class TestVocabLesson15TcFix(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.vocab = _load("15")
-        cls.by_no = {v["no"]: v for v in cls.vocab if not v["supplementary"]}
+        cls.by_no = {v["no"]: v for v in cls.vocab if v["category"] == "numbered"}
 
     def test_suwarimasu_kanji_and_zh_not_glued(self):
         """第 2 筆「すわります」：算繪 15.pdf 第 1 頁核對過視覺位置，
@@ -327,20 +393,20 @@ class TestVocabAdditionalTcFixDisclosure(unittest.TestCase):
     立，這裡補上測試鎖定並在報告揭露（見 task-7-report.md）。"""
 
     def test_lesson06_entries_3_and_9(self):
-        v06 = {v["no"]: v for v in _load("06") if not v["supplementary"]}
+        v06 = {v["no"]: v for v in _load("06") if v["category"] == "numbered"}
         self.assertEqual(v06[3]["zh"], "吸〔煙〕")
         self.assertEqual(v06[9]["zh"], "拍〔照〕，攝〔影〕")
 
     def test_lesson10_entry_41(self):
-        v10 = {v["no"]: v for v in _load("10") if not v["supplementary"]}
+        v10 = {v["no"]: v for v in _load("10") if v["category"] == "numbered"}
         self.assertEqual(v10[41]["zh"], "～啦～〔等〕")
 
     def test_lesson11_entry_4(self):
-        v11 = {v["no"]: v for v in _load("11") if not v["supplementary"]}
+        v11 = {v["no"]: v for v in _load("11") if v["category"] == "numbered"}
         self.assertEqual(v11[4]["zh"], "向〔公司〕請假")
 
     def test_lesson12_entry_14(self):
-        v12 = {v["no"]: v for v in _load("12") if not v["supplementary"]}
+        v12 = {v["no"]: v for v in _load("12") if v["category"] == "numbered"}
         self.assertEqual(v12[14]["zh"], "好〔咖啡〕")
 
 

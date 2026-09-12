@@ -1,5 +1,8 @@
 """單字表（ことば）解析：把 `Section`（Task 6）的 `Line` 序列切成一筆筆
-單字紀錄 `{"no", "kana", "kanji", "zh", "usage", "group", "supplementary"}`。
+單字紀錄 `{"no", "kana", "kanji", "zh", "usage", "group", "category"}`。
+`category` 是 `"numbered"`（有編號的本表單字）／`"supplementary"`（「以
+下單字請自行練習發音」之後的補充詞彙）／`"conversation"`（「■会話」
+小框內容）三者之一，見下方「補充單字」「会話小框」兩節。
 
 這是整條抽取管線最核心的資料——單字練習、漢字→假名讀音練習、中日對照
 全部建立在這裡的輸出上，實測見 `task-7-report.md`。
@@ -148,23 +151,24 @@ usage 子行只涵蓋「方括號搭配用法」這一種續行；複審進一�
 
 ### 續行鏈中斷：遇到不認得的內容必須重設 `last_entry`
 
-實作續行機制的過程中發現一個自己引入的新迴歸：`■会話` 小框裡的對話
-常常是長句換行（例如 07 課「ごめんください。對不起。／有人在家嗎？
-／我能進來」換行接續「嗎？（去別人家時用）」），對話本文本身的縮排
-（x=25.8）不對齊假名欄、不落在中文欄地板，所以正確地被判定成「不認
-得」；但換行後的殘句「嗎？（去別人家時用）」單獨一行時，形狀恰好符
-合「純中文續行」（整行只有一個 Cell、落在中文欄地板之後）！若不特別
-處理，`last_entry` 會停留在單字表最後一筆（例如第 38 筆），這句殘句
-就會被誤黏進那一筆的 `zh`，產生一團混亂的假資料——比完全不處理續行
-還糟。
+實作續行機制的過程中發現一個自己引入的新迴歸：當時「■会話」小框內容
+還沒有自己的處理邏輯（見下方「会話小框」，這是後來才修正的判斷錯
+誤），小框裡的長句換行內容（例如 07 課「ごめんください。對不起。／
+有人在家嗎？／我能進來」換行接續「嗎？（去別人家時用）」）會落到編
+號單字表的續行檢查——句子本身（縮排 x=25.8，不對齊假名欄、不落在中
+文欄地板）正確地被判定成「不認得」，但換行後的殘句「嗎？（去別人家
+時用）」單獨一行時，形狀恰好符合「純中文續行」（整行只有一個 Cell、
+落在中文欄地板之後）！若不特別處理，`last_entry` 會停留在單字表最後
+一筆（例如第 38 筆），這句殘句就會被誤黏進那一筆的 `zh`，產生一團混
+亂的假資料——比完全不處理續行還糟。
 
 修法：主迴圈每處理完一行，若這行**沒有**符合任何已知樣式（不是新單
 字、不是 usage 子行、不是純中文續行、不是替代讀音續行），就把
-`last_entry` 重設成 `None`。這樣「ごめんください...」這句認不出來的
-對話本文出現時，`last_entry` 立刻歸零，緊接在後的「嗎？（去別人家時
-用）」即使形狀符合純中文續行，也因為 `last_entry is None` 而不會被
-誤併，正確維持在未歸類狀態（`■会話` 小框內容目前的既定行為就是不特
-別收錄，見下方「補充單字」的「已知的不完整覆蓋」）。
+`last_entry` 重設成 `None`。**現在「■会話」標題本身會先被
+`_KAIWA_MARKER` 攔截、切換到 `past_kaiwa` 狀態**（見下方「会話小
+框」），小框內容不會再落到這條編號單字表的續行檢查路徑，這個重設機
+制事實上已經很少觸發——但仍然保留當作防禦性的最後一道防線，避免未
+來出現其他未預期的樣式時重蹈覆轍。
 
 ## 補充單字：無編號的國名／專有名詞不可整批遺失
 
@@ -207,27 +211,60 @@ marker` 設成 `True`，從此以後（直到這個 Section 結束）**所有**�
 補充單字共用同一張表格的版面，不受縮排差異影響。
 
 **與編號單字共用欄位狀態機、但不套用緊排單字切點**：`_parse_
-supplementary_line` 重用 `_split_data_cells` 切出「詞彙本身」跟「中
-文」，但刻意不套用 `_first_ideograph` 的緊排切點——補充單字欄本身就
-是一個完整的詞（可能是純假名的外來語國名「アメリカ」，也可能是漢字
-寫成的專有名詞「韓国」「さくら大学╱富士大学」，甚至是英文字母
-「AKC」「IMC」），不是「假名讀音＋漢字寫法」的配對；套用切點會把
-「パワー電気」這種本來就含漢字的複合詞誤切成兩半。改用「詞彙本身含
-不含表意文字」決定放在 `kana` 還是 `kanji` 欄，另一欄則是 `None`。
+freeform_line` 重用 `_split_data_cells` 切出「詞彙本身」跟「中文」，
+但刻意不套用 `_first_ideograph` 的緊排切點——補充單字欄本身就是一個
+完整的詞（可能是純假名的外來語國名「アメリカ」，也可能是漢字寫成的
+專有名詞「韓国」「さくら大学╱富士大学」，甚至是英文字母「AKC」
+「IMC」），不是「假名讀音＋漢字寫法」的配對；套用切點會把「パワー
+電気」這種本來就含漢字的複合詞誤切成兩半。改用「詞彙本身含不含表意
+文字」決定放在 `kana` 還是 `kanji` 欄，另一欄則是 `None`。
 
 **輸出形狀**：`{"no": None, "kana": ..., "kanji": ..., "zh": ...,
-"usage": None, "group": ..., "supplementary": True}`——編號單字的
-`supplementary` 一律是 `False`。**注意**：多筆補充單字的 `no` 都是
-`None`，若下游程式碼天真地用 `{v["no"]: v for v in vocab}` 建字典，
-這些補充單字會互相覆蓋、只剩最後一筆。呼叫端在需要以編號查詢單字時，
-應先用 `supplementary` 欄位篩掉補充單字，或改用清單索引／獨立集合處
-理它們，不能假設 `no` 在整份清單裡是唯一鍵。
+"usage": None, "group": ..., "category": "supplementary"}`——編號單
+字的 `category` 是 `"numbered"`。**注意**：補充單字（跟下面「会話小
+框」的內容）的 `no` 都是 `None`，若下游程式碼天真地用
+`{v["no"]: v for v in vocab}` 建字典，這些條目會互相覆蓋、只剩最後
+一筆。呼叫端在需要以編號查詢單字時，應先用 `category == "numbered"`
+篩選，或改用清單索引／獨立集合處理它們，不能假設 `no` 在整份清單裡
+是唯一鍵。
 
-**已知的不完整覆蓋**：「■会話」小框內的對話內容（標記行之前的部
-分）刻意不當成補充單字收錄——它們是完整句子的對話練習，不是「詞彙＋
-翻譯」格式的單字表，跟補充單字的資料形狀不同，混進同一個 schema 反
-而會製造出格式不一致的假資料（且如上述，07 課已經證實這樣做有具體
-的誤判風險）。
+## 会話小框：`■会話` 標題之後、`以下單字` 標記之前的內容也是詞彙
+
+第一版（見上方「補充單字」的推導過程）誤判「■会話」小框裡的內容是
+「對話本文」，因此刻意不收錄，還把 07 課這個小框當成「幾何判準會被
+對話內容誤觸發」的反例來佐證不能用 `label_x` 當判準。**複審指出這個
+判斷本身就錯了**：這個小框在課本裡的定位明確寫著「本課會話會用到的
+詞彙／短句」，不是對話本文——真正的對話本文在獨立的 `会話` 區段（跟
+`ことば` 平行的另一個 Section，Task 8 負責解析），這個小框只是提前
+把該課會話會用到的關鍵詞彙／招呼句列出來，格式跟補充單字完全同構
+（詞彙欄＋中文欄），例如：
+
+- 15 課：`思い出します　Ⅰ` / `想起來`、`いらっしゃいます　Ⅰ` /
+  `有，在（是的禮貌形）`——兩筆還帶動詞分類記號，跟編號單字表裡的
+  動詞條目結構完全一樣。
+- 07 課：`ごめんください。` / `對不起。／有人在家嗎？／我能進來嗎？
+  （去別人家時用）`——中文釋義因為句子長，被 PDF 自動換行成兩個物
+  理行，跟「續行不可遺失」那一節的純中文續行是同一種現象、同一套
+  `_is_pure_zh_continuation` 機制。
+
+`いただきます`、`失礼します`、`ごめんください` 這類招呼語是初級日語
+最核心的內容，直接影響使用者需求「單字練習」，不應該因為版面上跟「真
+正的對話」共用一個標題符號就被排除。
+
+**判定依據**：跟補充單字用同一種「文字標記當狀態閘門」手法——`parse_
+vocab` 掃到「■会話」這行文字（`_KAIWA_MARKER`）就把 `past_kaiwa` 設
+成 `True`，直到 Section 結束或碰到「以下單字」標記為止，這段區間的
+每一行都用 `_consume_freeform_line` 處理（跟補充單字共用同一個函式，
+只有 `category` 參數不同：`"conversation"`）。續行判定（純中文續行）
+也是同一套機制，天然支援 07 課那種跨行的招呼句。輸出的 `category` 是
+`"conversation"`。
+
+**這個修正同時解決了第一版判斷錯誤所依賴的反例**：07 課「「～は」い
+かがですか。」這句因為引號合併巧合落在 `label_x`＝12.0 的內容，不再
+需要靠幾何座標排除——它現在被歸類成 `category="conversation"`（本來
+就該收），不再是「証明幾何判準不可靠」的反例；幾何判準被放棄的真正
+理由（縮排在 15 課裡不固定）依然成立，只是不再需要靠這個過時的反例
+佐證。
 
 ## 中文欄的角括號 `〔〕` 不可被過濾
 
@@ -508,7 +545,7 @@ def _parse_entry_line(
         "zh": zh,
         "usage": None,
         "group": group,
-        "supplementary": False,
+        "category": "numbered",
     }
 
 
@@ -565,19 +602,28 @@ def _parse_usage_line(line: Line) -> Dict:
 # 狀態閘門用，不是幾何座標判準（補充單字的縮排在不同課別並不固定）。
 _SUPPLEMENTARY_MARKER = "以下單字"
 
+# 「■会話」小框標題——見模組說明「会話小框」：這個小框的定位是「本課
+# 會話會用到的詞彙／短句」，不是對話本文（對話本文在獨立的「会話」區
+# 段，Task 8 負責），結構上跟補充單字完全同構（詞彙欄＋中文欄），只是
+# 內容偏向招呼語／慣用句而不是單一詞彙。標題本身不是詞彙內容。
+_KAIWA_MARKER = "■会話"
 
-def _parse_supplementary_line(
-    line: Line, kanji_x: Optional[float], zh_floor: Optional[float]
+
+def _parse_freeform_line(
+    line: Line, kanji_x: Optional[float], zh_floor: Optional[float], category: str
 ) -> Dict:
-    """解析一筆補充單字（見模組說明「補充單字」）。跟編號單字共用同一
-    套欄位狀態機（`_split_data_cells`）切出「詞彙本身」跟「中文」，但
-    **不**套用 `_first_ideograph` 緊排單字切點——補充單字欄本身就是一
-    個完整的詞（可能是純假名的外來語國名，也可能是漢字寫成的專有名詞
-    或複合詞，例如「さくら大学╱富士大学」），不是「假名讀音 + 漢字寫
-    法」的配對，套用切點會把「パワー電気」這種本來就含漢字的複合詞
-    誤切成兩半。改用「詞彙本身含不含表意文字」決定放在 `kana` 還是
-    `kanji` 欄：純假名/片假名/其他非表意文字（外來語國名）放 `kana`，
-    含表意文字（漢字專有名詞）放 `kanji`，另一欄則是 `None`。"""
+    """解析一筆沒有編號的詞彙／短句（補充單字或 `■会話` 小框內容，見
+    模組說明「補充單字」「会話小框」）。跟編號單字共用同一套欄位狀態機
+    （`_split_data_cells`）切出「詞彙本身」跟「中文」，但**不**套用
+    `_first_ideograph` 緊排單字切點——這一欄本身就是一個完整的詞或短
+    句（可能是純假名的外來語國名、漢字寫成的專有名詞或複合詞「さくら
+    大学╱富士大学」，也可能是「ごめんください。」這類完整招呼句），
+    不是「假名讀音 + 漢字寫法」的配對；套用切點會把「パワー電気」這種
+    本來就含漢字的複合詞、或「思い出します　Ⅰ」這種帶動詞分類記號的
+    短句誤切成兩半。改用「詞彙本身含不含表意文字」決定放在 `kana` 還
+    是 `kanji` 欄，另一欄則是 `None`；動詞分類羅馬數字一樣用
+    `_extract_group` 抽成獨立欄位（`■会話` 小框裡也會出現，例如 15 課
+    「思い出します　Ⅰ」「いらっしゃいます　Ⅰ」）。"""
     cells = line.cells()
     kana_cells, kanji_cells, zh_cells = _split_data_cells(cells, kanji_x, zh_floor)
     term = _join(kana_cells + kanji_cells)
@@ -598,8 +644,33 @@ def _parse_supplementary_line(
         "zh": zh.strip(),
         "usage": None,
         "group": group,
-        "supplementary": True,
+        "category": category,
     }
+
+
+def _consume_freeform_line(
+    line: Line,
+    last_entry: Optional[Dict],
+    entries: List[Dict],
+    kanji_x: Optional[float],
+    zh_floor: Optional[float],
+    category: str,
+) -> Optional[Dict]:
+    """處理補充單字／`■会話` 小框區域裡的一行：是目前這筆的純中文續行
+    就併入，否則視為新的一筆。回傳新的 `last_entry`（可能不變）。兩個
+    區域共用同一套邏輯，只有 `category` 不同，見模組說明「補充單字」
+    「会話小框」。"""
+    if not line.cells():
+        return last_entry
+    if (last_entry is not None and last_entry["category"] == category
+            and _is_pure_zh_continuation(line, zh_floor)):
+        cont_text = line.text().strip()
+        if cont_text:
+            last_entry["zh"] = (last_entry["zh"] + cont_text).strip()
+        return last_entry
+    entry = _parse_freeform_line(line, kanji_x, zh_floor, category)
+    entries.append(entry)
+    return entry
 
 
 def _is_pure_zh_continuation(line: Line, zh_floor: Optional[float]) -> bool:
@@ -645,27 +716,35 @@ def parse_vocab(section: Section) -> List[Dict]:
     last_entry: Optional[Dict] = None
     expected = 1
     past_marker = False  # 見模組說明「補充單字」：碰到標記行後永久開啟
+    past_kaiwa = False   # 見模組說明「会話小框」：碰到「■会話」後永久開啟
 
     for line in section.lines:
-        if _SUPPLEMENTARY_MARKER in line.text():
+        text = line.text()
+
+        if _SUPPLEMENTARY_MARKER in text:
             past_marker = True
+            continue
+
+        if _KAIWA_MARKER in text:
+            past_kaiwa = True
             continue
 
         if past_marker:
             # 標記行之後，這個 Section 剩下的每一行都是補充單字或它的
             # 續行，不再檢查編號／usage 子行——那些機制只適用於編號單
             # 字表本體（見模組說明「補充單字」）。
-            if not line.cells():
-                continue
-            if (last_entry is not None and last_entry["supplementary"]
-                    and _is_pure_zh_continuation(line, zh_floor)):
-                cont_text = line.text().strip()
-                if cont_text:
-                    last_entry["zh"] = (last_entry["zh"] + cont_text).strip()
-                continue
-            entry = _parse_supplementary_line(line, kanji_x, zh_floor)
-            entries.append(entry)
-            last_entry = entry
+            last_entry = _consume_freeform_line(
+                line, last_entry, entries, kanji_x, zh_floor, "supplementary"
+            )
+            continue
+
+        if past_kaiwa:
+            # 「■会話」標題之後、「以下單字」標記之前：整個小框都是詞
+            # 彙／短句（見模組說明「会話小框」），跟補充單字共用同一套
+            # 處理邏輯，只是 category 不同。
+            last_entry = _consume_freeform_line(
+                line, last_entry, entries, kanji_x, zh_floor, "conversation"
+            )
             continue
 
         matched = _match_entry(line)
@@ -694,14 +773,12 @@ def parse_vocab(section: Section) -> List[Dict]:
                 last_entry["zh"] = (last_entry["zh"] + " " + cont_text).strip()
             continue
 
-        # 這行不符合任何已知樣式——見模組說明「續行鏈中斷」：一旦遇到無
-        # 法辨識的內容（典型例子是「■会話」小框的對話本文），視為離開
-        # 了目前這筆單字的續行鏈，重設 `last_entry`。不重設的話，後面
-        # 剛好長得像純中文續行（單一 Cell 落在中文欄地板之後）的無關對
-        # 話內容會被誤併入這筆舊單字——07 課「■会話」小框裡有好幾句對
-        # 話換行後的殘句（例如「嗎？（去別人家時用）」），複審修正 usage
-        # 容差之前沒有這個重設機制時，這些殘句全部被誤黏進第 38 筆單字
-        # 的 `zh`，變成一團混亂的假資料，是比「完全不收」更糟的迴歸。
+        # 這行不符合任何已知樣式——見模組說明「續行鏈中斷」：視為離開了
+        # 目前這筆單字的續行鏈，重設 `last_entry`，避免後面剛好長得像
+        # 純中文續行的無關內容被誤黏進舊單字。「■会話」小框標題本身在
+        # 迴圈最前面就已經被 `_KAIWA_MARKER` 攔截、切換到 `past_kaiwa`
+        # 狀態（見「会話小框」），不會走到這裡；這是修正過程中發現的
+        # 自我迴歸留下的防禦性最後一道防線，見模組說明。
         if line.cells() and line.text().strip():
             last_entry = None
 

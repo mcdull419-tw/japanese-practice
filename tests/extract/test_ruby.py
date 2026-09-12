@@ -375,5 +375,70 @@ class TestRubyReviewFixes(unittest.TestCase):
         self.assertNotIn("月17日", pairs4)
 
 
+class TestRubyLeftoverRegressions(unittest.TestCase):
+    """Task 5 最後一個 commit 夾帶的兩個正確但零測試覆蓋的修正，Task 6
+    複審時補上回歸測試（見 task-6-report.md「否證驗證」小節：分別把
+    對應修正在 scratch 副本上還原，確認這裡的斷言會變紅）。
+    """
+
+    _docs = {}
+
+    @classmethod
+    def _lines_for(cls, lesson):
+        if lesson not in cls._docs:
+            frags = extract_fragments(PDFDoc.from_path(lesson))
+            cls._docs[lesson] = (frags, group_lines(frags))
+        return cls._docs[lesson]
+
+    def _pairs_for(self, lesson, needle):
+        frags, lines = self._lines_for(lesson)
+        for ln in lines:
+            if needle in ln.text():
+                return {p.base: p.kana for p in pair_ruby(frags, ln)}
+        self.fail("在 %s 找不到含『%s』的行" % (lesson, needle))
+
+    def test_split_by_geometry_separates_unrelated_adjacent_fields(self):
+        """08.pdf 代入練習「1)大阪城静か」：「大阪城」（おおさかじょう）
+        跟後面代換用的形容詞「静」（しず）是同一列代入練習裡兩個各自獨
+        立、版面上相隔 84pt 的欄位，只是在讀出順序（reading）上索引恰好
+        相鄰。`_merge_blocks` 只看索引是否連續，不看實際幾何間距，若沒
+        有 `_split_by_geometry` 進一步依間距拆開，會把兩個各自正確的讀
+        音硬拼成 `base='大阪城静'、kana='おおさかじょうしず'`——kana 沒
+        有任何字元錯誤，但把兩個無關欄位的內容黏在一起，等於讓查詢「大
+        阪城」或「静」個別讀音的下游用途查不到獨立條目。
+
+        驗收：在 scratch 副本上把 `_split_by_geometry` 還原成不拆分
+        （直接回傳 `[(start, end)]`）重新執行，這裡的斷言必須變紅（實
+        測會得到 `base='大阪城静'`）——已用 monkeypatch 方式驗證過，見
+        task-6-report.md。
+        """
+        pairs = self._pairs_for("08.pdf", "大阪城静か")
+        self.assertEqual(pairs.get("大阪城"), "おおさかじょう")
+        self.assertEqual(pairs.get("静"), "しず")
+        self.assertNotIn("大阪城静", pairs)
+
+    def test_has_normal_spacing_rejects_zero_or_negative_gap(self):
+        """11.pdf 單字表換算列「－時間小時」「－年年數」：假名欄（日文
+        讀音）跟中文欄同一列、都從同一個左邊界排起，版面上常見「中文欄
+        字元剛好跟假名欄字元同 x 座標甚至落在它左邊」的排版巧合（換欄，
+        不是同一個詞內字元真的往左移動或原地不動）。`_has_normal_
+        spacing` 原本只檢查間距上限，沒有排除 `gap <= 0` 這種不可能的同
+        詞內字距，會誤判成「間距正常」，讓「時間」被錯誤延伸到中文欄
+        「小時」的「小」、「年」被錯誤延伸到中文欄另一個「年」。
+
+        驗收：在 scratch 副本上把 `gap < 0.5` 這道下界檢查拿掉（只保留
+        上限檢查）重新執行，這兩個斷言都必須變紅（實測會得到
+        `base='時間小'`、`base='年年'`）——已用 monkeypatch 方式驗證
+        過，見 task-6-report.md。
+        """
+        pairs = self._pairs_for("11.pdf", "－時間小時")
+        self.assertEqual(pairs.get("時間"), "じかん")
+        self.assertNotIn("時間小", pairs)
+
+        pairs2 = self._pairs_for("11.pdf", "－年年數")
+        self.assertEqual(pairs2.get("年"), "ねん")
+        self.assertNotIn("年年", pairs2)
+
+
 if __name__ == "__main__":
     unittest.main()

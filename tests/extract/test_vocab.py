@@ -24,7 +24,7 @@ class TestVocab(unittest.TestCase):
     def test_entry_with_kanji(self):
         self.assertEqual(self.by_no[1],
                          {"no": 1, "kana": "きります", "kanji": "切ります",
-                          "zh": "剪，切", "usage": None})
+                          "zh": "剪，切", "usage": None, "group": None})
 
     def test_entry_without_kanji(self):
         v = self.by_no[3]
@@ -54,6 +54,49 @@ class TestVocab(unittest.TestCase):
         self.assertEqual(self.by_no[21]["kana"], "セロテープ")
         self.assertIsNone(self.by_no[21]["kanji"])
         self.assertIn("膠帶", self.by_no[21]["zh"])
+
+    def test_no_group_marker_in_lessons_without_verb_classification(self):
+        """07 課沒有動詞分類標記，全部單字的 group 都應該是 None。"""
+        for v in self.vocab:
+            self.assertIsNone(v["group"], "07 課第 %d 筆不應該有 group" % v["no"])
+
+
+class TestVocabVerbGroup(unittest.TestCase):
+    """14 課開始課本用羅馬數字標註動詞分類（Ⅰ／Ⅱ／Ⅲ類），動詞變化練
+    習需要這個資訊，必須抽成獨立欄位，不能留在 kana 裡當雜訊。"""
+
+    @classmethod
+    def setUpClass(cls):
+        lines = group_lines(extract_fragments(PDFDoc.from_path("14.pdf")))
+        section = [s for s in split_sections(lines) if s.name == "ことば"][0]
+        cls.vocab = parse_vocab(section)
+        cls.by_no = {v["no"]: v for v in cls.vocab}
+
+    def test_group_ii_extracted_and_removed_from_kana(self):
+        """第 1 筆「つけます Ⅱ」：group 應為 "II"，kana 不應含羅馬數字。"""
+        v = self.by_no[1]
+        self.assertEqual(v["kana"], "つけます")
+        self.assertEqual(v["group"], "II")
+        self.assertIsNone(v["kanji"])
+
+    def test_group_i_extracted_and_removed_from_kana(self):
+        """第 2 筆「けします Ⅰ消します」：group 應為 "I"，kana 不應含羅馬數字。"""
+        v = self.by_no[2]
+        self.assertEqual(v["kana"], "けします")
+        self.assertEqual(v["group"], "I")
+        self.assertEqual(v["kanji"], "消します")
+
+    def test_group_iii_extracted(self):
+        """第 18 筆「コピーします Ⅲ」：group 應為 "III"。"""
+        v = self.by_no[18]
+        self.assertEqual(v["kana"], "コピーします")
+        self.assertEqual(v["group"], "III")
+
+    def test_kana_has_no_leading_or_trailing_whitespace(self):
+        """全課 kana 欄位不應有前後空白殘留（見任務要求 2）。"""
+        for v in self.vocab:
+            self.assertEqual(v["kana"], v["kana"].strip(),
+                              "第 %d 筆 kana 有前後空白殘留：%r" % (v["no"], v["kana"]))
 
 
 if __name__ == "__main__":

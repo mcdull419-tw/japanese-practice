@@ -63,22 +63,27 @@ def _load_all(lesson_str):
 
 # 全 15 課、四個區段各自的句數——用目前實際跑的 parse_sentences 重新量測
 # （見 task-8-report.md），逐課鎖住，任何一課的切分邏輯壞掉都會變紅。
+# 審查回合修正後重新量測（見 task-8-report.md 附加段落）：`会話` 每課
+# 少 1（標題不再當成一句台詞輸出），`問題` 每課少 1 或 2（純答案符號
+# 條目——①②③ 選擇欄／( ○ )/( × ) 是非欄——被過濾掉，見模組說明
+# 「過濾一」「過濾二」）。`文型`／`例文` 完全不受影響（這兩個區段沒
+# 有任何一筆是純符號或標題）。
 _EXPECTED_COUNTS = {
-    "01": {"文型": 4, "例文": 5, "会話": 10, "問題": 6},
-    "02": {"文型": 4, "例文": 8, "会話": 15, "問題": 8},
-    "03": {"文型": 2, "例文": 7, "会話": 13, "問題": 5},
-    "04": {"文型": 4, "例文": 6, "会話": 13, "問題": 8},
-    "05": {"文型": 3, "例文": 6, "会話": 16, "問題": 6},
-    "06": {"文型": 4, "例文": 6, "会話": 13, "問題": 6},
-    "07": {"文型": 3, "例文": 7, "会話": 13, "問題": 7},
-    "08": {"文型": 4, "例文": 7, "会話": 16, "問題": 7},
-    "09": {"文型": 3, "例文": 7, "会話": 17, "問題": 7},
-    "10": {"文型": 4, "例文": 6, "会話": 15, "問題": 7},
-    "11": {"文型": 2, "例文": 7, "会話": 17, "問題": 7},
-    "12": {"文型": 4, "例文": 8, "会話": 15, "問題": 6},
-    "13": {"文型": 3, "例文": 6, "会話": 18, "問題": 6},
-    "14": {"文型": 2, "例文": 6, "会話": 15, "問題": 7},
-    "15": {"文型": 2, "例文": 7, "会話": 16, "問題": 7},
+    "01": {"文型": 4, "例文": 5, "会話": 9, "問題": 4},
+    "02": {"文型": 4, "例文": 8, "会話": 14, "問題": 6},
+    "03": {"文型": 2, "例文": 7, "会話": 12, "問題": 4},
+    "04": {"文型": 4, "例文": 6, "会話": 12, "問題": 6},
+    "05": {"文型": 3, "例文": 6, "会話": 15, "問題": 4},
+    "06": {"文型": 4, "例文": 6, "会話": 12, "問題": 5},
+    "07": {"文型": 3, "例文": 7, "会話": 12, "問題": 5},
+    "08": {"文型": 4, "例文": 7, "会話": 15, "問題": 5},
+    "09": {"文型": 3, "例文": 7, "会話": 16, "問題": 6},
+    "10": {"文型": 4, "例文": 6, "会話": 14, "問題": 5},
+    "11": {"文型": 2, "例文": 7, "会話": 16, "問題": 5},
+    "12": {"文型": 4, "例文": 8, "会話": 14, "問題": 5},
+    "13": {"文型": 3, "例文": 6, "会話": 17, "問題": 5},
+    "14": {"文型": 2, "例文": 6, "会話": 14, "問題": 5},
+    "15": {"文型": 2, "例文": 7, "会話": 15, "問題": 6},
 }
 
 
@@ -193,12 +198,112 @@ class TestKaiwaLineWrapAndSpeakerBoundary(unittest.TestCase):
             self.assertNotIn("500円です  ワン", jp)
             self.assertNotIn("500円ですワ", jp)
 
-    def test_dialogue_title_is_isolated_from_first_utterance(self):
-        """07 課会話：標題『ごめんください』（対話篇名，沒有句號、後面
-        接空白行才是真正對話開始）不可以跟第一句台詞黏在一起。"""
+    def test_dialogue_title_excluded_from_output(self):
+        """07 課会話：標題『ごめんください』（対話篇名，不是台詞）不應
+        該以任何一句的身分出現在輸出裡；第一筆應該是真正的第一句台詞。"""
         out = _load_all("07")
-        first = out["会話"][0]
-        self.assertEqual(first["jp"], "ごめんください")
+        jps = [s["jp"] for s in out["会話"]]
+        self.assertNotIn("ごめんください", jps, "対話標題不應該被當成一句台詞輸出")
+        self.assertEqual(out["会話"][0]["jp"], "ホセ・サントス  ：ごめんください。")
+
+
+import re
+
+_KANA_RE = re.compile(r"[぀-ゟ゠-ヿ]")
+
+
+class TestProblemMarkerEntriesExcluded(unittest.TestCase):
+    """『問題』區段裡有些條目根本不是句子，是課本的作答格子／答案符號
+    （①②③ 選擇題圈選欄、( ○ )/( × ) 是非題答案列），全 15 課掃描共
+    24 筆——這些條目不含任何假名（平假名／片假名），全書其餘 369 筆
+    真正的句子（文型／例文／会話／問題裡有實質內容的條目）沒有一筆是
+    零假名的（已用 `TestNoRealSentenceHasZeroKana` 交叉驗證，避免誤刪
+    真正的句子）。"""
+
+    def test_no_marker_only_entries_survive(self):
+        for lesson_str in _EXPECTED_COUNTS:
+            out = _load_all(lesson_str)
+            for r in out["問題"]:
+                self.assertTrue(
+                    _KANA_RE.search(r["jp"]),
+                    "%s 不含假名、疑似作答格子/答案符號，不應該當成句子輸出：%r" % (r["id"], r["jp"]))
+
+    def test_lesson07_marker_entries_removed_real_ones_kept(self):
+        """07 課原本 7 筆問題，其中『問題 2』（①②③選擇欄）、『問題 3』
+        （( × )/( ○ ) 是非欄）是純答案符號，過濾後應剩 5 筆，且原本的
+        『問題 4』（friends／貸します 代入練習，含實質日文）仍要在。"""
+        out = _load_all("07")
+        jps = [s["jp"] for s in out["問題"]]
+        self.assertEqual(len(jps), 5)
+        self.assertFalse(any(jp in ("1)①②③\n2)①②③",) for jp in jps))
+        self.assertTrue(any("友達に" in jp and "貸します" in jp for jp in jps))
+
+    def test_lesson03_and_lesson06_only_one_marker_removed(self):
+        """03／06 課的『問題』沒有 ①②③ 選擇題（只有是非題答案列），
+        只會篩掉 1 筆，不是 2 筆——驗證篩選是逐條目判斷內容，不是寫死
+        『每課固定砍第 2、3 筆』。"""
+        out03 = _load_all("03")
+        out06 = _load_all("06")
+        self.assertEqual(len(out03["問題"]), 4)
+        self.assertEqual(len(out06["問題"]), 5)
+
+
+class TestNoRealSentenceHasZeroKana(unittest.TestCase):
+    """檢查角度（否證面）：反過來證明零假名過濾沒有誤刪真正的句子——對
+    全 15 課『文型』『例文』『会話』（這三個區段的內容全部是真正的句
+    子，不是答案符號）逐一確認，過濾前後這三個區段的句數完全不變、且
+    每一筆都通過『含假名』這個條件——如果零假名過濾器真的誤傷了正常
+    句子，這三個區段的句數會跟著減少。"""
+
+    def test_bunkei_reibun_kaiwa_unaffected_by_kana_filter(self):
+        for lesson_str in _EXPECTED_COUNTS:
+            out = _load_all(lesson_str)
+            for name in ("文型", "例文", "会話"):
+                for r in out[name]:
+                    self.assertTrue(
+                        _KANA_RE.search(r["jp"]),
+                        "%s 不含假名——如果這是真正的句子，代表零假名不是安全的判準" % r["id"])
+
+    def test_surviving_problem_entries_have_a_wide_safety_margin(self):
+        """全 15 課『問題』裡真正倖存下來的條目，假名數最低是 19（見
+        task-8-report.md 附加段落的全語料庫量測）——這裡鎖住『下限遠高
+        於 0』這件事本身：`>= 10` 留了將近一半的安全邊際，不是卡在剛好
+        測出來的臨界值上，避免未來資料稍有變動就假警報，但仍然遠遠不
+        會跟真正的答案符號（固定是 0）混淆。"""
+        min_kana = None
+        for lesson_str in _EXPECTED_COUNTS:
+            out = _load_all(lesson_str)
+            for r in out["問題"]:
+                n = len(_KANA_RE.findall(r["jp"]))
+                if min_kana is None or n < min_kana:
+                    min_kana = n
+        self.assertGreaterEqual(min_kana, 10)
+
+
+class TestKaiwaTitleRemovalPrecision(unittest.TestCase):
+    """檢查角度（対話標題移除的精確性）：直接呼叫內部分組函式，逐課驗
+    證『標題移除』只丟掉恰好一個 Line（標題本身），不會多丟——避免
+    『不小心把第一句真台詞也當成標題砍掉』這類過度修正。"""
+
+    def test_exactly_one_line_dropped_per_lesson(self):
+        from tools.extract.sections import split_sections
+        from tools.extract.sentences import _split_by_punctuation, _has_dialogue_title
+
+        for lesson_str in _EXPECTED_COUNTS:
+            frags = extract_fragments(PDFDoc.from_path(lesson_str + ".pdf"))
+            lines = group_lines(frags)
+            sections = {s.name: s for s in split_sections(lines)}
+            kaiwa_lines = sections["会話"].lines
+            groups = _split_by_punctuation(kaiwa_lines)
+            self.assertTrue(_has_dialogue_title(kaiwa_lines), "%s 課應該偵測到標題" % lesson_str)
+            title_group = groups[0]
+            dropped_lines = {id(line) for line, _lo, _hi in title_group}
+            self.assertEqual(
+                len(dropped_lines), 1,
+                "%s 課標題應該只對應到 1 個 Line，實得 %d 個" % (lesson_str, len(dropped_lines)))
+            first_nonblank = next(l for l in kaiwa_lines if l.text().strip())
+            self.assertIn(id(first_nonblank), dropped_lines,
+                          "%s 課被丟掉的行應該就是區段第一個非空白行" % lesson_str)
 
 
 if __name__ == "__main__":

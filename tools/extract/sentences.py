@@ -90,6 +90,50 @@
 這個平移，並在最後對組好的 `jp` 做一次整體 `strip()`，同步平移剩餘
 ruby 的 `at`，確保 `jp[at:at+len(base)] == base` 這個不變量在任何裁切
 之後都成立（詳見 `ruby.py` 模組說明「已知既有事實」）。
+
+## 過濾一：純答案符號的『問題』條目（審查回合修正）
+
+複審全 15 課後發現：`問題` 100 筆裡有 24 筆根本不是句子，是課本的
+「聽力多選圈選欄」（`①②③`）或「是非題答案列」（`( ○ )`／`( × )`）
+——例如 `L01-問題-2` 的 `jp` 是 `'例：①②③\n1)①②③\n2)①②③'`，
+沒有任何一個字是使用者需要輸入／聽懂的日文句子，若進了題庫，使用者
+會被要求「回答」`①②③` 這種東西。
+
+判準：**這一筆的 `jp` 完全不含任何假名（平假名或片假名）**。逐課實測
+（見 task-8-report.md 附加段落）這 24 筆的假名數全部是 0，全書其餘
+369 筆真正的句子（`文型`／`例文`／`会話`／`問題` 裡有實質內容的條目）
+假名數最低是 19——0 跟 19 之間有巨大的斷層、沒有任何一筆落在中間，這
+不是湊出來剛好卡在門檻上的巧合，是這個資料集裡「純符號答案列」跟「真
+正的句子」在結構上天生不同（真正的日文句子一定有假名——至少也會有
+「です」「ます」這類語尾），可以放心用「零假名」當判準，不需要更複雜
+的啟發式。`_looks_like_real_sentence` 實作、驗證細節見
+`test_sentences.py` 的 `TestProblemMarkerEntriesExcluded`／
+`TestNoRealSentenceHasZeroKana`（後者是否證面：反過來確認`文型`／
+`例文`／`会話`這三個「已知全部是真句子」的區段沒有一筆被這個判準誤
+殺）。
+
+這個過濾套用在**所有**區段（不只 `問題`），不是寫死「問題第 2、3 筆一
+定砍掉」——03／06／09／12／13／15 課的『問題』沒有 ①②③ 選擇題（只有
+是非題答案列），只會篩掉 1 筆而不是 2 筆，因為判準是逐筆看內容，不是
+看位置。`文型`／`例文`／`会話` 目前全部通過這個判準（沒有任何一筆被
+篩掉），純粹是因為這三個區段本來就沒有這種純符號條目——過濾器本身沒
+有排除任何一個區段。
+
+## 過濾二：`会話` 標題不是台詞（審查回合修正）
+
+`会話` 每篇對話開頭都有一行純標題（例如 07 課「ごめんください」、
+15 課「ご家族は？」），全 15 課實測：這一行一定是整個區段第一個非空
+白行、一定不是「說話者：」開頭（`_SPEAKER_RE` 判不到）、後面一定緊接
+一個空白行才是真正的對話開始（`_has_dialogue_title` 用這個結構驗證，
+不是單純「丟掉第一筆」）。修正前這行會被當成一句台詞輸出
+（`L07-会話-1`），修正後整段捨棄，不計入輸出、也不佔用編號。
+
+**為什麼選擇整段捨棄，不是存成 metadata**：任務介面固定是
+`parse_sentences(...) -> List[Dict]`，改成回傳 tuple 或在清單裡塞一
+個 schema 不同的特殊項目，都會破壞這個已經被其他測試／未來 Task 9~11
+依賴的簡單回傳型別。標題本身如果真的有下游需求，直接從
+`section.lines[0].text()` 取得即可（不需要經過句子解析器），不需要為
+了一個標題改變整個函式的回傳介面。
 """
 import re
 from typing import Dict, List, Optional, Tuple
@@ -117,6 +161,10 @@ _DASH_RE = re.compile(r"^-+$")
 
 _TERMINATORS = "。？！"
 
+# 假名（平假名 U+3040-309F／片假名 U+30A0-30FF）——用來過濾『問題』區段
+# 裡純答案符號（①②③、( ○ )/( × )）的條目（見模組說明「過濾一」）。
+_KANA_RE = re.compile(r"[぀-ゟ゠-ヿ]")
+
 Piece = Tuple[Line, int, int]   # (line, 起, 迄)：line.text()[起:迄]
 
 
@@ -137,6 +185,8 @@ def parse_sentences(section: Section, all_frags: List[Fragment], lesson: int) ->
             group_alts.append(alt)
     else:
         kept_groups = _split_by_punctuation(lines)
+        if kept_groups and _has_dialogue_title(lines):
+            kept_groups = kept_groups[1:]   # 見模組說明「過濾二」
         sep = ""
         group_alts = [[] for _ in kept_groups]
 
@@ -149,6 +199,8 @@ def parse_sentences(section: Section, all_frags: List[Fragment], lesson: int) ->
         jp, ruby_list = _trim(jp, ruby_list)
         if not jp:
             continue
+        if not _KANA_RE.search(jp):
+            continue   # 見模組說明「過濾一」：純答案符號，不是句子
         no += 1
         results.append({
             "id": "L%02d-%s-%d" % (lesson, section.name, no),
@@ -204,6 +256,20 @@ def _extract_alt(pieces: List[Piece]) -> Tuple[List[Piece], List[str]]:
         else:
             kept.append((line, lo, hi))
     return kept, alt
+
+
+def _has_dialogue_title(lines: List[Line]) -> bool:
+    """判斷這個區段（会話）開頭是不是一行純標題（見模組說明「過濾
+    二」）：區段第一個非空白行本身不是「說話者：」開頭。全 15 課實測
+    這個條件下、第一組（`_split_by_punctuation` 產生的第一個 group）
+    恰好就是這一整行標題本身——因為標題後面一定緊接空白行，
+    `_split_by_punctuation` 的 `flush()` 已經會在那個空白行把標題單
+    獨切成一組，不會混進後面的對話內容。"""
+    for line in lines:
+        text = line.text()
+        if text.strip():
+            return not _SPEAKER_RE.match(text.lstrip())
+    return False
 
 
 def _split_by_punctuation(lines: List[Line]) -> List[List[Piece]]:

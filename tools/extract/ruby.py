@@ -223,11 +223,32 @@ def _has_normal_spacing(reading: List[Tuple[str, float, Fragment]], start: int, 
     純粹依 x 排序＋內容流順序重建閱讀順序，兩欄之間沒有分隔符，光看字
     元是否相鄰無法分辨換欄。改看幾何 x 間距：同一個詞內相鄰漢字的間距
     等於字級（實測 10.4~13.2pt）；換欄的間距實測高達 332.4~345.6pt，兩
-    者差距懸殊，用「正文字級的 2 倍」當上限就能可靠分開。"""
+    者差距懸殊，用「正文字級的 2 倍」當上限就能可靠分開。
+
+    **間距也不能是零或負的**：11.pdf 單字表換算列（例如「－時間小
+    時」：假名欄「時間」跟中文欄「小時」剛好都從同一個左邊界 x=66.6
+    起排、假名欄字級較窄（12.6pt）先印完，中文欄「小」的錨點因此落在
+    假名欄「間」（x=79.2）的**左邊**——`next_x - prev_x = 66.6 - 79.2 =
+    -12.6`，這種「往回跳」只可能是換到另一個獨立定位的文字區塊，不可
+    能是同一個詞內字元真的往左移動。另一種變形是兩欄剛好**完全重
+    合**——「－年年數」的假名欄單字「年」跟中文欄「年數」的「年」都落
+    在 x=66.6（兩欄都從同一個左邊界起排、剛好都是第一個字），
+    `next_x - prev_x = 0`，同一個詞內真正相鄰的兩個字元不可能有 0 的前
+    進量（最窄的半形字元在最小字級下前進量也有數 pt）。原本只檢查上限
+    （`next_x - prev_x > 門檻`），沒有同時排除「零或負值」，會誤判成
+    「間距正常」，讓「時間」被錯誤延伸到中文欄「小時」、「年」被錯誤延
+    伸到中文欄的另一個「年」（見 `pair_ruby` 呼叫這個函式的兩個擴張段
+    落）。同一種列表格式另外還有「日天數」「週間星期」「か月月數」「分
+    分鐘」等好幾個實例，都是同一根因（審查回合全語料庫掃描找出，不是
+    這次新增的擴張邏輯造成的——沿用既有的熟字訓擴張機制，只是這道間距
+    檢查原本就有這個漏洞）。下限設在 `0.5pt`（而非嚴格要求 `> 0`）純粹
+    是安全邊界，容忍字元位置估計本身的次像素誤差，不是要放行真正的零
+    間距。"""
     for k in range(n - 1):
         _prev_ch, prev_x, prev_f = reading[start + k]
         _next_ch, next_x, _next_f = reading[start + k + 1]
-        if next_x - prev_x > _MAX_NORMAL_GAP_RATIO * prev_f.size:
+        gap = next_x - prev_x
+        if gap < 0.5 or gap > _MAX_NORMAL_GAP_RATIO * prev_f.size:
             return False
     return True
 
@@ -362,6 +383,25 @@ def _find_start(
 
 _JUKUJIKUN_EXTEND_CAP = 2   # 見模組說明「未分段複合詞讀音」，避免無界擴張
 
+_COUNTER_BRIDGE_KANJI = {"月", "時"}   # 見 pair_ruby 內「鏡像情況」段落說明：
+                                       # 全語料庫掃描確認唯二需要「漢字＋
+                                       # 數字＋漢字」橋接的計量單位漢字
+                                       # （月＋N＋日、時＋N＋分），刻意排
+                                       # 除「今」「毎日」「朝」等獨立時間
+                                       # 副詞，避免誤把兩個獨立詞併成一個
+
+_REGULAR_TARGET_READING = {"日": "にち"}   # 見 pair_ruby 內「鏡像情況」段落的
+                                           # 「規則讀音日期」說明：判斷 target
+                                           # 是否已經獨立配到一個「本身完整、
+                                           # 不需要再吸收數字」的讀音，若是就
+                                           # 不該被鏡像橋接吞掉。「日」是唯一
+                                           # 需要這道判斷的 target——「分」
+                                           # （時橋接的 target）不管數字規不
+                                           # 規則、時態如何，自己的讀音永遠是
+                                           # ふん／ぷん，橋接永遠正確，不需要
+                                           # 排除；「日」則不同，見下方詳細
+                                           # 說明。
+
 
 def pair_ruby(all_frags: List[Fragment], line: Line) -> List[RubyPair]:
     ruby_groups = _ruby_groups([
@@ -478,15 +518,189 @@ def pair_ruby(all_frags: List[Fragment], line: Line) -> List[RubyPair]:
                 continue
             break
 
+    # 鏡像情況（複審全語料庫稽核找出的殘留缺陷）：上面那段擴張只處理
+    # 「已配對區塊本身以數字結尾」（14→日、24→日）；沒有處理鏡像方
+    # 向——區塊以**漢字**結尾，後面緊接著「還沒被配到的數字」再接漢字
+    # （「月」+「6」+「日」、「月」+「1」+「日」）。05.pdf「4月6日」
+    # 「9月1日」正是這個形狀：「月」的振假名是單一未分段區段
+    # （'がつむい'／'がつついたち'），實際涵蓋整個「月N日」，但「6」／
+    # 「1」這個數字夾在中間、自己沒有振假名，前面的擴張邏輯不會處理
+    # （它只在區塊「以數字結尾」時觸發），導致 base='月' 卻帶著整個
+    # 「月N日」的讀音——跟已修好的「980円」「14日」是同一個缺陷類別，
+    # 只是方向相反。
+    #
+    # 這裡採「先確認整條路徑合法、再一次提交」而非逐步貪婪擴張：只有在
+    # 緊接著至少 1 個數字、且這個數字（或多位數字）之後（直接相鄰或跳
+    # 過剛好 1 個非底字字元）能接上一個漢字時，才把「數字＋（可能的跳
+    # 過字元）＋漢字」一次全部併入。**刻意要求「後面必須接得上漢字」這
+    # 個條件**——單純「後面是數字」不足以觸發，數字後面接不上漢字（例
+    # 如「例1：」的「1」後面是「：」，再後面是「（」，都不是漢字）就不
+    # 會誤觸發，維持「例1」「例2」原本的正確排除；也因為要求「先看得到
+    # 完整路徑才提交」，不會像貪婪擴張那樣半途留下不完整的殘餘標記。
+    #
+    # **`block_end` 的字元被刻意限制在 `_COUNTER_BRIDGE_KANJI` 這個白名
+    # 單，不是任何漢字都放行**：全語料庫掃描發現，如果不限制，這個機制
+    # 會誤觸發在「今9時半」（今→いま，緊接著「9」再接「時」——但「今」
+    # 是「現在」的意思，跟後面的「9時」是兩個獨立詞，不是像「月」那樣真
+    # 的屬於同一個複合詞）、「毎日9時」（毎日＝每天，同樣是獨立的時間副
+    # 詞）——這些案例會產生 base='今9時半'、kana='いまじはん'，「9」既
+    # 沒有自己的讀音，也不屬於「いまじはん」這個宣稱的一部分，是跟
+    # 「980円」同一類的假配對。「月」（月＋N＋日）與「時」（時＋N＋分，
+    # 例如「4時5分」）是全語料庫裡唯二真正需要這個橋接的漢字——量詞/日
+    # 期用語裡，數字前後的漢字本身就是那個數字的「計量單位」，跟「今」
+    # 「毎日」「朝」這類獨立語意的時間副詞在語法上完全不同，但沒有找到
+    # 純幾何/結構的訊號可以自動分辨兩者，只能用白名單限制範圍——這是刻
+    # 意的保守選擇，寧可讓白名單外的漢字＋數字＋漢字案例維持配不到（安
+    # 全），也不要冒錯配的風險。
+    for block_end in [end for _start, end in _merge_blocks(sorted(kana_by_index))]:
+        if reading[block_end][0] not in _COUNTER_BRIDGE_KANJI:
+            continue
+        digit_run: List[int] = []
+        probe = block_end + 1
+        while (probe < len(reading) and reading[probe][0].isdigit()
+                and probe not in kana_by_index):
+            digit_run.append(probe)
+            probe += 1
+        if not digit_run:
+            continue
+        skip_idx = None
+        target = probe
+        if not (target < len(reading) and _is_cjk_ideograph(reading[target][0])):
+            skip_idx = probe
+            target = probe + 1
+            if not (skip_idx < len(reading) and target < len(reading)
+                    and not _is_base_char(reading[skip_idx][0])
+                    and _is_cjk_ideograph(reading[target][0])):
+                continue
+        # 規則讀音日期不橋接（複審全語料庫稽核找出的假配對，跟「鏡像情
+        # 況」是同一段程式碼但需要額外排除的反例）：上面「鏡像情況」的
+        # 出發點是「月」的振假名有時會直接把後面數字的讀音吃掉一部分
+        # （「がつむい」「がつついたち」），這時候「日」要嘛完全沒有自
+        # 己的振假名（がつついたち已經含完，9月1日），要嘛只剩讀音尾巴
+        # （「か」，4月6日──單獨看「日」讀「か」是錯的，「か」只有跟前
+        # 面湊起來才是完整讀音），兩種情形都必須橋接才不會產生錯誤或不
+        # 完整的宣稱。
+        #
+        # 但全語料庫稽核發現「月」＋規則讀音日期（13、17、20、21、25、
+        # 30 日……這些不需要死背、跟著數字本身讀音走的日子）也會落入同
+        # 一段程式碼：這種情形「日」本身早就在主配對階段獨立配到一組完
+        # 整、正確、可以自己成立的讀音——標準讀音「にち」（例如
+        # 05.pdf「3月25日」：「月」自己的振假名只有「がつ」，「日」自
+        # 己的振假名是獨立的一個 fragment『にち』，中間的「25」本來就沒
+        # 有振假名，因為規則讀音不需要標）。這種情形如果照樣橋接，會把
+        # 兩個各自正確、各自完整的讀音（月→がつ、日→にち）硬併成一個
+        # 錯誤宣稱 base='月25日'、kana='がつにち'——「25」的讀音完全消
+        # 失不見，而「がつにち」本身根本不是任何人會唸的音。這正是簡報
+        # 「寧可不配對，也不要產生錯誤配對」的核心案例：不橋接，維持兩
+        # 個獨立、各自正確的 RubyPair（月→がつ、日→にち），遠比橋接出
+        # 一個消音又唸不出來的假讀音安全。
+        #
+        # 判別依據：**「日」已經獨立配到的讀音本身是不是一個完整、正確
+        # 的『日』單獨讀音**——にち（規則讀音日期唯一會出現的獨立日讀
+        # 音；不規則讀音絕不會單獨產生「にち」這個尾音，みっか、むい
+        # か、よっか、いつか、はつか、ついたち、とおか、なのか、ここの
+        # か、ようか、にじゅうよっか──沒有一個以「にち」結尾）。這是內
+        # 容判定，不是幾何判定：「がつ」（月自己的讀音，25 日這個案例）
+        # 跟「がつむい」（月自己的讀音，6 日這個案例）在 fragment 的錨
+        # 點/座標結構上完全一樣（都是單一未分段區段，錨點就在「月」本
+        # 身正上方），純幾何找不出任何能區分兩者的訊號——已實測驗證：兩
+        # 種情形下振假名 group 的錨點/y 座標/字級模式无法區分，唯一的差
+        # 別是實際印出來的假名內容本身，因此這裡選擇用內容判定，不是幾
+        # 何判定。
+        #
+        # 全語料庫掃描交叉驗證：11月16日（じゅうろくにち，規則讀音）的
+        # 「日」也獨立配到「にち」，這裡的判定同樣會擋下橋接，維持兩個
+        # 獨立正確的配對（月→がつ、日→にち）——這個案例剛好也被既有的
+        # 「安全閥」（比較數字錨點距離）意外擋下來過，兩道判斷在這裡結
+        # 果一致，但安全閥本身不可靠（06.pdf 系列的規則讀音案例，數字跟
+        # 「月」自己讀音錨點的距離超過 RUBY_X_MAX_DIST，安全閥完全不會
+        # 檢查到，這裡的內容判定才是真正擋下錯誤橋接的機制）。
+        target_ch = reading[target][0]
+        if (target_ch in _REGULAR_TARGET_READING
+                and kana_by_index.get(target) == _REGULAR_TARGET_READING[target_ch]):
+            continue
+        # 安全閥：如果被吸收的數字自己旁邊就有一個振假名 fragment 的錨
+        # 點、而且那個錨點離這個數字比離 target 更近，代表這個數字本來
+        # 就該有自己的讀音（fragment 明顯是衝著它來的），只是配對邏輯
+        # 目前解不出來——這種情況下不要用空字串默默吞掉它，寧可讓這個
+        # 區塊維持原狀（不擴張）。實測案例：04.pdf「７月２日」，「２
+        # 日」的振假名是單一 fragment `'  ふ つ か'`（3 個區段，錨點在
+        # 「２」正上方），但只有「２」「日」兩個底字可用，區段數（3）多
+        # 於底字數（2）這種「過度分段」目前的 `_find_run` 解不出來，整
+        # 組配不到；如果沒有這道安全閥，鏡像擴張會誤把「月」的區塊延伸
+        # 到「月２日」、卻只帶著「がつ」，等於宣稱「月２日」整體讀
+        # 「がつ」——這比「月」單獨讀「がつ」（配不到「２日」但沒有錯誤
+        # 宣稱）更糟。**跟 target 比較距離**這一步很重要：05.pdf「4月6
+        # 日」的「日」自己的 `'  か'` fragment 錨點剛好也落在「6」的門
+        # 檻範圍內（只差 6.6pt），但那個錨點離「日」本身的距離是 0——比
+        # 較距離後看得出這個 fragment 其實是衝著「日」（target）來的、
+        # 已經成功配對，不是「6」的孤兒讀音，不該觸發安全閥。
+        if any(
+            abs(anchor_y - (reading[d][2].y + RUBY_Y_OFFSET)) <= RUBY_Y_TOL
+            and abs(anchor_x - reading[d][1]) <= RUBY_X_MAX_DIST
+            and abs(anchor_x - reading[d][1]) <= abs(anchor_x - reading[target][1])
+            for d in digit_run
+            for anchor_x, anchor_y, _segments, _first_kana_x in ruby_groups
+        ):
+            continue
+        path = digit_run + ([skip_idx] if skip_idx is not None else []) + [target]
+        prev = block_end
+        normal = True
+        for idx in path:
+            if not _has_normal_spacing(reading, prev, 2):
+                normal = False
+                break
+            prev = idx
+        if not normal:
+            continue
+        for idx in digit_run:
+            kana_by_index[idx] = ""
+        if skip_idx is not None:
+            kana_by_index[skip_idx] = ""
+        kana_by_index.setdefault(target, "")
+
     matched_indices = sorted(kana_by_index)
 
     pairs: List[RubyPair] = []
     text = line.text()
     for start, end in _merge_blocks(matched_indices):
-        kana = "".join(kana_by_index[idx] for idx in range(start, end + 1))
-        pairs.append(RubyPair(base=text[start:end + 1], kana=kana, at=start))
+        for s, e in _split_by_geometry(reading, start, end):
+            kana = "".join(kana_by_index[idx] for idx in range(s, e + 1))
+            pairs.append(RubyPair(base=text[s:e + 1], kana=kana, at=s))
 
     return pairs
+
+
+def _split_by_geometry(
+    reading: List[Tuple[str, float, Fragment]], start: int, end: int
+) -> List[Tuple[int, int]]:
+    """把一個「索引連續」的區塊（`_merge_blocks` 的輸出）依照實際幾何間
+    距進一步拆開，回傳可能不只一段的 (start, end) 清單。
+
+    `_merge_blocks` 只看索引是不是連續整數，不看版面上的實際距離——這
+    在**兩個各自獨立配對成功、彼此都正確**的字元剛好在讀出順序上相鄰
+    （索引連續）時會出問題：08.pdf 代入練習「1)大阪城静か」，「大阪
+    城」（おおさかじょう，正確）跟後面代換用的形容詞「静」（しず，也正
+    確，是同一列代入練習的另一個獨立欄位，兩者之間版面上其實相隔
+    84pt，遠超過同一個詞內字元間距的量級）剛好落在讀出順序上緊鄰的索
+    引，`_merge_blocks` 因此把兩個本來正確、各自獨立的讀音硬拼成一個
+    `RubyPair`（base='大阪城静'、kana='おおさかじょうしず'）——雖然拼起
+    來的 kana 沒有任何一個字元是錯的，但把兩個無關欄位的內容黏在一起，
+    等於讓查詢「大阪城」或「静」個別讀音的下游用途查不到獨立條目，跟
+    「今　何」被誤合併是同一類問題。
+
+    這裡在建構最終 `RubyPair` 之前，對每個索引連續的區塊，逐步比對相鄰
+    位置的幾何間距（沿用 `_has_normal_spacing` 的比例），間距不正常就
+    切開——前面的擴張機制（`_JUKUJIKUN_EXTEND_CAP` 等）在「填入」空白/
+    跳過字元時已經各自檢查過幾何間距，這裡的切分不會影響那些已經驗證
+    過的合法擴張，只會把「原本就沒有經過任何擴張檢查、純粹因為索引相鄰
+    而被 `_merge_blocks` 誤連在一起」的情形分開。"""
+    boundaries = [start]
+    for idx in range(start, end):
+        if not _has_normal_spacing(reading, idx, 2):
+            boundaries.append(idx + 1)
+    boundaries.append(end + 1)
+    return [(boundaries[i], boundaries[i + 1] - 1) for i in range(len(boundaries) - 1)]
 
 
 def _merge_blocks(sorted_indices: List[int]) -> List[Tuple[int, int]]:

@@ -315,6 +315,65 @@ class TestRubyReviewFixes(unittest.TestCase):
         self.assertNotIn("24", pairs2)
         self.assertNotIn("2", pairs2)
 
+    def test_mirror_bridge_across_unread_digit(self):
+        """4月6日 → がつむいか、9月1日 → がつついたち（鏡像情況：區塊以
+        漢字「月」結尾，後面緊接著一個沒有自己振假名的數字，再接漢字
+        「日」）。
+
+        「月」的振假名有時會直接把後面數字讀音的一部分吃進去（不規則讀
+        音日期：1、3、4、6、8、9、10、14、20、24、…日），例如「がつむ
+        い」「がつついたち」，數字本身完全沒有獨立的振假名，若不橋接會
+        產生 base='月'、kana='がつむい'（漏掉「6日」，但 kana 卻已經包
+        含「6」的讀音一部分——比純粹配不到更容易誤導下游）。
+        """
+        pairs = self._pairs_for("05.pdf", "4月6日です")
+        self.assertEqual(pairs.get("月6日"), "がつむいか")
+        self.assertNotIn("月", pairs)
+
+        pairs2 = self._pairs_for("05.pdf", "9月1日です")
+        self.assertEqual(pairs2.get("月1日"), "がつついたち")
+        self.assertNotIn("月", pairs2)
+
+    def test_regular_reading_date_not_bridged(self):
+        """3月25日／３月２５日（全形數字）不可以被鏡像橋接成假配對
+        base='月25日'、kana='がつにち'。
+
+        複審全語料庫稽核找出的假配對：規則讀音的日期（13、17、25 日這
+        些跟著數字本身讀音走、不需要死背的日子）不會在數字上標振假名，
+        但「日」本身仍然獨立標了完整、正確的標準讀音「にち」——「月」自
+        己的振假名也只有規則讀音「がつ」，不像不規則讀音日期那樣會吃進
+        數字的一部分。鏡像橋接機制若不分青紅皂白一律橋接，會把兩個各自
+        正確、各自完整的讀音（月→がつ、日→にち）硬併成 base='月25日'、
+        kana='がつにち'——「25」的讀音完全消失，而「がつにち」本身也不
+        是任何人會唸出來的音，比「配不到」更糟。
+
+        正確結果是兩個獨立、各自完整的 RubyPair：月→がつ、日→にち，中
+        間的數字維持配不到（規則讀音本來就沒有振假名可配）。
+        """
+        pairs = self._pairs_for("05.pdf", "3月25日に")
+        self.assertEqual(pairs.get("月"), "がつ")
+        self.assertEqual(pairs.get("日"), "にち")
+        self.assertNotIn("月25日", pairs)
+        self.assertNotEqual(pairs.get("月25日"), "がつにち")
+
+        pairs2 = self._pairs_for("05.pdf", "３月２５日に")
+        self.assertEqual(pairs2.get("月"), "がつ")
+        self.assertEqual(pairs2.get("日"), "にち")
+        self.assertNotIn("月２５日", pairs2)
+        self.assertNotEqual(pairs2.get("月２５日"), "がつにち")
+
+        # 同一課另外兩個規則讀音日期實例（13 日、17 日），同一根因，一
+        # 併鎖住，避免只修好稽核明確點名的兩個而漏掉同類案例。
+        pairs3 = self._pairs_for("05.pdf", "6月13日です")
+        self.assertEqual(pairs3.get("月"), "がつ")
+        self.assertEqual(pairs3.get("日"), "にち")
+        self.assertNotIn("月13日", pairs3)
+
+        pairs4 = self._pairs_for("05.pdf", "8月17日に")
+        self.assertEqual(pairs4.get("月"), "がつ")
+        self.assertEqual(pairs4.get("日"), "にち")
+        self.assertNotIn("月17日", pairs4)
+
 
 if __name__ == "__main__":
     unittest.main()

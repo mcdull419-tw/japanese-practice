@@ -134,6 +134,52 @@ ruby 的 `at`，確保 `jp[at:at+len(base)] == base` 這個不變量在任何裁
 依賴的簡單回傳型別。標題本身如果真的有下游需求，直接從
 `section.lines[0].text()` 取得即可（不需要經過句子解析器），不需要為
 了一個標題改變整個函式的回傳介面。
+
+## `id` 的編號來源（複審回合修正：ID 決定性缺陷）
+
+**第一版實作的缺陷**：`no`（因此也是 `id` 裡的編號）原本是「輸出陣列
+的位置」——`for` 迴圈裡每 `results.append` 一次才 `+= 1`。這在加入
+「過濾一」「過濾二」之後暴露了一個嚴重問題：過濾器一旦排除某個條
+目，它後面所有條目的 `no` 全部往前位移一格，導致**同一句話在修正前後
+拿到不同的 `id`**（複審實測：`L01-会話` 標題「初めまして」被排除
+後，原本 `L01-会話-2`「佐　藤：おはよう　ございます。」變成
+`L01-会話-1`——ID 變了，但這是同一句話）。這正是規格 §5.3 明文禁止
+的：`id` 必須決定性、題庫重新生成時同一道題必須拿到同一個 `id`，否則
+使用者的 SRS 複習歷史全部失效。更根本的問題是「輸出位置」這個編號來
+源本身就不穩定——未來任何一次過濾規則的改變（甚至只是修正一個
+bug）都會再次讓後面的條目集體位移。
+
+**修正**：`no` 改成優先使用**課本本身印出來的編號**，不是輸出位置。
+
+- **有來源編號的區段**（`文型`／`例文`／`問題`——全 15 課三者皆以行
+  首 `N.` 切分，見「兩條切分邏輯」）：`no` 直接是 `_split_numbered`
+  解析出的 `N`（`_NUM_START_RE` 的捕捉群組）。這個數字來自課本排版
+  本身，不會因為我們的過濾規則（現在或未來）而改變——`文型`／`例文`
+  沒有任何條目被過濾器排除，`no` 因此逐課逐句完全等於課本編號；
+  `問題` 有條目被過濾器排除時，**留下空號是正確行為**（例如 07 課
+  問題 2、3 是純答案符號被排除，`no` 序列是 1、4、5、6、7，不是
+  1、2、3、4、5）——空號代表「課本這裡本來就有一題，我們判斷它不是
+  句子」，不是遺漏；重新生成題庫時，同一題永遠拿到同一個 `no`，不受
+  過濾規則細節影響。
+- **沒有來源編號的區段**（`会話`——全 15 課掃描過，対話本文從未印出
+  行首編號，見「兩條切分邏輯」）：`no` 只能退回「輸出位置」（標題
+  排除後、剩下的對白依序 1、2、3……）。**這是位置編號，不是決定性
+  ID 來源，明確記錄在此**：`会話` 沒有課本編號可以依附，這是資料本
+  身的限制，不是實作疏漏；只要 `会話` 的切分規則（`_split_by_
+  punctuation`／`_has_dialogue_title`）之後又調整，`会話` 的 `no`
+  仍然會位移。**這意味著在 Phase 1 開始收集使用者的複習事件（SRS
+  歷史跟 `id` 綁定）之前，`会話` 的切分規則必須凍結**——這之後如果
+  真的要改，需要另外設計遷移／重新對齊機制，不是本模組能單獨處理的
+  範圍。
+
+**為什麼不用說話者＋序號或內容雜湊**：說話者＋序號一樣是位置性質
+（同一說話者第 N 次發言，換一個切分規則一樣會位移，沒有比純位置更
+穩定）；內容雜湊（例如對 `jp` 做 hash）理論上更穩定，但引入的複雜度
+（要決定雜湊前用哪個正規化版本的文字、hash 碰撞、跟 `L{lesson}-
+{section}-{no}` 這個全專案統一的 id 格式不相容）超過它解決的問題——
+`会話` 只有 15 課、207 句，且目前還沒有任何下游系統真正依賴它的
+`id` 做 SRS 追蹤，「明確標示為位置編號＋凍結時間點」是這個階段最小、
+最誠實的處置，不是逃避設計。
 """
 import re
 from typing import Dict, List, Optional, Tuple
@@ -145,7 +191,9 @@ from tools.extract.sections import Section
 
 # 行首編號：`    1.`、`   12.` 這類。刻意只認句點，不認右括號 `)`——問題
 # 區段的子項用 `1)`／`2)`，不應該被誤判成新的一組（見模組說明）。
-_NUM_START_RE = re.compile(r"^\s*\d+\.\s*")
+# 捕捉數字本身（group(1)）——這是課本印出來的原始編號，`no` 直接沿用
+# 這個數字，不是輸出位置（見模組說明「id 的編號來源」）。
+_NUM_START_RE = re.compile(r"^\s*(\d+)\.\s*")
 
 # 純粹「（詞）」整行——alt 替代形註記。`\S+` 不含空白，故 `（本を貸します）`
 # 這類多詞括號不會被 `fullmatch` 到（見模組說明）。同時接受全形／半形括號。
@@ -174,25 +222,29 @@ def parse_sentences(section: Section, all_frags: List[Fragment], lesson: int) ->
 
     ruby_cache: Dict[int, List[RubyPair]] = {}
 
+    # (來源編號 or None, piece 清單, alt 清單)——見模組說明「id 的編號
+    # 來源」：有來源編號的區段（文型／例文／問題）直接帶課本印出的
+    # `N.`；`会話` 沒有課本編號可用，填 `None`，下面迴圈用輸出位置遞
+    # 補（會隨著過濾規則改變而變動，是資料本身的限制，不是實作疏漏，
+    # 見模組說明）。
+    items: List[Tuple[Optional[int], List[Piece], List[str]]] = []
+
     if numbered:
-        raw_groups = _split_numbered(lines)
-        sep = "\n"
-        group_alts = []
-        kept_groups = []
-        for pieces in raw_groups:
+        for source_no, pieces in _split_numbered(lines):
             kept, alt = _extract_alt(pieces)
-            kept_groups.append(kept)
-            group_alts.append(alt)
+            items.append((source_no, kept, alt))
+        sep = "\n"
     else:
         kept_groups = _split_by_punctuation(lines)
         if kept_groups and _has_dialogue_title(lines):
             kept_groups = kept_groups[1:]   # 見模組說明「過濾二」
+        for pieces in kept_groups:
+            items.append((None, pieces, []))
         sep = ""
-        group_alts = [[] for _ in kept_groups]
 
     results: List[Dict] = []
-    no = 0
-    for pieces, alt in zip(kept_groups, group_alts):
+    position_no = 0
+    for source_no, pieces, alt in items:
         if not pieces:
             continue
         jp, ruby_list = _build_sentence(pieces, sep, all_frags, ruby_cache)
@@ -201,7 +253,8 @@ def parse_sentences(section: Section, all_frags: List[Fragment], lesson: int) ->
             continue
         if not _KANA_RE.search(jp):
             continue   # 見模組說明「過濾一」：純答案符號，不是句子
-        no += 1
+        position_no += 1
+        no = source_no if source_no is not None else position_no
         results.append({
             "id": "L%02d-%s-%d" % (lesson, section.name, no),
             "section": section.name,
@@ -214,12 +267,16 @@ def parse_sentences(section: Section, all_frags: List[Fragment], lesson: int) ->
     return results
 
 
-def _split_numbered(lines: List[Line]) -> List[List[Piece]]:
+def _split_numbered(lines: List[Line]) -> List[Tuple[int, List[Piece]]]:
     """編號模式分組：行首 `N.` 開新一組，之後的行（含空白行以外的所有
     行）全部併入目前這一組，直到下一個 `N.` 出現。空白行整行捨棄（既不
     開新組也不併入任何一組——`例文` 每組之間的空白間隔行就是這種情
-    形）。"""
-    groups: List[List[Piece]] = []
+    形）。
+
+    回傳 `(來源編號, piece 清單)` 的清單——來源編號就是課本印出來的
+    `N.` 本身（`int(m.group(1))`），供 `parse_sentences` 直接拿來當
+    `no`（見模組說明「id 的編號來源」），不是這裡的清單索引。"""
+    groups: List[Tuple[int, List[Piece]]] = []
     current: Optional[List[Piece]] = None
     for line in lines:
         text = line.text()
@@ -228,7 +285,7 @@ def _split_numbered(lines: List[Line]) -> List[List[Piece]]:
         m = _NUM_START_RE.match(text)
         if m:
             current = []
-            groups.append(current)
+            groups.append((int(m.group(1)), current))
             lo = len(m.group(0))
             hi = len(text.rstrip())
             if lo < hi:

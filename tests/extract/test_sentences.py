@@ -306,5 +306,84 @@ class TestKaiwaTitleRemovalPrecision(unittest.TestCase):
                           "%s 課被丟掉的行應該就是區段第一個非空白行" % lesson_str)
 
 
+# 課本印出來的原始編號，獨立於 `tools/extract/sentences.py` 重新掃描
+# （只借用「行首 N.」這個最原始的觀察，不 import `_NUM_START_RE`），
+# 用來檢查 `no` 到底等於「課本編號」還是「輸出位置」——這兩者只有在
+# 中間有條目被過濾掉時才會不一樣，這正是這組測試要鎖住的。
+_SRC_NUM_RE = re.compile(r"^\s*(\d+)\.")
+
+
+def _source_group_starts(section):
+    nums = []
+    for line in section.lines:
+        text = line.text()
+        if not text.strip():
+            continue
+        m = _SRC_NUM_RE.match(text)
+        if m:
+            nums.append(int(m.group(1)))
+    return nums
+
+
+class TestIdUsesSourceNumberNotOutputPosition(unittest.TestCase):
+    """複審 Critical：`no`（因此 `id`）不得由輸出位置決定，否則同一句
+    話會因為過濾規則的任何變動而拿到不同 id，讓 SRS 複習歷史全部失
+    效。`文型`／`例文`／`問題` 有課本印出來的 `N.` 編號可用，`no` 必
+    須直接沿用它；被過濾掉的條目應該留下空號，不是讓後面的條目往前
+    遞補。
+
+    否證驗證（把 `no` 改回輸出位置，這裡的具體斷言必須變紅）已用
+    scratch 副本在 shell 裡實測，指令與輸出見 task-8-report.md。"""
+
+    def test_lesson07_problem_ids_have_gap_at_filtered_entries(self):
+        """07 課『問題』原本印出 1~7 共 7 題，2、3 兩題是純答案符號被
+        過濾掉——`no` 必須是 1、4、5、6、7（有缺口），不是過濾後重新
+        從 1 數到 5。"""
+        out = _load_all("07")
+        ids = [s["id"] for s in out["問題"]]
+        self.assertEqual(
+            ids,
+            ["L07-問題-1", "L07-問題-4", "L07-問題-5", "L07-問題-6", "L07-問題-7"])
+
+    def test_lesson03_problem_ids_have_gap_at_filtered_entry(self):
+        """03 課『問題』沒有 ①②③ 選擇題，只有『問題 2』（是非題答案
+        列）被過濾——`no` 必須是 1、3、4、5，不是 1、2、3、4。"""
+        out = _load_all("03")
+        ids = [s["id"] for s in out["問題"]]
+        self.assertEqual(ids, ["L03-問題-1", "L03-問題-3", "L03-問題-4", "L03-問題-5"])
+
+    def test_no_matches_printed_number_across_all_lessons(self):
+        """通用檢查：對全 15 課的『文型』『例文』『問題』，`no` 序列必
+        須是『課本原始編號』的子序列（依相對順序保留、可以有缺口，但
+        不可以出現一個沒印在課本上的號碼）；且只要這個區段真的有條目
+        被過濾掉（輸出筆數 < 課本印出的編號數），`no` 序列就不應該退
+        化成從 1 開始的連續整數——那正是『輸出位置』的特徵，代表 no
+        又被改回位置編號了。"""
+        for lesson_str in _EXPECTED_COUNTS:
+            frags = extract_fragments(PDFDoc.from_path(lesson_str + ".pdf"))
+            lines = group_lines(frags)
+            sections = {s.name: s for s in split_sections(lines)}
+            for name in ("文型", "例文", "問題"):
+                section = sections[name]
+                src_nums = _source_group_starts(section)
+                out_nums = [s["no"] for s in parse_sentences(section, frags, int(lesson_str))]
+                # 子序列檢查：out_nums 必須能依序在 src_nums 裡逐一找到
+                # （允許跳過中間被過濾掉的號碼，但不能倒序、不能出現課
+                # 本沒印過的號碼）。
+                idx = 0
+                for n in out_nums:
+                    while idx < len(src_nums) and src_nums[idx] != n:
+                        idx += 1
+                    self.assertLess(
+                        idx, len(src_nums),
+                        "%s課%s 的 no=%d 不是課本印出來的編號、或順序不對" % (lesson_str, name, n))
+                    idx += 1
+                # 沒有被過濾就不用檢查「不能是連續位置編號」——兩者本來就會重合
+                if len(out_nums) < len(src_nums) and out_nums:
+                    self.assertNotEqual(
+                        out_nums, list(range(1, len(out_nums) + 1)),
+                        "%s課%s 有條目被過濾（%d/%d），no 卻是連續的 1..N，"
+                        "疑似又退回輸出位置編號" % (lesson_str, name, len(out_nums), len(src_nums)))
+
 if __name__ == "__main__":
     unittest.main()

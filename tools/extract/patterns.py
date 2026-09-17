@@ -425,19 +425,97 @@ def _fine_segments(line: Line) -> List[Tuple[float, str]]:
     return segments
 
 
-def _column_index(x: float, base_xs: List[float]) -> int:
+def _column_index(x: float, base_xs: List[float], fraction: float = None) -> int:
     """回傳 `x` 所屬的欄位索引。這是區間式歸屬（一旦進入某欄，同一欄
     內接下來的內容不論多寬都留在同一欄，直到真的越過下一欄的起點），
     不是單純的「離哪個欄位最近」（見模組說明「槽位偵測」）；但「要越
     過多遠才算真的跨欄」不是固定 pt 數，是相對於「目前欄位到下一欄」
-    這段欄距本身的比例（見 `_COLUMN_CROSS_FRACTION` 說明）。"""
+    這段欄距本身的比例（見 `_COLUMN_CROSS_FRACTION` 說明）。
+
+    `fraction` 預設用模組級的 `_COLUMN_CROSS_FRACTION`（給一般代入
+    表、必須同時相容全部欄位間距差異懸殊的表格用）；
+    `_parse_ms_te_reference_table` 這種已經是專用解析、只需要相容自己
+    這一張表 4 個欄位間距的呼叫情境，可以傳入自己校準過的比例，不受
+    全域常數的跨表相容性限制。"""
+    f = _COLUMN_CROSS_FRACTION if fraction is None else fraction
     idx = 0
     for i in range(1, len(base_xs)):
         gap = base_xs[i] - base_xs[idx]
-        threshold = base_xs[i] - _COLUMN_CROSS_FRACTION * gap if gap > 0 else base_xs[i]
+        threshold = base_xs[i] - f * gap if gap > 0 else base_xs[i]
         if x >= threshold:
             idx = i
     return idx
+
+
+def _collapse_group(segs: List[Tuple[float, str]]) -> str:
+    """把一個欄位收集到的 (x, 文字) 片段清單合併成一個字串（依原始
+    x 序，用單一半形空白連接），見 `_redistribute_missing_slots` 與
+    `_parse_one_table` 呼叫處。"""
+    return _collapse_ws(" ".join(t for _x, t in segs))
+
+
+def _redistribute_missing_slots(
+    variant_rows: List[Dict[int, List[Tuple[float, str]]]],
+    slot_idxs: List[int],
+    base_xs: List[float],
+) -> None:
+    """複審第四輪抓到的回歸：單靠 `_column_index` 這種「只看單一欄位
+    跨欄比例」的判斷，天生無法同時滿足所有真實反例——複審反推 13 課
+    練習Ａ-2「はたらき」需要跨欄比例 >= 0.2857、14 課練習Ａ-5
+    「べんきょうして」需要 >= 0.381、15 課練習Ａ-3「けっこんして」需
+    要 >= 0.3，這三個下限全部超過 10 課練習Ａ-4「まえ」「必須不跨欄」
+    的上限 < 0.2727——**不存在任何一個全域比例常數能同時滿足這批反
+    例**，這不是校準不夠精，是單一比例常數的設計本身在這份語料上不
+    完備。
+
+    這幾個反例的共通點：句子讀起來剛好通順（`{S}{T}` 前後相接，其中
+    一欄為空時句子恰好還讀得通），但欄位歸屬本身是錯的——用課本自己
+    的網底框顏色核對過，`はたらき`／`べんきょうして`／`けっこんして`
+    這三個詞真正屬於的欄位，都是**這張表已經由其他列證實存在、但這
+    一列偵測不到值**的那個槽位，而不是它們被 `_column_index` 分到的
+    那一欄。
+
+    複審建議的修法：改用「表格整體結構」這個比單一列的 x 座標更強的
+    訊號——若某欄已經透過**其他列**證實有自己的候選詞集合
+    （`slot_idxs`，在呼叫這個函式之前就已經算好），但**這一列**偵測
+    不到這個欄位的值，優先把這一列排在它前面、內容比較多的欄位裡的
+    殘餘文字，重新分給這個缺值的欄位，而不是繼續相信 `_column_index`
+    當初的判斷：
+
+    - **這一列前面的欄位收了 2 個以上的片段**（13 課「外国で
+      はたらき」、14 課「日本語を べんきょうして」都是這種情形）：
+      把最後一個片段整個移到缺值的欄位，前面的欄位留下其餘片段。這是
+      單欄裡「其實塞了兩欄內容」最直接的訊號——真正只有一欄內容的
+      列，`_column_index` 不會意外多切出一個片段。
+    - **這一列前面的欄位只有 1 個片段**（15 課「けっこんして」單獨一
+      個片段，`_column_index` 誤判成 S）：改成比較這個片段的 x 到底
+      離哪個欄位的基底句參照 x 更近——`_column_index` 判斷「是否跨
+      欄」時只看與目前欄位的相對比例，沒有拿缺值欄位的參照位置直接
+      比較距離；這裡改成直接比距離，離缺值欄位更近就整個移過去。
+
+    這個函式**原地修改** `variant_rows`（每一列的 dict），不回傳新
+    值——呼叫方在算完 `slot_idxs`之後、建立 `slots`／`rows` 之前呼
+    叫一次即可。"""
+    for row_groups in variant_rows:
+        present = sorted(row_groups)
+        for missing in slot_idxs:
+            if missing in row_groups and row_groups[missing]:
+                continue
+            # 找這一列裡，排在缺值欄位「之前」、有內容的最近欄位。
+            candidates = [i for i in present if i < missing and row_groups.get(i)]
+            if not candidates:
+                continue
+            src = max(candidates)
+            segs = row_groups[src]
+            if len(segs) >= 2:
+                row_groups[missing] = [segs[-1]]
+                row_groups[src] = segs[:-1]
+            else:
+                (x, _text) = segs[0]
+                if abs(x - base_xs[missing]) < abs(x - base_xs[src]):
+                    row_groups[missing] = segs
+                    row_groups[src] = []
+            present = sorted(i for i in row_groups if row_groups.get(i))
 
 
 def _reconstruct_question(
@@ -526,7 +604,7 @@ def _parse_one_table(lesson: int, table_no: int, lines: List[Line]) -> Dict:
     base_xs = [x for x, _ in base_columns]
     base_texts = [t for _, t in base_columns]
 
-    variant_rows: List[Dict[int, str]] = []
+    variant_rows: List[Dict[int, List[Tuple[float, str]]]] = []
     question_variant: Optional[str] = None
     question_ellipsis_idx: Optional[int] = None
     question_row_values: Dict[int, str] = {}
@@ -609,11 +687,11 @@ def _parse_one_table(lesson: int, table_no: int, lines: List[Line]) -> Dict:
         # 這裡不再需要這條特例，兩個真實反例（14 課「迎えに いき」該
         # 合併、08 課「にぎやか」該正確分流到別的函式）因此都不必再
         # 靠同一條規則硬撐。
-        row_values: Dict[int, str] = {}
+        row_groups: Dict[int, List[Tuple[float, str]]] = {}
         for x, text in cleaned:
             idx = _column_index(x, base_xs) if base_xs else 0
-            row_values[idx] = _collapse_ws((row_values.get(idx, "") + " " + text).strip())
-        variant_rows.append(row_values)
+            row_groups.setdefault(idx, []).append((x, text))
+        variant_rows.append(row_groups)
 
     # 只有「真的出現過跟基底句不同的候選詞」的欄位才算槽位——07 課練
     # 習Ａ-6 每一列都重印了完全相同的「ました。」在同一欄（idx3），這
@@ -630,7 +708,7 @@ def _parse_one_table(lesson: int, table_no: int, lines: List[Line]) -> Dict:
         idx
         for row in variant_rows
         for idx in row
-        if row[idx] != base_texts[idx]
+        if _collapse_group(row[idx]) != base_texts[idx]
     })
     if not slot_idxs and base_columns:
         # 防禦性後備：目前 15 課驗證過的資料裡，每張代入表至少都有一個
@@ -641,6 +719,8 @@ def _parse_one_table(lesson: int, table_no: int, lines: List[Line]) -> Dict:
         # 欄當成只有一個候選詞的槽位。
         slot_idxs = [0]
 
+    _redistribute_missing_slots(variant_rows, slot_idxs, base_xs)
+
     if question_row_values or question_ellipsis_idx is not None:
         question_variant = _reconstruct_question(
             base_texts, question_row_values, question_ellipsis_idx, slot_idxs
@@ -650,18 +730,20 @@ def _parse_one_table(lesson: int, table_no: int, lines: List[Line]) -> Dict:
     slots: Dict[str, List[str]] = {slot_letters[idx]: [base_texts[idx]] for idx in slot_idxs}
     rows: List[List[int]] = [[0] * len(slot_idxs)]
 
-    for row_values in variant_rows:
-        if not any(idx in row_values for idx in slot_idxs):
+    for row_groups in variant_rows:
+        if not any(idx in row_groups and row_groups[idx] for idx in slot_idxs):
             continue
         row_indices = []
         for idx in slot_idxs:
             letter = slot_letters[idx]
-            if idx in row_values:
-                slots[letter].append(row_values[idx])
+            if idx in row_groups and row_groups[idx]:
+                slots[letter].append(_collapse_group(row_groups[idx]))
                 row_indices.append(len(slots[letter]) - 1)
             else:
-                # 這一列沒有提供這個槽位的新候選詞——用空字串當這一列
-                # 的值，不是沿用前一列的索引。
+                # 這一列沒有提供這個槽位的新候選詞（`_redistribute_
+                # missing_slots` 已經先嘗試把前面欄位的殘餘文字重新分
+                # 配過，這裡走到 else 分支代表真的沒有可分配的來源）
+                # ——用空字串當這一列的值，不是沿用前一列的索引。
                 #
                 # 複審第二輪抓到的真實反例（13 課練習Ａ-4）：課本這一
                 # 列本身只印了「かいもの」一個詞，用課本頁面算繪核對
@@ -672,11 +754,7 @@ def _parse_one_table(lesson: int, table_no: int, lines: List[Line]) -> Dict:
                 # 「ロシア料理を」誤接到這一列的「かいもの」前面，產生
                 # 「わたしはロシア料理をかいものに行きます。」這種混
                 # 合兩列內容的病句；改成空字串後正確產生
-                # 「わたしはかいものに行きます。」。15 課練習Ａ-3／
-                # 14 課練習Ａ-5 是同一類問題的鏡像案例（這次是 T 欄缺
-                # 值），「沿用前一列索引」一樣會產生誤接兩列內容的病句
-                # （「わたしはけっこんしてしっています」），空字串一樣
-                # 修正為正確句子（「わたしはけっこんしています」）。
+                # 「わたしはかいものに行きます。」。
                 #
                 # 這裡優先重用已存在的空字串候選（避免每次都新增一個
                 # 內容相同的候選詞），不存在才新增。
@@ -704,13 +782,24 @@ def _parse_one_table(lesson: int, table_no: int, lines: List[Line]) -> Dict:
     return result
 
 
-# 變化對照表判定用的助詞／終助詞白名單——這些字元本來就常常在正常句子
-# 裡合法重複兩次以上（「AとBとどちらが」比較句型、「XからYまで」範
-# 圍句型），出現在基底句欄位裡不代表這張表是變化對照表（見
+# 變化對照表判定用的助詞白名單——這些字元本來就常常在正常句子裡合法
+# 重複兩次以上（「AとBとどちらが」比較句型、「XからYまで」範圍句
+# 型），出現在基底句欄位裡不代表這張表是變化對照表（見
 # `_find_conjugation_marker` 說明；12 課練習Ａ-5「サッカーとやきゅう
 # と」就是這樣的真實反例，`と` 重複但這張表是正常代入表）。
+#
+# **複審第四輪抓到的臭蟲**：這個清單原本也排除「か」「の」，理由是
+# 「常見助詞」，但沒有實測驗證——14 課練習Ａ-1（動詞ます形／て形總
+# 表）裡，「か」是「書きます／書いて」的動詞語幹、「の」是「飲みます
+# ／飲んで」的動詞語幹，不是助詞。把它們排除會讓 `_find_conjugation_
+# marker` 對這些列的重複語幹視而不見，導致這些列在「同一個 segment
+# 數多數決」的分界演算法裡完全解析不出分界，整列從 `forms` 消失（複審
+# 實測：11 個資料列裡至少 5 列因此被靜默丟棄）。這裡拿掉「か」「の」
+# ——這張表現在改用專門的 `_parse_ms_te_reference_table`（見該函式說
+# 明）處理，不再依賴這份清單，但清單本身也不該包含沒有實測依據、還會
+# 誤傷合法語幹的項目，一併修正。
 _CONJUGATION_EXCLUDED_REPEATS = frozenset(
-    ["は", "が", "を", "に", "で", "と", "も", "へ", "から", "まで", "や", "の", "か", "、"]
+    ["は", "が", "を", "に", "で", "と", "も", "へ", "から", "まで", "や", "、"]
 )
 
 
@@ -866,6 +955,104 @@ def _parse_conjugation_table(lesson: int, table_no: int, lines: List[Line], mark
     }
 
 
+def _parse_ms_te_reference_table(lesson: int, table_no: int, lines: List[Line]) -> Dict:
+    """14 課練習Ａ-1 專用解析：動詞ます形／て形總表（Ⅰ／Ⅱ／Ⅲ類全
+    表）。複審第四輪指出這張表根本不是「一列一組形態」的版面，是
+    **一列同時橫跨兩個動詞**（左半一個動詞的 ます形／て形、右半另一
+    個動詞的 ます形／て形，並排省版面），套用 `_find_conjugation_
+    marker` 那種「同一個 segment 數多數決切兩段」的邏輯，會把兩個不
+    相干動詞的形態接在一起（例如「いき ます」跟「＊いっ てね ます
+    ねて」黏成一段），或因為動詞語幹（「か」「の」）被舊版的助詞白名
+    單誤判排除而整列消失。
+
+    這裡改用基底句（表頭列）自己印出的欄位 x 座標當四個欄位的參照位
+    置——表頭列文字是「ます形　て形　ます形　て形」（左半動詞的
+    ます形／て形標籤，右半另一個動詞的 ます形／て形標籤），共 4 個
+    概念欄位（「て形」因表頭本身的字距排版，可能被 `_fine_segments`
+    拆成 `て`／`形` 兩個 segment，這裡只取每個標籤的第一個 segment 當
+    參照 x，足夠定義四個欄位的邊界）。每個資料列先濾掉「Ⅰ」「Ⅱ」
+    「Ⅲ」這種純動詞分類標籤（不是形態內容本身，見
+    `_GROUP_LABEL_MARKERS`），再用 `_column_index`（跟一般代入表共用
+    同一套「相對欄距比例」判斷）把剩下的 segment 分進四個欄位，左半
+    兩欄湊成一組「(ます形, て形)」、右半兩欄湊成另一組，兩組都非空才
+    算數（有些列只有右半有內容——這是課本真實排版：左邊 Ⅰ 類動詞的
+    例子比右邊少，列到後面左半自然空白，不是資料遺漏）。"""
+    header_segments = _fine_segments(lines[0])[1:]
+    # 表頭「て形」有時（本身排版用字距撐開)被 `_fine_segments` 拆成
+    # 「て」／「形」兩個 segment（見上方模組說明），逐一併相鄰 segment
+    # 湊字看是否構成「ます形」或「て形」，取這個標籤第一個 segment 的
+    # x 當這一欄的參照位置。
+    col_xs: List[float] = []
+    i = 0
+    while i < len(header_segments) and len(col_xs) < 4:
+        x, t = header_segments[i]
+        stripped = t.replace(" ", "")
+        if stripped in ("ます形", "て形"):
+            col_xs.append(x)
+            i += 1
+            continue
+        if i + 1 < len(header_segments):
+            x2, t2 = header_segments[i + 1]
+            if (stripped + t2.replace(" ", "")) in ("ます形", "て形"):
+                col_xs.append(x)
+                i += 2
+                continue
+        i += 1
+
+    forms: List[List[str]] = []
+    if len(col_xs) == 4:
+        for line in lines[1:]:
+            cleaned = [
+                (x, t) for x, t in _fine_segments(line) if t not in _GROUP_LABEL_MARKERS
+            ]
+            if not cleaned:
+                continue
+            groups: Dict[int, List[str]] = {}
+            for x, t in cleaned:
+                # 這張表左右兩欄組（colA/colB、colC/colD）之間的欄距
+                # 105.6~118.8pt，遠比其中一欄內部（詞幹 segment 到
+                # 「ます」／「て」語尾 segment 之間）常見的間距寬鬆很
+                # 多；但個別動詞語幹（單一假名，例如「い」「かえ」）
+                # 偶爾會印在欄位邊界附近，用跟一般代入表共用的
+                # `_COLUMN_CROSS_FRACTION`（為了同時相容 07 課「フォー
+                # ク」等窄欄距表格而校準得比較保守）會讓這些語幹跨欄失
+                # 敗，把左欄的「て形」語幹誤留在「ます形」欄裡（複審實
+                # 測「＊い」「いそ」「かえ」都曾經卡在這個門檻差幾 pt
+                # 跨不過去）。這裡改用 0.25——只需要相容這張表自己 4
+                # 個欄位間的距離，不必兼顧其他表格，用實際量出的邊界
+                # 案例（差 5.28pt 沒跨過）反推得出。
+                groups.setdefault(_column_index(x, col_xs, fraction=0.25), []).append(t)
+
+            def _joined(idx: int) -> str:
+                return "".join(tok.replace(" ", "") for tok in groups.get(idx, []))
+
+            left = (_joined(0), _joined(1))
+            right = (_joined(2), _joined(3))
+            # 表格中途重印一次表頭列本身（「ます形」／「て形」字面重
+            # 複出現在資料列的右半，見模組說明）——這是裝飾用的分隔提
+            # 示，不是真正的動詞形態，過濾掉不計入 `forms`。
+            if left[0] and left[1] and left not in (("ます形", "て形"),):
+                forms.append([left[0], left[1]])
+            if right[0] and right[1] and right not in (("ます形", "て形"),):
+                forms.append([right[0], right[1]])
+
+    return {
+        "id": "L%02d-A%d" % (lesson, table_no),
+        "table_type": "conjugation",
+        "requires_lesson": lesson,
+        "template": None,
+        "slots": None,
+        "rows": None,
+        "question_variant": None,
+        "forms": forms,
+    }
+
+
+# 14 課練習Ａ-1 表頭列的動詞分類標籤——不是形態內容本身，見
+# `_parse_ms_te_reference_table` 說明，解析資料列時要先濾掉。
+_GROUP_LABEL_MARKERS = frozenset(["Ⅰ", "Ⅱ", "Ⅲ"])
+
+
 def parse_pattern_tables(section: Section, lesson: int) -> List[Dict]:
     """把 `練習Ａ` 的 `Line` 序列切成代入表清單（見模組說明）。"""
     lines = section.lines
@@ -881,6 +1068,13 @@ def parse_pattern_tables(section: Section, lesson: int) -> List[Dict]:
         raw = "".join(f.text for f in lines[start].frags)
         table_no = int(_TABLE_START_RE.match(raw).group(1))
         table_lines = lines[start:end]
+        if lesson == 14 and table_no == 1:
+            # 見 `_parse_ms_te_reference_table` 說明：這張表是「一列橫
+            # 跨兩個動詞」的特殊版面，一般的「同一個 segment 數多數決」
+            # 分界演算法（`_parse_conjugation_table`）對它結構性地不適
+            # 用，改用專用解析。
+            tables.append(_parse_ms_te_reference_table(lesson, table_no, table_lines))
+            continue
         base_texts = [t for _, t in _fine_segments(table_lines[0])[1:]]
         marker = _find_conjugation_marker(base_texts)
         if marker is not None:

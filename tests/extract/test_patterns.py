@@ -155,6 +155,42 @@ class TestPatternTableNoiseCharacters(unittest.TestCase):
             for form in pair:
                 self.assertNotIn("→", form)
 
+    def test_l14_a1_verb_form_pairs_are_correct_not_merged_across_verbs(self):
+        """14 課練習Ａ-1（動詞ます形／て形總表）——複審第四輪指出這張
+        表原本的問題比「內容有些行混雜」嚴重得多：`_CONJUGATION_
+        EXCLUDED_REPEATS` 誤把「か」「の」當助詞排除（這張表裡兩者其
+        實是「書きます／書いて」「飲みます／飲んで」的動詞語幹），導
+        致 11 個資料列中至少 5 列被靜默整列丟棄，殘留的列則常常把兩個
+        不相干動詞的形態黏在一起（例如「いき ます」跟「＊いっ てね
+        ますねて」）。根本原因是這張表版面是「一列橫跨兩個動詞」（左
+        半一個動詞、右半另一個動詞，並排省版面），不是「一列一組形
+        態」，改用專用的 `_parse_ms_te_reference_table`（依表頭自己的
+        欄位 x 座標分四欄，不依賴同一份助詞白名單）後，斷言具體的動
+        詞形態配對必須正確、且沒有互相污染。"""
+        lines = group_lines(extract_fragments(PDFDoc.from_path("14.pdf")))
+        sections = {s.name: s for s in split_sections(lines)}
+        tables = parse_pattern_tables(sections["練習Ａ"], 14)
+        t = [x for x in tables if x["id"] == "L14-A1"][0]
+        self.assertEqual(t["table_type"], "conjugation")
+        expected_pairs = [
+            ["かきます", "かいて"],       # 書きます／書いて（Ⅰ類，か 語幹）
+            ["のみます", "のんで"],       # 飲みます／飲んで（Ⅰ類，の 語幹）
+            ["たべます", "たべて"],       # 食べます／食べて（Ⅱ類）
+            ["いきます", "＊いって"],     # 行きます／行って（Ⅰ類，不規則て形）
+            ["きます", "きて"],           # 来ます／来て（Ⅲ類）
+            ["します", "して"],           # します／して（Ⅲ類）
+        ]
+        for pair in expected_pairs:
+            self.assertIn(pair, t["forms"], "找不到形態配對 %r" % pair)
+        # 不該把兩個不相干動詞的形態黏在一起（回歸的具體症狀）。
+        for pair in t["forms"]:
+            for form in pair:
+                self.assertNotIn("ますね", form, "疑似把兩個動詞的形態接在一起：%r" % pair)
+                self.assertNotIn("ますおき", form, "疑似把兩個動詞的形態接在一起：%r" % pair)
+        # 表頭列本身在資料列中途重印一次（裝飾用分隔提示），不該被誤
+        # 認成一組真正的動詞形態。
+        self.assertNotIn(["ます形", "て形"], t["forms"])
+
     def test_conjugation_tables_classified_across_lessons_without_false_positives(self):
         """複審第三輪發現至少 7 張表根本是變化對照表、不是代入表：
         L04-A7（ます／ません／ました／ませんでした 四態）、L06-A5
@@ -212,24 +248,60 @@ class TestColumnDriftRowPairingFixes(unittest.TestCase):
 
     def test_l13_a4_blank_slot_becomes_empty_not_previous_rows_value(self):
         """13 課練習Ａ-4「かいもの」單獨一欄，S 欄本來就沒有替代詞
-        （課本頁面算繪核對：這一列 S 欄是空白網底框）。「わたしは
-        ロシア料理をかいものに行きます。」是回歸出的病句，正確應為
-        「わたしはかいものに行きます。」。"""
+        （課本頁面算繪核對：這一列 S 欄是空白網底框，「かいもの」整
+        個落在 T 欄）。斷言 `slots` 的欄位內容本身正確（`T` 要拿到
+        「かいもの」、`S` 這一列要是空字串），不只是斷言代入後的句子
+        通順——複審第四輪點名：只看句子讀得通會漏掉「兩欄縮成一欄、
+        另一欄空白但巧合讀得通」這類回歸。"""
         t = self._table(13, "L13-A4")
+        names = sorted(t["slots"])
+        self.assertEqual(names, ["S", "T"])
+        row = t["rows"][2]  # かいもの 那一列
+        vals = {n: t["slots"][n][i] for n, i in zip(names, row)}
+        self.assertEqual(vals, {"S": "", "T": "かいもの"})
         sentences = self._sentences(t)
         self.assertIn("わたしはかいものに行きます。", sentences)
-        for s in sentences:
-            self.assertNotIn("ロシア料理をかいもの", s)
 
     def test_l15_a3_blank_slot_becomes_empty_not_previous_rows_value(self):
-        """15 課練習Ａ-3「けっこんして」單獨一欄，T 欄本來就沒有替代
-        詞。「わたしはけっこんしてしっています」是回歸出的病句，正確
-        應為「わたしはけっこんしています」。"""
+        """15 課練習Ａ-3「けっこんして」單獨一欄——複審第四輪用課本網
+        底框顏色核對：「けっこんして」真正屬於 T 欄，S 欄該留空，不是
+        `_column_index` 曾經誤判的「S 欄有值、T 欄缺值」。斷言 `slots`
+        的欄位內容本身正確，不只是斷言代入後的句子通順（「わたしは
+        けっこんしています」在兩種錯誤的欄位配對下都可能巧合讀得
+        通）。"""
         t = self._table(15, "L15-A3")
+        names = sorted(t["slots"])
+        self.assertEqual(names, ["S", "T"])
+        row = t["rows"][2]  # けっこんして 那一列
+        vals = {n: t["slots"][n][i] for n, i in zip(names, row)}
+        self.assertEqual(vals, {"S": "", "T": "けっこんして"})
         sentences = self._sentences(t)
         self.assertIn("わたしはけっこんしています", sentences)
-        for s in sentences:
-            self.assertNotIn("けっこんしてしって", s)
+
+    def test_l13_a2_two_words_split_across_two_slots_not_merged(self):
+        """13 課練習Ａ-2「外国で はたらき」課本網底框核對：「外国で」
+        與「はたらき」是兩個分開的欄位（S／T），不是同一欄合併的兩個
+        詞——複審第四輪點名：`わたしは外国ではたらきたいです。` 這句
+        話在「S=外国で　はたらき，T=空」與「S=外国で，T=はたらき」兩
+        種欄位配對下代入出來的句子剛好一模一樣，只看句子看不出配對錯
+        誤，必須斷言 `slots` 本身。"""
+        t = self._table(13, "L13-A2")
+        names = sorted(t["slots"])
+        self.assertEqual(names, ["S", "T"])
+        row = t["rows"][2]  # 外国で／はたらき 那一列
+        vals = {n: t["slots"][n][i] for n, i in zip(names, row)}
+        self.assertEqual(vals, {"S": "外国で", "T": "はたらき"})
+
+    def test_l14_a5_two_words_split_across_two_slots_not_merged(self):
+        """14 課練習Ａ-5「日本語を べんきょうして」同樣道理：「日本語
+        を」是 S、「べんきょうして」是 T，不是合併成一個 S 值、T 留
+        空。"""
+        t = self._table(14, "L14-A5")
+        names = sorted(t["slots"])
+        self.assertEqual(names, ["S", "T"])
+        row = t["rows"][2]  # 日本語を／べんきょうして 那一列
+        vals = {n: t["slots"][n][i] for n, i in zip(names, row)}
+        self.assertEqual(vals, {"S": "日本語を", "T": "べんきょうして"})
 
     def test_l08_a1_left_drift_does_not_merge_into_subject_slot(self):
         """08 課練習Ａ-1「おもしろい」（單一形容詞候選詞，真實 x 比參

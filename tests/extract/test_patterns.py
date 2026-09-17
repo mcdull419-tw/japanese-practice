@@ -133,18 +133,125 @@ class TestPatternTableNoiseCharacters(unittest.TestCase):
       成真正的候選詞，混進 `slots["S"]`。
     """
 
-    def test_l08_a2_positional_mapping_avoids_column_drift(self):
-        """08 課練習Ａ-2：segment 數跟基底句欄位數相等時，依位置對應，
-        不受 x 抖動影響。"""
+    def test_l08_a2_is_a_conjugation_table_not_a_broken_substitution_table(self):
+        """08 課練習Ａ-2 是變化對照表（きれいです／きれいじゃありません
+        這種正負形態對照），不是代入表——複審第三輪判定：這張表 fixed
+        列的「です にぎやか」（欄位漂移）曾經是回歸重現的症狀，但根本
+        問題是這張表從一開始就不該套用代入表的 slots／template／rows
+        邏輯。改成 `table_type="conjugation"`＋`forms` 後，連不規則形
+        容詞「いい／よくない」（正負形態不共用字根）都要正確切成兩
+        段，不能殘留任何裝飾用「→」箭頭或跟其他列黏在一起的雜訊。"""
         lines = group_lines(extract_fragments(PDFDoc.from_path("08.pdf")))
         sections = {s.name: s for s in split_sections(lines)}
         tables = parse_pattern_tables(sections["練習Ａ"], 8)
         t = [x for x in tables if x["id"] == "L08-A2"][0]
-        all_values = [v for vals in t["slots"].values() for v in vals]
-        self.assertNotIn("です にぎやか", all_values,
-                         "「にぎやか」欄位漂移的回歸：不該把「です」跟下一欄的"
-                         "「にぎやか」混成一個候選詞")
-        self.assertIn("にぎやか", t["slots"]["S"])
+        self.assertEqual(t["table_type"], "conjugation")
+        self.assertIsNone(t["template"])
+        self.assertIsNone(t["slots"])
+        self.assertIn(["にぎやかです", "にぎやかじゃありません"], t["forms"])
+        self.assertIn(["いいです", "よくないです"], t["forms"],
+                       "不規則形容詞「いい／よくない」正負形態必須正確切成兩段")
+        for pair in t["forms"]:
+            for form in pair:
+                self.assertNotIn("→", form)
+
+    def test_conjugation_tables_classified_across_lessons_without_false_positives(self):
+        """複審第三輪發現至少 7 張表根本是變化對照表、不是代入表：
+        L04-A7（ます／ません／ました／ませんでした 四態）、L06-A5
+        （ます／ましょう）、L08-A2（正負形態）、L12-A2／L12-A3（過去
+        式正負形態）、L13-A3（たい形正負）、L14-A1（動詞ます形／て形
+        總表）。這裡驗證分類結果，並確保沒有誤判：12 課練習Ａ-5（比較
+        句型「AとBとどちらが」，基底句雖然「と」重複兩次，但那是比較
+        句型本身的助詞，是正常代入表）、08 課練習Ａ-3（「い」形容詞
+        「いい」候選詞本身兩個字重複，但整張表其餘三列都是正常代入，
+        是正常代入表）都不該被誤判成變化對照表。"""
+        expected_conjugation = {
+            4: ["L04-A7"],
+            6: ["L06-A5"],
+            8: ["L08-A2"],
+            12: ["L12-A2", "L12-A3"],
+            13: ["L13-A3"],
+            14: ["L14-A1"],
+        }
+        not_conjugation = {12: ["L12-A5"], 8: ["L08-A1", "L08-A3"]}
+        for lesson, ids in expected_conjugation.items():
+            lines = group_lines(extract_fragments(PDFDoc.from_path("%02d.pdf" % lesson)))
+            sections = {s.name: s for s in split_sections(lines)}
+            tables = {t["id"]: t for t in parse_pattern_tables(sections["練習Ａ"], lesson)}
+            for tid in ids:
+                self.assertEqual(tables[tid]["table_type"], "conjugation",
+                                 "%s 應判定為變化對照表" % tid)
+        for lesson, ids in not_conjugation.items():
+            lines = group_lines(extract_fragments(PDFDoc.from_path("%02d.pdf" % lesson)))
+            sections = {s.name: s for s in split_sections(lines)}
+            tables = {t["id"]: t for t in parse_pattern_tables(sections["練習Ａ"], lesson)}
+            for tid in ids:
+                self.assertEqual(tables[tid]["table_type"], "substitution",
+                                 "%s 不該被誤判成變化對照表" % tid)
+
+
+class TestColumnDriftRowPairingFixes(unittest.TestCase):
+    """複審第三輪發現：欄位向左漂移會讓 `_column_index` 誤判進前一
+    欄，接著「沿用前一列索引」的 fallback 會用上一列不相干的內容補
+    缺欄，產出課本沒教、不通順的日文句子。這裡鎖定複審親自驗證過的
+    具體案例，斷言代入後的句子正確，不只是斷言 `rows` 存在。"""
+
+    def _table(self, lesson, table_id):
+        lines = group_lines(extract_fragments(PDFDoc.from_path("%02d.pdf" % lesson)))
+        sections = {s.name: s for s in split_sections(lines)}
+        tables = {t["id"]: t for t in parse_pattern_tables(sections["練習Ａ"], lesson)}
+        return tables[table_id]
+
+    def _sentences(self, t):
+        names = sorted(t["slots"])
+        out = []
+        for row in t["rows"]:
+            vals = {n: t["slots"][n][i] for n, i in zip(names, row)}
+            out.append(t["template"].format(**vals))
+        return out
+
+    def test_l13_a4_blank_slot_becomes_empty_not_previous_rows_value(self):
+        """13 課練習Ａ-4「かいもの」單獨一欄，S 欄本來就沒有替代詞
+        （課本頁面算繪核對：這一列 S 欄是空白網底框）。「わたしは
+        ロシア料理をかいものに行きます。」是回歸出的病句，正確應為
+        「わたしはかいものに行きます。」。"""
+        t = self._table(13, "L13-A4")
+        sentences = self._sentences(t)
+        self.assertIn("わたしはかいものに行きます。", sentences)
+        for s in sentences:
+            self.assertNotIn("ロシア料理をかいもの", s)
+
+    def test_l15_a3_blank_slot_becomes_empty_not_previous_rows_value(self):
+        """15 課練習Ａ-3「けっこんして」單獨一欄，T 欄本來就沒有替代
+        詞。「わたしはけっこんしてしっています」是回歸出的病句，正確
+        應為「わたしはけっこんしています」。"""
+        t = self._table(15, "L15-A3")
+        sentences = self._sentences(t)
+        self.assertIn("わたしはけっこんしています", sentences)
+        for s in sentences:
+            self.assertNotIn("けっこんしてしって", s)
+
+    def test_l08_a1_left_drift_does_not_merge_into_subject_slot(self):
+        """08 課練習Ａ-1「おもしろい」（單一形容詞候選詞，真實 x 比參
+        照欄位偏左 13.2pt）不該被誤併進主詞欄「ワット先生は」，導致
+        跟前一列的「いい」黏成「おもしろいいいです。」這種病句。"""
+        t = self._table(8, "L08-A1")
+        self.assertEqual(len(t["slots"]), 1, "應只有一個槽位（形容詞），主詞應維持固定")
+        sentences = self._sentences(t)
+        self.assertIn("ワット先生はおもしろいです。", sentences)
+        for s in sentences:
+            self.assertNotIn("いいいです", s)
+
+    def test_l10_a4_left_drift_keeps_particle_with_final_form(self):
+        """10 課練習Ａ-4「エレベーターの まえ」（複合詞第二段落後參照
+        欄位 13.8pt，超過修正前的絕對容差）不該把「まえ」跨欄跨進基
+        底句原本的虛欄「に」，導致「エレベーターのまえいます。」這種
+        漏掉「に」的病句。"""
+        t = self._table(10, "L10-A4")
+        sentences = self._sentences(t)
+        self.assertIn("ミラーさんはエレベーターの まえにいます。", sentences)
+        for s in sentences:
+            self.assertNotIn("まえいます", s)
 
     def test_l12_a5_sample_answer_block_excluded_from_slots(self):
         """12 課練習Ａ-5：示範答案區塊（含跨行延續）整段不計入槽位候

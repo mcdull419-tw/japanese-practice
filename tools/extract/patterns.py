@@ -247,6 +247,7 @@ cue／answer 語意完整性」這個跟 Task 9 原本「逐字回查」完全�
 task-9-report.md）改為同時驗證兩者。
 """
 import re
+from collections import Counter
 from typing import Dict, List, Optional, Tuple
 
 from tools.extract.fonts import char_width
@@ -316,14 +317,41 @@ _SAMPLE_ANSWER_ROW_RE = re.compile(r"^\s*…+")
 # 會把它誤判成下一欄，錯誤地把兩個獨立欄位的內容混在一起（複審時实際
 # 測出這個回歸，見下方 `_column_index`）。
 #
-# 但區間式比對也不能寫死 ±6pt（簡報建議值）：03 課「13,000えん」量出
-# 來的欄位 x 是 199.2，比同一欄其他列（1,500えん／5,800えん，x=205.8）
-# 落後 6.6pt，超過 ±6pt。這裡取 10.0pt——大於 6.6（涵蓋 03 課這個真實
-# 案例），且小於本模組目前看過的全部資料裡「最窄的相鄰欄位間距」的一
-# 半（07 課練習Ａ-2「で」（238.8）到「レポートを」（265.2）間距
-# 26.4pt，一半是 13.2pt，10.0 留有安全邊際，不會讓兩個相鄰欄位的管轄
-# 範圍重疊）。
-_COLUMN_TOLERANCE = 10.0
+# 但區間式比對也不能用固定的絕對容差（pt）——這是複審第二輪抓到的更
+# 深層問題：欄位 x 的漂移幅度本身沒有一個安全的固定上限。已經實測到的
+# 反例（全部是「候選詞真實 x 比參照欄位更靠左」的漂移）：
+#   - 03 課「13,000えん」：漂移 6.6pt
+#   - 08 課練習Ａ-1「おもしろい」：漂移 13.2pt
+#   - 13 課練習Ａ-4「かいもの」：漂移 13.2pt
+#   - 08 課練習Ａ-2「にぎやか」：漂移 13.8pt（這筆現在改用位置對應，
+#     見 `_parse_one_table` 的 `len(cleaned) == len(base_columns)` 分
+#     支，不再依賴這裡）
+# 這些漂移幅度已經逼近、甚至超過本模組看過的最窄相鄰欄距（07 課練習
+# Ａ-2「で」到「レポートを」26.4pt）的一半（13.2pt）——用固定容差
+# （不論設多少）不可能同時滿足「大到能接住 13.8pt 的漂移」跟「小到不
+# 會在 26.4pt 窄欄距裡誤跨欄」這兩個互斥的要求，第一輪選的 10.0pt 正
+# 是卡在這兩者中間、遲早會被更大的反例打破的妥協值。
+#
+# 改用**相對於欄距本身的比例**決定何時跨欄，不是絕對 pt 數：欄位 i 到
+# i+1 的欄距是 `gap = base_xs[i+1] - base_xs[目前欄位]`，只有當 x 大於
+# 等於 `base_xs[i+1] - _COLUMN_CROSS_FRACTION * gap` 才跨欄。欄距窄時
+# 允許的漂移量自動跟著變小，欄距寬時自動跟著變大——這正是「漂移量會不
+# 會誤觸下一欄」這個問題本身的形狀，比任何固定常數都更貼近實際情況。
+#
+# 這個比例值必須同時滿足 5 個真實反例（4 個「必須跨欄」＋1 個「必須不
+# 跨欄」，逐一代入 `base_xs[i+1] - f * gap` 這條公式反推 f 的上下限）：
+#   - 08 課練習Ａ-1「おもしろい」必須跨欄：f >= 0.1386
+#   - 13 課練習Ａ-4「かいもの」必須跨欄：f >= 0.0513
+#   - 03 課練習Ａ-6「13,000えん」必須跨欄：f >= 0.0667
+#   - 07 課練習Ａ-1「フォーク」必須**不**跨欄：f < 0.4545
+#   - 10 課練習Ａ-4「エレベーターの まえ」的「まえ」必須**不**跨欄
+#     （這一列的「まえ」若跨進下一欄，會把「エレベーターの まえ」這
+#     個複合詞拆成兩截，跟基底句原本只是單一虛欄「に」的候選詞混在一
+#     起，見 `_parse_one_table` 呼叫處的具體案例）：f < 0.2727
+# 交集是 `0.1386 <= f < 0.2727`，取中段的 `0.2`（20%），兩側都留有安
+# 全邊際（詳見 task-9-report.md 複審回合二的完整計算過程與逐一代入驗
+# 算）。
+_COLUMN_CROSS_FRACTION = 0.2
 
 # 槽位命名：依簡報範例從 S 開始（S、T、U……），不是 A、B、C。最多命名
 # 到 Z（26-83=... 這批課本資料實測最多只有 2 個槽位，遠低於這個上
@@ -398,17 +426,17 @@ def _fine_segments(line: Line) -> List[Tuple[float, str]]:
 
 
 def _column_index(x: float, base_xs: List[float]) -> int:
-    """回傳 `x` 所屬的欄位索引：`base_xs` 中，滿足
-    `base_xs[i] <= x + _COLUMN_TOLERANCE` 的最後一個索引（見模組說明
-    「槽位偵測」與 `_COLUMN_TOLERANCE`）。這是區間式歸屬（一旦進入某
-    欄，同一欄內後續內容不論多寬都留在同一欄，直到真的越過下一欄的起
-    點），不是單純的「離哪個欄位最近」。"""
+    """回傳 `x` 所屬的欄位索引。這是區間式歸屬（一旦進入某欄，同一欄
+    內接下來的內容不論多寬都留在同一欄，直到真的越過下一欄的起點），
+    不是單純的「離哪個欄位最近」（見模組說明「槽位偵測」）；但「要越
+    過多遠才算真的跨欄」不是固定 pt 數，是相對於「目前欄位到下一欄」
+    這段欄距本身的比例（見 `_COLUMN_CROSS_FRACTION` 說明）。"""
     idx = 0
-    for i, bx in enumerate(base_xs):
-        if bx <= x + _COLUMN_TOLERANCE:
+    for i in range(1, len(base_xs)):
+        gap = base_xs[i] - base_xs[idx]
+        threshold = base_xs[i] - _COLUMN_CROSS_FRACTION * gap if gap > 0 else base_xs[i]
+        if x >= threshold:
             idx = i
-        else:
-            break
     return idx
 
 
@@ -555,45 +583,36 @@ def _parse_one_table(lesson: int, table_no: int, lines: List[Line]) -> Dict:
             question_ellipsis_idx = ellipsis_idx
             continue
 
-        # 「→」是課本在少數幾張表（06/08/12/13 課的動詞／形容詞變化對
-        # 照表）裡，對其中一列額外加印的裝飾用轉換箭頭（例如「たべ
-        # ます →たべましょう」），純粹是排版上的視覺提示，不是候選詞
-        # 內容本身的一部分——全 15 課逐課掃描過，這個字元從未真正屬於
-        # 任何一個候選詞（前後不是空白就是另一個候選詞邊界）。不濾掉
-        # 的話，這個字元會原封不動混進候選詞字串（複審實測：06 課練
-        # 習Ａ-5「たべます→たべましょう」這一列，T 欄候選詞因此變成
-        # 「ます →」而不是乾淨的「ます」）。獨立於欄位歸屬方式（下方
-        # 兩種都要套用），先把每個 segment 自己清乾淨、丟掉清乾淨後變
-        # 空的 segment（通常就是那個單獨自成一格的「→」本身）。
+        # 「→」是課本在變化對照表（見 `_CONJUGATION_MARKER_TEXT`／
+        # `table_type`）裡，對其中一列額外加印的裝飾用轉換箭頭（例如
+        # 「たべます →たべましょう」），純粹是排版上的視覺提示，不是
+        # 候選詞內容本身的一部分——全 15 課逐課掃描過，這個字元從未真
+        # 正屬於任何一個候選詞（前後不是空白就是另一個候選詞邊界）。
+        # 不濾掉的話，這個字元會原封不動混進候選詞字串。這裡的表都是
+        # 一般代入表（變化對照表已在 `parse_pattern_tables` 分流到
+        # `_parse_conjugation_table`，不會走到這裡），但字元清理規則
+        # 沿用同一套、無條件套用不影響正確性。
         cleaned = [(x, text.replace("→", "").strip()) for x, text in segments]
         cleaned = [(x, text) for x, text in cleaned if text]
 
-        row_values = {}
-        if base_columns and len(cleaned) == len(base_columns):
-            # 依位置逐一對應，不看 x 座標——見模組說明「欄位偵測」跟
-            # `_COLUMN_TOLERANCE` 的取捨兩難：08 課練習Ａ-2「にぎやか
-            # です にぎやか じゃ ありません」這一列，第二個「にぎやか」
-            # 真實 x 落後參照欄位 13.8pt，超過 `_COLUMN_TOLERANCE`
-            # （10.0pt，為了不誤傷 07 課「フォーク」而不能再放大），用
-            # 區間比對會把它誤併回前一欄（「です にぎやか」）；但這一
-            # 列的 segment 數（5 個）剛好跟基底句欄位數（5 欄）完全相
-            # 等——這是「這一列每一欄都有給值，沒有省略任何欄位」的強
-            # 訊號，此時依印刷順序逐一對應，完全不需要猜 x 落在哪個區
-            # 間，兩種歧義（07 課「フォーク」需要小容差、08 課「にぎ
-            # やか」需要大容差）因此都不必再靠同一個容差常數硬撐。
-            #
-            # 這條規則不能無條件套用在所有列：07 課練習Ａ-1 的「イン
-            # ドネシア人 スプーンと フォーク」只有 3 個 segment（S 跟
-            # T 兩欄，不含「は」「で ごはんを 食べます。」這兩個沒被
-            # 替換的固定欄），跟基底句 4 欄對不上，這種「只碰到部分欄
-            # 位」的列，必須繼續用 x 座標判斷碰到的是哪幾欄，逐位置對
-            # 應在這裡完全不適用（見下面的 else 分支）。
-            for idx, (_x, text) in enumerate(cleaned):
-                row_values[idx] = _collapse_ws(text)
-        else:
-            for x, text in cleaned:
-                idx = _column_index(x, base_xs) if base_xs else 0
-                row_values[idx] = _collapse_ws((row_values.get(idx, "") + " " + text).strip())
+        # 一律依 x 座標區間歸屬（見 `_column_index`／`_COLUMN_CROSS_
+        # FRACTION`），不再依「segment 數是否等於欄位數」切換成逐位置
+        # 對應。複審第三輪發現：14 課練習Ａ-4「迎えに いき」（2 個
+        # segment，跟這張表基底句的欄位數 2 剛好相等）曾經因為這個
+        #「數量相符就依位置對應」的規則，被誤判成「這一列兩欄都各自
+        # 給了新值」，把「いき」錯塞進「ましょうか。」那個其實從未被
+        # 任何一列真正替換過的固定欄，產生「迎えにいき」這種丟掉語尾
+        # 的殘句。這條規則原本是為了解決 08 課練習Ａ-2「にぎやか」欄
+        # 位漂移 13.8pt 超出 `_COLUMN_CROSS_FRACTION` 涵蓋範圍的問
+        # 題——但那張表本身就是變化對照表，已經改用 `_parse_
+        # conjugation_table` 的獨立邏輯處理（不受這裡的容差限制），
+        # 這裡不再需要這條特例，兩個真實反例（14 課「迎えに いき」該
+        # 合併、08 課「にぎやか」該正確分流到別的函式）因此都不必再
+        # 靠同一條規則硬撐。
+        row_values: Dict[int, str] = {}
+        for x, text in cleaned:
+            idx = _column_index(x, base_xs) if base_xs else 0
+            row_values[idx] = _collapse_ws((row_values.get(idx, "") + " " + text).strip())
         variant_rows.append(row_values)
 
     # 只有「真的出現過跟基底句不同的候選詞」的欄位才算槽位——07 課練
@@ -641,10 +660,31 @@ def _parse_one_table(lesson: int, table_no: int, lines: List[Line]) -> Dict:
                 slots[letter].append(row_values[idx])
                 row_indices.append(len(slots[letter]) - 1)
             else:
-                # 這一列沒有提供這個槽位的新候選詞——沿用前一列的索引
-                # （見模組說明「槽位偵測」，目前資料沒有實際案例觸發這
-                # 個分支，是防禦性設計，不是憑空猜測的行為）。
-                row_indices.append(rows[-1][slot_idxs.index(idx)] if rows else 0)
+                # 這一列沒有提供這個槽位的新候選詞——用空字串當這一列
+                # 的值，不是沿用前一列的索引。
+                #
+                # 複審第二輪抓到的真實反例（13 課練習Ａ-4）：課本這一
+                # 列本身只印了「かいもの」一個詞，用課本頁面算繪核對
+                # 過，這一列在 S 欄（神戸へ／ロシア料理を）對應的位置
+                # 是**空白網底框**，「かいもの」整個落在 T 欄——這一列
+                # 的 S 本來就沒有替代詞，不是「沿用上一列的 S」。第一
+                # 版的「沿用前一列索引」fallback 會把上一列的
+                # 「ロシア料理を」誤接到這一列的「かいもの」前面，產生
+                # 「わたしはロシア料理をかいものに行きます。」這種混
+                # 合兩列內容的病句；改成空字串後正確產生
+                # 「わたしはかいものに行きます。」。15 課練習Ａ-3／
+                # 14 課練習Ａ-5 是同一類問題的鏡像案例（這次是 T 欄缺
+                # 值），「沿用前一列索引」一樣會產生誤接兩列內容的病句
+                # （「わたしはけっこんしてしっています」），空字串一樣
+                # 修正為正確句子（「わたしはけっこんしています」）。
+                #
+                # 這裡優先重用已存在的空字串候選（避免每次都新增一個
+                # 內容相同的候選詞），不存在才新增。
+                if "" in slots[letter]:
+                    row_indices.append(slots[letter].index(""))
+                else:
+                    slots[letter].append("")
+                    row_indices.append(len(slots[letter]) - 1)
         rows.append(row_indices)
 
     template = "".join(
@@ -654,6 +694,7 @@ def _parse_one_table(lesson: int, table_no: int, lines: List[Line]) -> Dict:
 
     result: Dict = {
         "id": "L%02d-A%d" % (lesson, table_no),
+        "table_type": "substitution",
         "template": template,
         "slots": slots,
         "rows": rows,
@@ -661,6 +702,168 @@ def _parse_one_table(lesson: int, table_no: int, lines: List[Line]) -> Dict:
         "question_variant": question_variant,
     }
     return result
+
+
+# 變化對照表判定用的助詞／終助詞白名單——這些字元本來就常常在正常句子
+# 裡合法重複兩次以上（「AとBとどちらが」比較句型、「XからYまで」範
+# 圍句型），出現在基底句欄位裡不代表這張表是變化對照表（見
+# `_find_conjugation_marker` 說明；12 課練習Ａ-5「サッカーとやきゅう
+# と」就是這樣的真實反例，`と` 重複但這張表是正常代入表）。
+_CONJUGATION_EXCLUDED_REPEATS = frozenset(
+    ["は", "が", "を", "に", "で", "と", "も", "へ", "から", "まで", "や", "の", "か", "、"]
+)
+
+
+def _find_conjugation_marker(base_texts: List[str]) -> Optional[str]:
+    """判定這張表是不是「變化對照表」（見模組說明「變化對照表：跟代
+    入表版面相同、語意結構完全不同」）：回傳基底句欄位裡第一個「重複
+    出現、且不是純助詞」的文字，找不到則回傳 `None`。
+
+    這個文字若存在，就是這張表每一列的「起始標記」——變化對照表的基
+    底句本身就是好幾組「詞幹＋語尾」黏在一起（例如 07 課「たべます
+    たべましょう」：`たべ` 沒有重複、但很多其他變化對照表的詞幹會直
+    接重複兩次以上，見下方函式呼叫處的具體案例），不是一個真正的句
+    子。全 15 課、78 張表逐一用「基底句欄位裡是否有重複且非助詞的文
+    字」掃描過，精確找出 7 張這種表（`L04-A7`／`L06-A5`／`L08-A2`／
+    `L12-A2`／`L12-A3`／`L13-A3`／`L14-A1`），沒有誤判任何一張正常代
+    入表（`L12-A5` 的基底句雖然也有重複文字「と」，但那是比較句型的
+    助詞，已經用 `_CONJUGATION_EXCLUDED_REPEATS` 排除）。
+
+    **重複必須間隔至少 2 個欄位才算數**（`i - seen[t] >= 2`）：08 課
+    練習Ａ-2 有一列本身是「い い です よ くない です」（形容詞
+    「いい」本身兩個字重複，不是「正／負形態各自的起始標記」重複）
+    ——「い」緊接著自己重複一次，這是這個形容詞單字本身的拼寫，不是
+    形態組的分界，若不排除，會把「い」誤判成這一列的分界標記，切出
+    「いですよくない」「です」這種錯誤分組。要求間隔至少 2 欄，能正
+    確跳過這種「同一個詞自己疊字」的情形，繼續找到真正代表「正／負形
+    態」分界的重複（這一列本身其實找不到——「いい／よくない」是不規
+    則形容詞，兩個形態沒有共用字根，見 `_parse_conjugation_table` 說
+    明「同一個 segment 數的所有列用多數決決定分界」如何處理這個殘留
+    案例）。
+    """
+    seen_at: Dict[str, int] = {}
+    for i, t in enumerate(base_texts):
+        if t in _CONJUGATION_EXCLUDED_REPEATS:
+            continue
+        if t in seen_at and i - seen_at[t] >= 2:
+            return t
+        seen_at[t] = i
+    return None
+
+
+def _row_group_starts(texts: List[str]) -> Optional[List[int]]:
+    """對單一列（已清乾淨的欄位文字清單）用 `_find_conjugation_marker`
+    找出形態組的起始欄位索引清單（恆以 0 開頭）。找不到重複標記則回
+    傳 `None`（見 `_parse_conjugation_table` 說明「同一個 segment 數的
+    所有列用多數決決定分界」，這種情形交給呼叫方處理，不在這裡猜
+    測）。"""
+    marker = _find_conjugation_marker(texts)
+    if marker is None:
+        return None
+    starts = [i for i, t in enumerate(texts) if t == marker]
+    if not starts or starts[0] != 0:
+        starts = [0] + starts
+    return starts
+
+
+def _parse_conjugation_table(lesson: int, table_no: int, lines: List[Line], marker: str) -> Dict:
+    """解析變化對照表（見模組說明「變化對照表」）。
+
+    每一列本身就是好幾組「詞幹＋語尾」黏在一起，不是單一句子加槽位。
+    每一列各自用 `_row_group_starts`（`_find_conjugation_marker` 的邏
+    輯）找出「這一列自己的形態組從哪裡開始」——這是位置對應（不是
+    `_column_index` 的 x 座標區間比對），因為變化對照表每一列本來就
+    是「每一欄都對應著印」，不會有「只替換部分欄位」的情形（跟一般代
+    入表的核心差異）。
+
+    ## 同一個 segment 數的所有列用多數決決定分界，不是各自為政
+
+    08 課練習Ａ-2「い い です よ くない です」（形容詞「いい」＝
+    「好」，不規則形容詞，正／負形態「いい」／「よくない」沒有共用字
+    根）——這一列自己用 `_row_group_starts` 解析，剛好會湊巧選到
+    「です」當分界標記（`です` 在這一列裡出現兩次、間隔剛好 >= 2，滿
+    足 `_find_conjugation_marker` 的條件），切出「いいです」「よくな
+    い」「です」三段——**這個自我解析的結果本身是錯的**（正確應該是
+    兩段：「いいです」「よくないです」），因為這一列的兩個形態本來就
+    沒有共用字根可以正確標記分界，任何找到的「重複文字」都只是巧合。
+
+    但這一列的 segment 數（6 個）跟同一張表另外兩列（「たか い です
+    たか くない です」「おいし い です おいし くない です」，兩者都
+    正確解析出「正／負形態各 3 欄」）完全相同——**同一張表裡 segment
+    數相同的列，形態組的欄位切法理應相同**（都是「い形容詞肯定形／
+    否定形」這個固定版面，只是詞幹不同）。因此不採用「每一列各自的解
+    析結果」，改成**同一個 segment 數的所有列一起多數決**：這裡
+    `[0, 3]`（たか／おいし 兩票）勝過「いい」這一列自己解析出的
+    `[0, 2, 5]`（一票），全部 3 列統一套用多數決選出的 `[0, 3]`，「い
+    い」這一列因此也能正確切成兩段。
+
+    若某個 segment 數在整張表裡完全沒有任何一列能解析出分界（目前 15
+    課資料沒有這種案例），這一列會被跳過、不計入 `forms`——寧可少一
+    列資料，也不要瞎猜一個可能錯誤的切法。
+
+    回傳 `{"id", "table_type": "conjugation", "requires_lesson",
+    "forms"}`——`forms` 是每一列一組的形態清單（例如 06 課練習Ａ-5
+    第一列是 `["やすみます", "やすみましょう"]`）。沒有
+    `template`／`slots`／`rows`／`question_variant`：這些欄位對變化
+    對照表沒有意義，刻意留白（設為 `None`），避免下游把它當一般代入
+    表呼叫 `template.format(**slots)`。
+    """
+    base_line = lines[0]
+    base_texts = [t for _, t in _fine_segments(base_line)[1:]]
+
+    all_rows_texts: List[List[str]] = [base_texts]
+    for line in lines[1:]:
+        raw = "".join(f.text for f in line.frags)
+        cleaned_texts = [t.replace("→", "").strip() for _x, t in _fine_segments(line)]
+        cleaned_texts = [t for t in cleaned_texts if t]
+        if not cleaned_texts:
+            continue
+        if _QUESTION_VARIANT_RE.search(raw) or _SAMPLE_ANSWER_ROW_RE.match(raw):
+            # 變化對照表目前 15 課實測從未出現疑問句變體或示範答案區
+            # 塊（這兩種都是一般代入表的慣例），這裡防禦性排除、不計
+            # 入 `forms`，避免萬一真的出現時混入垃圾資料。
+            continue
+        all_rows_texts.append(cleaned_texts)
+
+    # 第一輪：每一列各自嘗試解析分界。同一個 segment 數的所有列，理應
+    # 共用同一種切法（同一種版面，只是詞幹不同）——用**多數決**選出
+    # 每個 segment 數最常見的分界（不是「誰先解析出來就用誰」）：08
+    # 課練習Ａ-2「いい／よくない」那一列自己解析出的分界（`です` 兩次
+    # 出現，湊巧間隔也 >= 2）剛好是錯的（`いい`／`よくない` 是不規則
+    # 形容詞，正負形態不共用字根，見 `_find_conjugation_marker` 說
+    # 明），但跟它 segment 數相同的另外兩列（`たか`／`おいし`）都正確
+    # 解析出「各 3 欄」的分界，多數決會蓋掉這一列自己的錯誤答案，改用
+    # 兩票對一票勝出的正確分界。
+    resolved = [_row_group_starts(texts) for texts in all_rows_texts]
+    votes_by_count: Dict[int, Counter] = {}
+    for texts, starts in zip(all_rows_texts, resolved):
+        if starts is not None:
+            votes_by_count.setdefault(len(texts), Counter())[tuple(starts)] += 1
+    majority_by_count = {
+        count: max(votes.items(), key=lambda kv: kv[1])[0]
+        for count, votes in votes_by_count.items()
+    }
+
+    forms: List[List[str]] = []
+    for texts in all_rows_texts:
+        starts = majority_by_count.get(len(texts))
+        if starts is None:
+            continue  # 見模組說明：整個 segment 數都解析不出分界，跳過
+        forms.append([
+            "".join(texts[s:(starts[i + 1] if i + 1 < len(starts) else len(texts))])
+            for i, s in enumerate(starts)
+        ])
+
+    return {
+        "id": "L%02d-A%d" % (lesson, table_no),
+        "table_type": "conjugation",
+        "requires_lesson": lesson,
+        "template": None,
+        "slots": None,
+        "rows": None,
+        "question_variant": None,
+        "forms": forms,
+    }
 
 
 def parse_pattern_tables(section: Section, lesson: int) -> List[Dict]:
@@ -677,7 +880,13 @@ def parse_pattern_tables(section: Section, lesson: int) -> List[Dict]:
         end = starts[si + 1] if si + 1 < len(starts) else len(lines)
         raw = "".join(f.text for f in lines[start].frags)
         table_no = int(_TABLE_START_RE.match(raw).group(1))
-        tables.append(_parse_one_table(lesson, table_no, lines[start:end]))
+        table_lines = lines[start:end]
+        base_texts = [t for _, t in _fine_segments(table_lines[0])[1:]]
+        marker = _find_conjugation_marker(base_texts)
+        if marker is not None:
+            tables.append(_parse_conjugation_table(lesson, table_no, table_lines, marker))
+        else:
+            tables.append(_parse_one_table(lesson, table_no, table_lines))
     return tables
 
 

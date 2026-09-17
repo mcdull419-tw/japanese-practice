@@ -94,6 +94,28 @@ fragment 落差用來處理「兩個 fragment 之間完全沒有空白字元、�
 誤併入上一欄）兩個方向相反的真實反例並列記錄，避免又是「只在單一課
 別試通就交差」。
 
+**單一容差常數終究撐不住所有情形，`_parse_one_table` 因此在區間比對
+之外，另外加了一條「segment 數對得上就依位置對應」的規則**：08 課練
+習Ａ-2「にぎやか です にぎやか じゃ ありません」這一列，第二個
+「にぎやか」的真實 x 落後參照欄位 13.8pt——比 03 課的 6.6pt 還大，超
+過 `_COLUMN_TOLERANCE`（10.0pt，這個值已經是 07 課「フォーク」跟 03
+課「13,000えん」兩個反例拉扯出來的結果，不能再放大，放大會讓 07 課
+「フォーク」的兩欄之間開始有歧義）。用區間比對會把它誤併回前一欄，
+產生「です にぎやか」這種混雜兩個欄位內容的候選詞。
+
+真正的解法不是再調容差，是換一種歸屬依據：**這一列的 segment 數
+（5 個）剛好跟基底句欄位數（5 欄）完全相等，代表這一列每一欄都有給
+值、沒有省略任何欄位**——這時候不需要猜 x 落在哪個區間，直接依印刷
+順序逐一對應（第 1 個 segment 對應第 1 欄……以此類推）就一定正確，
+徹底繞開 x 抖動的問題。這條規則只在 segment 數跟欄位數完全相等時套
+用：07 課練習Ａ-1「インドネシア人 スプーンと フォーク」只有 3 個
+segment，跟基底句 4 欄對不上（這一列沒有觸碰「は」跟「で ごはんを
+食べます。」這兩個固定欄），這種「只碰到部分欄位」的列，逐位置對應
+會整個對錯欄，必須繼續用 `_column_index` 的區間判斷。兩種規則搭配之
+後，07 課「フォーク」跟 08 課「にぎやか」這兩個方向相反的真實反例都
+不再需要靠同一個容差常數硬撐（實作細節見 `_parse_one_table` 呼叫
+`_column_index` 前的 `len(cleaned) == len(base_columns)` 判斷）。
+
 ## 疑問句變體：整列排除、不進槽位（`question_variant`）
 
 課本用重複的「……」（U+2026 全形省略號，重複多次，不是句點）後接
@@ -154,26 +176,75 @@ one_drill` 用 `_ITEM_RE` 掃出「每個 `N)` 標籤＋其後到下一個箭頭
 `_naive_concat` 在還沒觀察到的其他課別又踩到某種目前未知的錯位，只要
 `N)` 標籤本身沒被拆散，排序這一步仍然能救回正確順序。
 
-## `例` 前導區塊：可能有多個範例（`例１：`／`例２：`），簡化為以「／」
-串接
+**誠實記錄這條防禦線目前的驗證狀態**：對全 15 課、107 筆變換題逐一比
+對過「依 `_ITEM_RE` 掃描到的先後順序」跟「依擷取到的整數 `N` 排序」
+兩者的 `items` 結果，兩者在現有語料裡**從未出現過差異**（複審移除這
+行排序、重跑全部測試，142 個測試依然全綠）。換句話說，這個排序步驟
+目前是**防禦性**的——現有課本資料裡，`_naive_concat` 依 fragment x
+序重建出來的字串，`N)` 標籤本身出現的先後順序恰好一律等於數字大小順
+序，`01.pdf` 練習Ｂ-3 那種「編號跟內容錯開」的情形（見上方）目前從未
+真的讓兩個以上的 `N)` 標籤本身彼此顛倒。這不代表這行排序是多餘的：
+它是規格明文要求的不變量，且只要未來有一課的版面把 `N)` 標籤本身的
+掃描順序也弄反，這行排序就會是唯一的救援機制——只是目前的驗證證據
+告訴我們「這件事還沒發生過」，不是「這件事不可能發生」，這裡如實記
+錄兩者的差別，不誇大這條防禦線目前抓到的真實案例數量（目前是 0）。
+
+## `例` 前導區塊：可能有多個範例（`例１：`／`例２：`），簡化為以
+`_MULTI_EXAMPLE_SEP` 串接
 
 07 課練習Ｂ-7、01 課練習Ｂ-4 都是「一題兩個範例＋各自的延續答案」的
 格式（`例１：……→……` 換行接「……」延續答案，然後換行又是`例２：`）。
 任務介面（`{"model_cue", "model_answer", ...}`）只有單一欄位可以承載
-範例，無法無損表達「這一題其實有兩組範例」。這裡選擇用全形「／」把多
-組範例的 cue／answer 分別串接成一個字串（保留全部內容，不是丟棄第二
-組），並在此明確記錄這是簡化，不是遺漏——跟 `sentences.py`「問題區段
-的已知簡化」是同一種處理原則：介面必須維持穩定，資訊改用可見、明確
-記錄的方式保留，不是靜默流失。
+範例，無法無損表達「這一題其實有兩組範例」。這裡選擇把多組範例的
+cue／answer 分別串接成一個字串（保留全部內容，不是丟棄第二組），並在
+此明確記錄這是簡化，不是遺漏——跟 `sentences.py`「問題區段的已知簡
+化」是同一種處理原則：介面必須維持穩定，資訊改用可見、明確記錄的方
+式保留，不是靜默流失。
+
+**分隔符不能用全形斜線「／」**（第一版的選擇）——複審修正 cue／answer
+分界 bug 之後，額外新增的「cue 是否落在正確欄位」獨立檢查（見下方
+「cue／answer 分界」一節與 task-9-report.md）在全 15 課逐課掃描時揪
+出：08 課練習Ｂ-5 的 cue **本身**就真的包含全形斜線（課本原文「花を
+買いました／きれい」——「做了什麼」跟「什麼樣的」兩個真實片語，用斜
+線連接，是課本自己的標點，不是本模組加的分隔符）。若拿同一個字元當
+「這裡有幾組範例」的分隔符，`model_cue.split("／")` 會把這種單一 cue
+誤切成兩截，下游完全無法正確還原「這一題有幾組範例」——內容沒有損
+毀，但**結構**被誤判，跟複審一開始抓到的「內容在不在 vs. 內容在對的
+欄位裡」是同一類問題，只是這次是我自己新增的獨立檢查在導入這個修正
+的過程中自己抓到的，不是複審報告原文列出的項目。改用
+`_MULTI_EXAMPLE_SEP = "｜"`（全形直線，U+FF5C）：全 15 課練習Ｂ 逐字
+掃描過，這個字元從未出現在任何課本原文內容裡。
 
 ## `……` 延續行：courseware 排版慣例，不是句子的一部分
 
 例句的答案有時因為版面寬度印不下，換行後在行首印一個「……」（見 07
 課練習Ｂ-2「……「パソコン」です。」）。這裡在合併多行前導文字之前，
-先把每一行行首的「……」去掉（`_strip_continuation_marker`），視為純
-排版標記，不當作句子內容保留——全 15 課目前看到的每一個「……」出現
-位置都恰好是「這一行是接續前一行答案」的角色，從未出現在句子中間當
-作真正的語意省略號使用（若未來發現反例，這裡的假設需要重新檢視）。
+先把每一行行首的「……」去掉（`_line_tokens`），視為純排版標記，不當
+作句子內容保留——全 15 課目前看到的每一個「……」出現位置都恰好是
+「這一行是接續前一行答案」的角色，從未出現在句子中間當作真正的語意
+省略號使用。**這個假設已經用一個真實反例交叉核對過，不是空話**：15
+課練習Ｂ-3「すみません。 ちょっと……。」的「……」是句子**中間**真正
+的日文語尾委婉省略（口語裡「不太方便」的婉拒），不是續行標記——這個
+字串完全沒有出現在任何一行的**行首**，複審用「對照算繪頁面比對語意
+完整性」找出這個字串正確保留在 `model_answer` 裡（見下方修正記錄），
+證實 `_CONTINUATION_RE`「只吃行首」這個設計沒有誤傷這個真實反例。
+
+## cue／answer 分界：以 fragment 邊界為準，不是「→」字元的字串位置
+（複審發現的資料損毀，已修正）
+
+第一版實作把整段前導文字（跨行）先串成一個字串，再用
+`str.partition("→")` 找箭頭切 cue／answer。複審用「對照算繪頁面比對
+cue／answer 語意完整性」這個跟 Task 9 原本「逐字回查」完全不同的角
+度，在全 15 課、107 筆變換題裡揪出 8 筆受害：`str.partition` 假設
+「→」的字串位置就是語意上 cue 跟 answer 的分界，但至少兩種課本排版
+變體會讓這個假設不成立（06 課練習Ｂ-7「沒有箭頭」、10／11／13／14
+課多筆「箭頭印在示範問句之後、不是 cue 跟示範問句之間」）。詳細根因
+與修正後的規則見 `_split_cue_answer` 的 docstring。**這個 bug 之所以
+穿過原本「逐字回查」的檢查**：合併錯誤並不會讓內容從原始文字裡消
+失——cue 跟 answer 的內容都還在，只是被分進了錯的欄位；逐字回查只驗
+證「內容在不在」，不驗證「內容在對的欄位裡」，因此回報「0 個問
+題」。修正後新增的檢查（見 `parse_drills` 的批次驗證腳本，摘要見
+task-9-report.md）改為同時驗證兩者。
 """
 import re
 from typing import Dict, List, Optional, Tuple
@@ -197,6 +268,45 @@ _FRAGMENT_GAP_THRESHOLD = 5.0
 # 「か」，可選再接一個句點，且必須錨定在整列文字的結尾（見模組說明
 # 「疑問句變體」）。
 _QUESTION_VARIANT_RE = re.compile(r"…+か。?\s*$")
+
+# 尾端純省略號（沒有接「か」）——課本另一種用法：省略號不一定是「這裡
+# 開始都跟基底句一樣、改成疑問形」的結尾標記（`_QUESTION_VARIANT_RE`
+# 專門處理那一種，一定帶「か」），也可能只是單純「這一欄（或這一欄的
+# 尾巴）不變，用點代替重印一次基底句原文」的視覺速記，不接「か」：
+#
+# - 04 課練習Ａ-5「あなたは …… なんじ ………………か。」：「……」自成一
+#   個欄位（欄位裡只有點，沒有其他字），落在「毎朝」的欄位，代表這欄
+#   沿用基底句原文；真正的結尾標記是後面帶「か。」的那一段。
+# - 13 課練習Ａ-4「あなたは…… なにを し …………か。」：「……」沒有自
+#   成一欄，是**緊接在「あなたは」後面、同一個欄位**裡的尾巴（這一欄
+#   跟基底句排版時中間沒有留白，兩段文字被存成同一個 fragment）——
+#   若不處理，「……」會原封不動跟著「あなたは」一起被當成這一欄的候
+#   選詞內容，重建出「あなたは……なにをしに行きますか。」這種殘留裝
+#   飾符號的錯誤句子。
+#
+# 兩種情形的共通處理：只要一個欄位的文字**尾端**是一段沒有接「か」的
+# 省略號，一律把這段尾端省略號去掉，剩下的文字（可能是空字串，也可能
+# 像「あなたは」這樣還有實質內容）才是這一欄真正的候選詞。全 15 課逐
+# 課掃描過，這種「尾端純省略號、沒有か」的情形只出現在 04、11、13 三
+# 課，共 4 處，這裡明確記錄樣本數不大，但已對每一處都核對過語意（見
+# `_parse_one_table` 呼叫處）。
+_TRAILING_BARE_ELLIPSIS_RE = re.compile(r"…+$")
+
+# 整列以省略號開頭、但不是疑問句變體（不符合 `_QUESTION_VARIANT_RE`，
+# 即結尾沒有「か」）——複審後額外發現的第三種課本用法：12 課練習Ａ-5
+# 「……  サッカー の ほうが おもしろいです。」是「示範答案」（呼應
+# `練習Ｂ` 的「……延續行」慣例，只是這次出現在 `練習Ａ` 的代入表裡），
+# 不是這張表的替代候選詞。若不排除，這一整列會被當成普通候選列處理，
+# 「……」跟示範答案本身的文字會原封不動混進槽位候選詞清單（複審實測
+# L12-A5 因此把 `slots["S"]` 污染成
+# `["サッカー","ほん","しごと","…… サッカー","ほん","しごと"]`，
+# `rows` 的配對也完全錯亂）。這一整列直接排除、不計入 `variant_rows`
+# 也不計入 `rows`——跟疑問句變體被整列排除、另存 `question_variant`
+# 是類似的處理精神，但這裡沒有對應的介面欄位可以承接（任務介面
+# `parse_pattern_tables` 只定義了 `question_variant`，沒有「範例答
+# 案」欄位），所以只排除，不另外保留內容。全 15 課逐課掃描過，這種
+# 「整列以省略號開頭、結尾沒有か」的情形只出現在 12 課這一處。
+_SAMPLE_ANSWER_ROW_RE = re.compile(r"^\s*…+")
 
 # 欄位歸屬容差（pt）。見模組說明「槽位偵測」：欄位歸屬必須是「這個 x
 # 落在哪個欄位的管轄範圍內」（區間式），不能單純「離哪個欄位最近」
@@ -303,7 +413,10 @@ def _column_index(x: float, base_xs: List[float]) -> int:
 
 
 def _reconstruct_question(
-    base_texts: List[str], row_values: Dict[int, str], ellipsis_start_idx: Optional[int]
+    base_texts: List[str],
+    row_values: Dict[int, str],
+    ellipsis_start_idx: Optional[int],
+    slot_idxs: List[int],
 ) -> Optional[str]:
     """盡力還原疑問句變體的完整句子（見模組說明「疑問句變體」）。
 
@@ -325,13 +438,45 @@ def _reconstruct_question(
     輯重算 07 課練習Ａ-4／5，分別得到「あなたはだれに電話をかけます
     か。」「あなたはだれに 本を借りましたか。」——文法通順、語意正確。
 
+    ## 一個疑問詞可能整體取代好幾個槽位（複審發現的第二個回歸，已修正）
+
+    10 課練習Ａ-5 是兩個槽位：`S`（`えきの`／`ぎんこうの`／`はなやと`）
+    緊接著 `T`（`ちかく`／`となり`／`スーパーの あいだ`），基底句是
+    「本屋は{S}{T}に あります。」。疑問句變體整列只有「どこ」一個詞
+    （落在 `S` 的欄位 x）＋省略號（落在 `に` 的欄位 x，`T` 欄本身完全
+    沒有出現在這一列裡）。第一版實作對「沒有拿到候選詞的欄位」一律
+    fallback 回基底句原文，`T` 欄因此照抄基底值「ちかく」，重建出
+    「本屋はどこちかくにありますか。」——文法錯誤，`どこ` 後面多黏了
+    一個不該存在的「ちかく」。
+
+    真正的語意是：「どこ」不是只取代 `S`，而是取代「`S` 加 `T` 這整個
+    複合片語」（「えきの ちかく」＝「車站附近」整組被問成「どこ」＝
+    「哪裡」），`T` 欄根本不該再輸出任何文字。修正後的規則：**從第一
+    個真的拿到候選詞的欄位開始，之後任何屬於槽位（`slot_idxs`）但這一
+    列沒有提供候選詞的欄位，直接跳過、不印任何文字**（不是 fallback
+    回基底值）——只有非槽位的固定欄位才會 fallback 回基底句原文（固
+    定文字本來就不是被問的對象，理當照印）。用這個修正後的規則重算
+    10 課練習Ａ-5，得到「本屋はどこにありますか。」——文法通順、語意
+    正確。
+
     沒有任何驗收測試鎖定這個字串的精確內容（見模組說明），這裡誠實記
-    錄：這個函式追求「語意正確」，已用上述兩個實例交叉核對過，但沒有
-    對全 15 課逐一驗證過每一種疑問句變體的排版變體。
+    錄：這個函式追求「語意正確」，已用多個實例（07 課 A1/A4/A5、10 課
+    A5）交叉核對過，但沒有對全 15 課逐一驗證過每一種疑問句變體的排版
+    變體。
     """
     if ellipsis_start_idx is None:
         return None
-    pieces = [row_values.get(idx, base_texts[idx]) for idx in range(ellipsis_start_idx)]
+    slot_idx_set = set(slot_idxs)
+    pieces: List[str] = []
+    replacing = False
+    for idx in range(ellipsis_start_idx):
+        if idx in row_values:
+            pieces.append(row_values[idx])
+            replacing = True
+        elif replacing and idx in slot_idx_set:
+            continue  # 被前面的疑問詞整體取代，見上方說明，不印任何文字
+        else:
+            pieces.append(base_texts[idx])
     tail_texts = list(base_texts[ellipsis_start_idx + 1:])
     head = row_values.get(ellipsis_start_idx, base_texts[ellipsis_start_idx])
     suffix = "".join([head] + tail_texts)
@@ -358,10 +503,27 @@ def _parse_one_table(lesson: int, table_no: int, lines: List[Line]) -> Dict:
     question_ellipsis_idx: Optional[int] = None
     question_row_values: Dict[int, str] = {}
 
+    in_sample_answer_block = False
     for line in lines[1:]:
         raw = "".join(f.text for f in line.frags)
         segments = _fine_segments(line)
         if not segments:
+            continue
+
+        if _SAMPLE_ANSWER_ROW_RE.match(raw) and not _QUESTION_VARIANT_RE.search(raw):
+            # 見 `_SAMPLE_ANSWER_ROW_RE` 說明：示範答案列，整列排除，
+            # 不計入槽位候選詞也不計入 `rows`。12 課練習Ａ-5 實測這個
+            # 示範答案本身可能橫跨好幾列（第一列印「……サッカーの
+            # ほうがおもしろいです。」，後面接著只印「ほん」「しごと」
+            # ——沿用 `練習Ａ` 一貫的「只印有改變的部分」慣例，這次改
+            # 的是示範答案，不是基底句），全部屬於同一個示範答案區
+            # 塊。一旦看到這個標記，這張表接下來的所有列都視為這個區
+            # 塊的延續，全部排除——全 15 課逐課掃描過，示範答案區塊
+            # 一定出現在表格最後（真正的候選詞列一定先印完），還沒遇
+            # 過這個區塊後面又接著真正候選詞列的反例。
+            in_sample_answer_block = True
+            continue
+        if in_sample_answer_block:
             continue
 
         if _QUESTION_VARIANT_RE.search(raw):
@@ -378,23 +540,61 @@ def _parse_one_table(lesson: int, table_no: int, lines: List[Line]) -> Dict:
                             (row_values.get(idx, "") + " " + prefix).strip()
                         )
                 else:
-                    row_values[idx] = _collapse_ws(
-                        (row_values.get(idx, "") + " " + text).strip()
-                    )
+                    # 見 `_TRAILING_BARE_ELLIPSIS_RE` 說明：先去掉這個
+                    # 欄位文字尾端「沒有接か」的省略號（純裝飾，代表
+                    # 「這一欄／這一欄的尾巴沿用基底句原文」），剩下的
+                    # 才是真正的候選詞內容；若去掉後整段變空字串（欄位
+                    # 裡原本就只有省略號），略過、不寫入 row_values，
+                    # 讓 `_reconstruct_question` 自然 fallback 回基底句。
+                    stripped = _TRAILING_BARE_ELLIPSIS_RE.sub("", text).strip()
+                    if stripped:
+                        row_values[idx] = _collapse_ws(
+                            (row_values.get(idx, "") + " " + stripped).strip()
+                        )
             question_row_values = row_values
             question_ellipsis_idx = ellipsis_idx
             continue
 
-        row_values = {}
-        for x, text in segments:
-            idx = _column_index(x, base_xs) if base_xs else 0
-            row_values[idx] = _collapse_ws((row_values.get(idx, "") + " " + text).strip())
-        variant_rows.append(row_values)
+        # 「→」是課本在少數幾張表（06/08/12/13 課的動詞／形容詞變化對
+        # 照表）裡，對其中一列額外加印的裝飾用轉換箭頭（例如「たべ
+        # ます →たべましょう」），純粹是排版上的視覺提示，不是候選詞
+        # 內容本身的一部分——全 15 課逐課掃描過，這個字元從未真正屬於
+        # 任何一個候選詞（前後不是空白就是另一個候選詞邊界）。不濾掉
+        # 的話，這個字元會原封不動混進候選詞字串（複審實測：06 課練
+        # 習Ａ-5「たべます→たべましょう」這一列，T 欄候選詞因此變成
+        # 「ます →」而不是乾淨的「ます」）。獨立於欄位歸屬方式（下方
+        # 兩種都要套用），先把每個 segment 自己清乾淨、丟掉清乾淨後變
+        # 空的 segment（通常就是那個單獨自成一格的「→」本身）。
+        cleaned = [(x, text.replace("→", "").strip()) for x, text in segments]
+        cleaned = [(x, text) for x, text in cleaned if text]
 
-    if question_row_values or question_ellipsis_idx is not None:
-        question_variant = _reconstruct_question(
-            base_texts, question_row_values, question_ellipsis_idx
-        )
+        row_values = {}
+        if base_columns and len(cleaned) == len(base_columns):
+            # 依位置逐一對應，不看 x 座標——見模組說明「欄位偵測」跟
+            # `_COLUMN_TOLERANCE` 的取捨兩難：08 課練習Ａ-2「にぎやか
+            # です にぎやか じゃ ありません」這一列，第二個「にぎやか」
+            # 真實 x 落後參照欄位 13.8pt，超過 `_COLUMN_TOLERANCE`
+            # （10.0pt，為了不誤傷 07 課「フォーク」而不能再放大），用
+            # 區間比對會把它誤併回前一欄（「です にぎやか」）；但這一
+            # 列的 segment 數（5 個）剛好跟基底句欄位數（5 欄）完全相
+            # 等——這是「這一列每一欄都有給值，沒有省略任何欄位」的強
+            # 訊號，此時依印刷順序逐一對應，完全不需要猜 x 落在哪個區
+            # 間，兩種歧義（07 課「フォーク」需要小容差、08 課「にぎ
+            # やか」需要大容差）因此都不必再靠同一個容差常數硬撐。
+            #
+            # 這條規則不能無條件套用在所有列：07 課練習Ａ-1 的「イン
+            # ドネシア人 スプーンと フォーク」只有 3 個 segment（S 跟
+            # T 兩欄，不含「は」「で ごはんを 食べます。」這兩個沒被
+            # 替換的固定欄），跟基底句 4 欄對不上，這種「只碰到部分欄
+            # 位」的列，必須繼續用 x 座標判斷碰到的是哪幾欄，逐位置對
+            # 應在這裡完全不適用（見下面的 else 分支）。
+            for idx, (_x, text) in enumerate(cleaned):
+                row_values[idx] = _collapse_ws(text)
+        else:
+            for x, text in cleaned:
+                idx = _column_index(x, base_xs) if base_xs else 0
+                row_values[idx] = _collapse_ws((row_values.get(idx, "") + " " + text).strip())
+        variant_rows.append(row_values)
 
     # 只有「真的出現過跟基底句不同的候選詞」的欄位才算槽位——07 課練
     # 習Ａ-6 每一列都重印了完全相同的「ました。」在同一欄（idx3），這
@@ -402,6 +602,11 @@ def _parse_one_table(lesson: int, table_no: int, lines: List[Line]) -> Dict:
     # 換槽位。若只憑「有沒有被任何列碰到」判定槽位，會產生一個候選詞
     # 清單裡三個值都一樣的假槽位，`template` 因此少展現這欄本來是固
     # 定文字的事實。改成「該欄位至少有一列的值跟基底句不同」才算數。
+    #
+    # 這一步必須在 `_reconstruct_question` 之前算好：疑問句變體重建需
+    # 要知道哪些欄位是槽位（見該函式說明「一個疑問詞可能整體取代好幾
+    # 個槽位」），才能正確判斷「這個沒拿到候選詞的欄位，是該印基底句
+    # 原文的固定文字，還是該整個跳過的槽位」。
     slot_idxs = sorted({
         idx
         for row in variant_rows
@@ -416,6 +621,11 @@ def _parse_one_table(lesson: int, table_no: int, lines: List[Line]) -> Dict:
         # 變量失守，且下游代入練習完全無法使用）。退而求其次，把第一
         # 欄當成只有一個候選詞的槽位。
         slot_idxs = [0]
+
+    if question_row_values or question_ellipsis_idx is not None:
+        question_variant = _reconstruct_question(
+            base_texts, question_row_values, question_ellipsis_idx, slot_idxs
+        )
 
     slot_letters = {idx: _slot_letter(i) for i, idx in enumerate(slot_idxs)}
     slots: Dict[str, List[str]] = {slot_letters[idx]: [base_texts[idx]] for idx in slot_idxs}
@@ -479,6 +689,18 @@ def parse_pattern_tables(section: Section, lesson: int) -> List[Dict]:
 # 塊」），全形／半形冒號皆接受，數字與冒號前後容許空白。
 _EXAMPLE_RE = re.compile(r"例\s*\d*\s*[:：]")
 
+# 多範例（例１／例２）串接分隔符（見模組說明「例 前導區塊」）。**不能
+# 用全形斜線「／」**——複審後新增的獨立檢查（比對「cue 是否落在正確欄
+# 位」，見 task-9-report.md）發現 08 課練習Ｂ-5 的 cue 本身就真的包含
+# 全形斜線（課本原文「花を 買いました／きれい」，斜線是課本用來連接
+# 「做了什麼」跟「什麼樣的」兩個真實片語的標點，不是本模組加的分隔
+# 符）——如果拿同一個字元當多範例分隔符，`model_cue.split("／")` 會把
+# 這種單一 cue 誤切成兩截，讓下游完全無法正確還原「這一題有幾組範
+# 例」。改用「｜」（全形直線，U+FF5C）：全 15 課練習Ｂ 逐字掃描過，這
+# 個字元從未出現在任何課本原文內容裡，不會跟真實 cue／answer 內容衝
+# 突。
+_MULTI_EXAMPLE_SEP = "｜"
+
 # 小題編號：「N)」，捕捉數字本身、以及到下一個「→」（或字串結尾）之前
 # 的內容。不會跟 `_TABLE_START_RE`／drill 開頭的「N.」搞混，因為這裡
 # 認的是右括號，不是句點。
@@ -507,8 +729,103 @@ def _naive_concat(line: Line) -> str:
     return "".join(f.text for f in line.frags)
 
 
-def _strip_continuation_marker(text: str) -> str:
-    return _CONTINUATION_RE.sub("", text)
+# fragment 邊界標記，插在每個 fragment 的原始文字之間（見 `_line_
+# tokens`／`_parse_one_drill` 說明「cue／answer 分界：以 fragment 邊界
+# 為準，不是以「→」字元在字串裡的位置為準」）。選 `\x00`：不是任何合
+# 法字元編碼會解碼出來的字元（`fonts.decode_hex` 的目標字元集不含
+# NUL），不會跟課本真實內容混淆，之後也一定會在比對／輸出前整個移除。
+_FRAGMENT_SENTINEL = "\x00"
+
+
+def _line_tokens(line: Line) -> List[str]:
+    """把一行拆成逐 fragment 的原始文字清單（依 `line.frags` 既有 x
+    序，不套用任何插入規則，跟 `_naive_concat` 用同一套資料來源）。若
+    這一行整行文字（見模組說明「…… 延續行」）以「……」開頭，把這個續
+    行標記從**跨 fragment 的前綴**移除。
+
+    標記不保證落在第一個 fragment：10 課練習Ｂ-3 的續行是兩個
+    fragment `'   '`（純空白，courseware 排版留白）與
+    `'……かばんが  あります。'`（標記跟真正內容融合在同一個 fragment
+    裡）——標記其實在**第二個** fragment 的開頭。複審抓到這個案例：
+    第一版只檢查、移除第一個 fragment 的前導標記，這一行的空白
+    fragment 沒有標記可移除，真正帶標記的第二個 fragment完全沒被處
+    理，導致「……」原封不動留在 `model_answer` 裡（`L10-B3`／
+    `L11-B2` 皆受影響）。
+
+    修正：用 `_CONTINUATION_RE.match` 量出整行文字開頭要移除幾個字
+    元，再依序從每個 fragment 的開頭扣掉這個長度（可能跨過好幾個
+    fragment，例如這裡先扣光第一個純空白 fragment，再繼續扣進第二個
+    fragment 內部），確保不論標記落在第幾個 fragment，或是不是跟純空
+    白 fragment 混在一起，都能正確移除。"""
+    tokens = [f.text for f in line.frags]
+    match = _CONTINUATION_RE.match(_naive_concat(line))
+    if not match:
+        return tokens
+    remaining = match.end()
+    out: List[str] = []
+    for t in tokens:
+        if remaining <= 0:
+            out.append(t)
+        elif remaining >= len(t):
+            remaining -= len(t)
+            out.append("")
+        else:
+            out.append(t[remaining:])
+            remaining = 0
+    return out
+
+
+def _split_cue_answer(chunk: str) -> Tuple[str, str]:
+    """把一個「例」範例的內容（`_FRAGMENT_SENTINEL` 分隔的逐 fragment
+    片段）切成 `(cue, answer)`。
+
+    **cue／answer 分界：以 fragment 邊界為準，不是以「→」字元在字串
+    裡的位置為準**——複審抓到的臭蟲根因：原本的實作把整段前導文字先
+    串成一個字串，再用 `str.partition("→")` 找箭頭切 cue／answer。這
+    在課本排版把箭頭放在 cue 跟 answer 之間時（例如 07 課練習Ｂ-1
+    「ごはんを 食べます → はしで ごはんを 食べます。」）碰巧是對的，
+    但至少兩種排版變體會讓它失效：
+
+    1. **答案完全沒有箭頭**（06 課練習Ｂ-7「いっしょに 京都へ 行きま
+       せんか。」下一行「……ええ、行きましょう。」，這裡沒有任何
+       「→」）——`partition` 找不到分隔符，整段文字全部落入 cue，
+       answer 變空字串。
+    2. **箭頭印在 cue 與「示範問句」都結束之後，而不是兩者之間**（14
+       課練習Ｂ-7「カリナさんは 何を かいて いますか。」跟「花を か
+       いて います。」是**兩個各自獨立的 fragment**，「→」是緊接在
+       第二個 fragment 後面的**第三個** fragment，不是夾在兩者中
+       間；10 課練習Ｂ-3、11 課練習Ｂ-2、13 課練習Ｂ-4、14 課練習
+       Ｂ-4 都是同一種版面）——用字串位置切，會把「示範問句」整段
+       併入 cue，answer 只剩箭頭後面的殘餘空白，變成空字串。
+
+    這兩種情形的共通點：**cue 永遠就是「例：」標籤後面那一個
+    fragment 自己的內容**（課本排版上，cue 詞／片語跟緊接在後的示範
+    句／答案句一定是不同的 fragment，即使兩者之間完全沒有箭頭、或箭
+    頭被印到後面去了）。因此改成：先依 fragment 邊界（用
+    `_FRAGMENT_SENTINEL` 保留下來）取得「例：」後的第一個 fragment
+    當 cue；「→」字元本身只當作視覺雜訊整個移除，不再用它的字串位置
+    做任何切分。
+
+    **完全沒有箭頭時，cue 視為空字串，整段內容都算 answer**——跟課本
+    排版習慣一致（沒有可代換的「cue 詞」時，這一題本來就是「示範問句
+    ＋示範答案」的完整組合，例如 07 課練習Ｂ-2「例：→ これは 日本語
+    で 何ですか。」原本就已經是 cue="" 的處理方式，這裡只是把它推廣
+    到「連箭頭都沒有」的情形）。"""
+    tokens = chunk.split(_FRAGMENT_SENTINEL)
+    if "→" not in chunk:
+        return "", _collapse_ws(" ".join(tokens))
+    head = tokens[0]
+    if "→" in head:
+        # 防禦性分支：全 15 課實測「→」從未跟其他非空白文字融合在同一
+        # 個 fragment 裡（只跟裝飾用的全形/半形空白融合過），這裡沒有
+        # 真實案例觸發，只是避免萬一真的發生時，cue 被誤含箭頭字元。
+        cue_part, _, remainder = head.partition("→")
+        rest = [remainder] + tokens[1:]
+    else:
+        cue_part = head
+        rest = tokens[1:]
+    answer = _collapse_ws(" ".join(rest).replace("→", ""))
+    return _collapse_ws(cue_part), answer
 
 
 def _parse_one_drill(lesson: int, drill_no: int, lines: List[Line]) -> Dict:
@@ -523,20 +840,21 @@ def _parse_one_drill(lesson: int, drill_no: int, lines: List[Line]) -> Dict:
     preamble_lines = lines[:item_start]
     item_lines = lines[item_start:]
 
-    preamble_text = " ".join(
-        _strip_continuation_marker(_naive_concat(ln)) for ln in preamble_lines
-    )
+    preamble_tokens: List[str] = []
+    for ln in preamble_lines:
+        preamble_tokens.extend(_line_tokens(ln))
+    preamble_text = _FRAGMENT_SENTINEL.join(preamble_tokens)
     examples = _EXAMPLE_RE.split(preamble_text)[1:]  # [0] 是題號本身，丟棄
 
     cues: List[str] = []
     answers: List[str] = []
     for chunk in examples:
-        cue_raw, _, answer_raw = chunk.partition("→")
-        cues.append(_collapse_ws(cue_raw))
-        answers.append(_collapse_ws(answer_raw))
+        cue, answer = _split_cue_answer(chunk)
+        cues.append(cue)
+        answers.append(answer)
 
-    model_cue = "／".join(cues) if cues else ""
-    model_answer = "／".join(answers) if answers else ""
+    model_cue = _MULTI_EXAMPLE_SEP.join(cues) if cues else ""
+    model_answer = _MULTI_EXAMPLE_SEP.join(answers) if answers else ""
 
     item_text = " ".join(_naive_concat(ln) for ln in item_lines)
     found = [(int(n), _collapse_ws(content)) for n, content in _ITEM_RE.findall(item_text)]

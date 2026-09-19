@@ -484,19 +484,67 @@ def _redistribute_missing_slots(
 
     - **這一列前面的欄位收了 2 個以上的片段**（13 課「外国で
       はたらき」、14 課「日本語を べんきょうして」都是這種情形）：
-      把最後一個片段整個移到缺值的欄位，前面的欄位留下其餘片段。這是
-      單欄裡「其實塞了兩欄內容」最直接的訊號——真正只有一欄內容的
-      列，`_column_index` 不會意外多切出一個片段。
+      候選是把最後一個片段整個移到缺值的欄位。
     - **這一列前面的欄位只有 1 個片段**（15 課「けっこんして」單獨一
-      個片段，`_column_index` 誤判成 S）：改成比較這個片段的 x 到底
-      離哪個欄位的基底句參照 x 更近——`_column_index` 判斷「是否跨
-      欄」時只看與目前欄位的相對比例，沒有拿缺值欄位的參照位置直接
-      比較距離；這裡改成直接比距離，離缺值欄位更近就整個移過去。
+      個片段，`_column_index` 誤判成 S）：候選是把這個片段整個移到
+      缺值的欄位。
+
+    ## 第五輪回歸：segment 數量不能單獨當作「該不該分裂」的判準
+
+    01 課練習Ａ-4 第三列「あの　ひと」（單一 fragment，只靠 2 個半
+    形空白斷詞，前一欄收了 2 個片段）跟 13 課「外国で はたらき」是
+    同一種「前一欄 ≥2 個片段」訊號，但課本網底框核對的結果相反：
+    「外国で／はたらき」該分裂成 S／T 兩欄，「あの ひと」不該分
+    裂——它本身就是合法的雙字複合詞主詞，只有 S 一個真槽位。**光看
+    這一列前面欄位的 segment 數量，無法區分這兩種情形。**
+
+    改用更強的訊號：這個候選片段的 x，離「缺值欄位在其他列真正確立
+    的參照位置」有多近，而不是只跟這一列自己的來源欄位比。具體做
+    法：對每個欄位，收集**除了目前正在判斷的這一列以外**、所有列
+    （含 base 本身，用 `base_xs` 當種子）真正落在這個欄位的 x，取平
+    均當作這個欄位的參照 x（`_ref_x`，見下方）。刻意「排除自己」而
+    非「含自己」：含自己會讓候選片段把它目前所在欄位的平均值拉向自
+    己，天生偏向「維持現狀、不分裂」，在 01 課這個新反例上量出來的
+    間距只剩 6.1pt（不含自己時是穩定的方向一致，含自己則會被同一個
+    可疑片段污染成偽訊號）。
+
+    這個統一判準同時驗證過全部既有反例：13 課「はたらき」（該分裂，
+    間距 26.4pt vs 66.0pt）、14 課「べんきょうして」（該分裂，59.4pt
+    vs 85.8pt）、15 課「けっこんして」（該分裂，39.6pt vs 92.4pt）、
+    13 課「かいもの」（沒有可用的來源欄位，維持原樣留空）、01 課
+    「ひと」（不該分裂，46.5pt vs 52.6pt，S 較近）——原本各自的
+    「segment 數量」與「跟基底句單點比較」兩條規則，統一成同一條
+    「跟其他列確立的參照 x 比距離」判準。
+
+    **保守原則**：算出來的距離無法判斷（缺值欄位在其他列從未真正確
+    立過參照 x，只能退回 base_xs 這個 fallback，若兩邊距離仍然相
+    等），就不分裂，讓缺值欄位留空字串——下游驗證層（Task 12）會偵
+    測「代入列含空槽位」並排除該列，不會產生殘句題目；錯誤分裂則會
+    讓不屬於這個槽位的詞混進候選詞池，日後自由重組可能生成病句。
 
     這個函式**原地修改** `variant_rows`（每一列的 dict），不回傳新
     值——呼叫方在算完 `slot_idxs`之後、建立 `slots`／`rows` 之前呼
     叫一次即可。"""
-    for row_groups in variant_rows:
+    # 每個欄位的「已確立觀測」：`(來源列索引, x)`，用 `base_xs` 當種子
+    # （列索引用 -1，永遠不會被任何一列排除掉，保證 `_ref_x` 一定有
+    # 至少一個值可用）。這份清單在任何一列被本函式修正之前、一次算
+    # 完、全部列共用，不隨著修正過程重算——否則後面列的判斷會受前面
+    # 列的修正結果污染，變成順序相依。
+    established: Dict[int, List[Tuple[int, float]]] = {
+        idx: [(-1, x)] for idx, x in enumerate(base_xs)
+    }
+    for row_i, row_groups in enumerate(variant_rows):
+        for idx, segs in row_groups.items():
+            for x, _text in segs:
+                established.setdefault(idx, []).append((row_i, x))
+
+    def _ref_x(idx: int, exclude_row: int) -> float:
+        others = [x for (ri, x) in established.get(idx, []) if ri != exclude_row]
+        if not others:
+            others = [x for (_ri, x) in established.get(idx, [])]
+        return sum(others) / len(others)
+
+    for row_i, row_groups in enumerate(variant_rows):
         present = sorted(row_groups)
         for missing in slot_idxs:
             if missing in row_groups and row_groups[missing]:
@@ -507,14 +555,14 @@ def _redistribute_missing_slots(
                 continue
             src = max(candidates)
             segs = row_groups[src]
-            if len(segs) >= 2:
+            x, _text = segs[-1]
+            dist_src = abs(x - _ref_x(src, row_i))
+            dist_missing = abs(x - _ref_x(missing, row_i))
+            if dist_missing < dist_src:
                 row_groups[missing] = [segs[-1]]
                 row_groups[src] = segs[:-1]
-            else:
-                (x, _text) = segs[0]
-                if abs(x - base_xs[missing]) < abs(x - base_xs[src]):
-                    row_groups[missing] = segs
-                    row_groups[src] = []
+            # 否則保守不分裂（見上方「保守原則」）：缺值欄位留空，不
+            # 強行搬動不屬於它的片段。
             present = sorted(i for i in row_groups if row_groups.get(i))
 
 

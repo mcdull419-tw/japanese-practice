@@ -303,6 +303,31 @@ class TestColumnDriftRowPairingFixes(unittest.TestCase):
         vals = {n: t["slots"][n][i] for n, i in zip(names, row)}
         self.assertEqual(vals, {"S": "日本語を", "T": "べんきょうして"})
 
+    def test_l01_a4_single_column_compound_noun_not_split_across_slots(self):
+        """01 課練習Ａ-4 第三列「あの　ひと」（那個人）課本網底框核
+        對：這一列只有一個淺粉色網底框罩住整個「あの　ひと」，`も`／
+        `ブラジル人です。` 完全無網底——這張表其實只有 S 一個真槽
+        位，`あの ひと` 是單一欄位的完整主詞，不是「S=あの、
+        T=ひと」兩欄。舊版 `_redistribute_missing_slots` 只要「前一
+        欄有 ≥2 個 segment 且後一欄缺值」就無條件把最後一個 segment
+        整欄搬過去，這條判準跟 13 課「外国で／はたらき」該分裂的訊
+        號完全相同、但這裡不該分裂——純看 segment 數量分不出兩者。
+        分裂後 `T` 槽多了一個「ひと」候選詞，日後自由重組時可能跟其
+        他列的 S 值拼出「サントスさんはひと」這種病句，斷言 `slots`
+        本身內容，不只是斷言這一列自己代入出的句子通順（`あのひと`
+        巧合也讀得通，掩蓋了欄位歸屬本身是錯的這件事）。"""
+        t = self._table(1, "L01-A4")
+        names = sorted(t["slots"])
+        self.assertEqual(names, ["S", "T"])
+        self.assertNotIn("ひと", t["slots"]["T"],
+                          "「ひと」不該被拆進 T 槽，會污染候選詞池")
+        row = t["rows"][2]  # あの／ひと 那一列
+        vals = {n: t["slots"][n][i] for n, i in zip(names, row)}
+        self.assertEqual(vals["S"], "あの ひと",
+                          "「あの ひと」是單一欄位的完整主詞，不該被拆成兩欄")
+        self.assertEqual(vals["T"], "",
+                          "判斷不出來時寧可讓 T 欄留空，也不要塞進不屬於它的詞")
+
     def test_l08_a1_left_drift_does_not_merge_into_subject_slot(self):
         """08 課練習Ａ-1「おもしろい」（單一形容詞候選詞，真實 x 比參
         照欄位偏左 13.2pt）不該被誤併進主詞欄「ワット先生は」，導致

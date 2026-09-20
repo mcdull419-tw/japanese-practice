@@ -1,7 +1,13 @@
 """`validate_lesson` 不變式檢查測試。
 
-任務簡報 Step 1 的 10 個官方測試（`TestValidate`）原封不動保留，逐字
-比對簡報範例，確保介面契約不被實作細節帶偏。
+任務簡報 Step 1 的 10 個官方測試（`TestValidate`）原則上逐字保留，確
+保介面契約不被實作細節帶偏。**例外**：Task 13 複審回合對全 15 課實測
+後發現其中「文法缺少日文例句」一條在真實資料上是誤判（91 則裡有 9
+則課本原文本來就沒有圈號例句），依控制端指示調校判準後，`test_
+detects_grammar_without_japanese_example` 已改名為 `test_detects_
+grammar_with_marker_but_no_extracted_example` 並更新其壞資料以符合新
+判準——這是唯一偏離「原封不動」的一條，原因與调校細節見該測試與
+`tools/extract/validate.py` 模組說明。
 
 `TestExtraInvariants` 是全案複審清單額外要求納入的檢查——每一條都有
 「壞資料真的會被抓到」的斷言，不是只驗「好資料通過」（好資料通過測
@@ -73,10 +79,19 @@ class TestValidate(unittest.TestCase):
         bad["sentences"][0]["jp"] = "わたしは 手紙を 書きます"
         self.assertTrue(any("結尾" in p for p in validate_lesson(bad)))
 
-    def test_detects_grammar_without_japanese_example(self):
+    def test_detects_grammar_with_marker_but_no_extracted_example(self):
+        """Task 13 複審回合調校：原本「examples 為空就報問題」對全 15
+        課 91 則文法點中 9 則課本原文本來就沒有圈號例句的合法情形會誤
+        報（見 `TestExtraInvariants.
+        test_grammar_without_example_and_without_marker_is_not_flagged`）。
+        調校後的判準改成「examples 為空，且 body_zh 殘留圈號標記」才
+        報問題——這裡用殘留圈號模擬「標記存在但抽取失敗」的真實情
+        境，取代原本單純清空 examples 的測法。"""
         bad = copy.deepcopy(GOOD)
         bad["grammar"][0]["examples"] = []
-        self.assertTrue(any("例句" in p for p in validate_lesson(bad)))
+        bad["grammar"][0]["body_zh"] = "助詞「で」表示手段。①はしで 食べます。"
+        problems = validate_lesson(bad)
+        self.assertTrue(any("例句" in p for p in problems))
 
     def test_detects_empty_quotes_in_grammar(self):
         bad = copy.deepcopy(GOOD)
@@ -150,6 +165,67 @@ class TestExtraInvariants(unittest.TestCase):
     def test_good_data_has_no_circled_marks_false_positive(self):
         self.assertEqual(validate_lesson(copy.deepcopy(GOOD)), [])
 
+    def test_circled_mark_in_problem_section_is_not_flagged(self):
+        """Task 13 複審回合調校：`問題` 區段的圈號是課本印的選擇題選
+        項本身（例如『それは （ ①だれ、②何、③本 ） ですか。』），不
+        是抽取忘了剝除的標記殘留——全 15 課實測含圈號的句子共 6 句，
+        全部落在 `問題` 區段，其餘區段 0 句。這裡用 GOOD 的句子改成
+        `問題` 區段＋含圈號選項，驗證不再被誤報。"""
+        good = copy.deepcopy(GOOD)
+        good["sentences"][0]["section"] = "問題"
+        good["sentences"][0]["id"] = "L07-問題-1"
+        good["sentences"][0]["jp"] = (
+            "例：それは （ ①だれ、②何、③本 ） ですか。……本です。（②）"
+        )
+        good["sentences"][0]["ruby"] = []
+        self.assertEqual(validate_lesson(good), [])
+
+    def test_circled_mark_in_non_problem_section_is_still_flagged(self):
+        """調校只排除 `問題` 區段——`文型`（GOOD 本身的區段）含圈號依
+        然必須被攔下，證明排除範圍沒有被放大到其他區段（`test_
+        detects_circled_mark_left_in_sentence` 已涵蓋這個斷言，這裡另
+        外用『整句改成問題區段那種選擇題格式，但區段名仍是文型』的資
+        料再次交叉驗證，確認判準看的是 `section` 欄位本身，不是句子
+        內容長得像不像選擇題）。"""
+        bad = copy.deepcopy(GOOD)
+        bad["sentences"][0]["jp"] = (
+            "例：それは （ ①だれ、②何、③本 ） ですか。……本です。（②）"
+        )
+        problems = validate_lesson(bad)
+        self.assertTrue(any("圈號" in p for p in problems))
+
+    def test_missing_terminator_in_problem_section_is_not_flagged(self):
+        """Task 13 複審回合調校：`問題` 區段以「整題」為單位（控制端已
+        裁決維持，見 `sentences.py` 模組說明），多行參考素材合法地以
+        『（②）』這類選擇題答案代號結尾，不是缺句號。"""
+        good = copy.deepcopy(GOOD)
+        good["sentences"][0]["section"] = "問題"
+        good["sentences"][0]["id"] = "L07-問題-1"
+        good["sentences"][0]["jp"] = "1) ミラーさんは 何歳ですか。……28歳です。（②）"
+        good["sentences"][0]["ruby"] = []
+        self.assertEqual(validate_lesson(good), [])
+
+    def test_missing_terminator_in_non_problem_section_is_still_flagged(self):
+        """調校只排除 `問題` 區段——其餘區段（`文型`／`例文`／`会話`）
+        句尾仍須是「。？！」或「→」，`test_detects_sentence_without_
+        terminator`已涵蓋 GOOD 本身的區段，這裡再用『問題區段常見的
+        答案代號結尾格式，但區段名仍是文型』交叉驗證判準看的是
+        `section` 欄位。"""
+        bad = copy.deepcopy(GOOD)
+        bad["sentences"][0]["jp"] = "1) ミラーさんは 何歳ですか。……28歳です。（②）"
+        problems = validate_lesson(bad)
+        self.assertTrue(any("結尾" in p for p in problems))
+
+    def test_grammar_without_example_and_without_marker_is_not_flagged(self):
+        """Task 13 複審回合調校：91 則文法點中有 9 則課本原文本來就沒
+        有圈號例句（Task 10 已對照課本核對，內容都在 `body_zh` 裡，不
+        是遺漏）——`examples` 為空、`body_zh` 也不含圈號殘留時，不該
+        被標記。"""
+        good = copy.deepcopy(GOOD)
+        good["grammar"][0]["examples"] = []
+        good["grammar"][0]["body_zh"] = "這是一段純說明文字，課本原文沒有例句。"
+        self.assertEqual(validate_lesson(good), [])
+
     def test_detects_kanji_field_as_pure_punctuation(self):
         """漢字欄若被誤抽成純標點（例如把課本的頓號誤判成漢字內
         容），代表欄位歸屬壞掉，必須攔下。"""
@@ -165,14 +241,26 @@ class TestExtraInvariants(unittest.TestCase):
         good["vocab"][0]["kanji"] = None
         self.assertEqual(validate_lesson(good), [])
 
-    def test_detects_incomplete_usage(self):
-        """帶 `usage` 的單字，其 `usage.kana`／`usage.kanji` 皆須非
+    def test_detects_usage_missing_entirely(self):
+        """帶 `usage` 的單字，其 `usage.kana`／`usage.kanji` 不得兩側皆
         空——回歸第 7 課第 9 筆「かけます」的遺失缺陷（spec §13 明文
-        列出的既有回歸案例）。"""
+        列出的既有回歸案例：原型把整個 `［でんわを～］／［電話を～］`
+        子行弄丟，不是只丟其中一側）。"""
         bad = copy.deepcopy(GOOD)
-        bad["vocab"][0]["usage"] = {"kana": "でんわを～", "kanji": ""}
+        bad["vocab"][0]["usage"] = {"kana": "", "kanji": ""}
         problems = validate_lesson(bad)
         self.assertTrue(any("搭配" in p for p in problems))
+
+    def test_usage_with_only_kana_is_not_flagged(self):
+        """Task 13 複審回合調校：`usage` 只有假名、沒有漢字寫法是合法
+        狀態，不該被誤判成缺陷——課本第 6 課「吸います」的搭配用法
+        `［たばこを～］` 本來就只印假名（已用 `tools/render.swift`
+        算繪第 1 頁核對，同頁鄰近詞條「撮ります」的 usage 才兩側都
+        有），不是抽取遺漏了漢字寫法。舊版「兩側皆須非空」的檢查對
+        這種課本原文如此排版的詞彙會誤報。"""
+        good = copy.deepcopy(GOOD)
+        good["vocab"][0]["usage"] = {"kana": "たばこを～", "kanji": None}
+        self.assertEqual(validate_lesson(good), [])
 
     def test_usage_none_is_not_flagged(self):
         """大多數單字沒有搭配用法子行，`usage: None` 是常態，不該被

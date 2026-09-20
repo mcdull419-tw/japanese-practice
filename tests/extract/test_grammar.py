@@ -215,6 +215,21 @@ class TestGrammarCrossLessonSpotChecks(unittest.TestCase):
         self.assertEqual(ex["jp"], "わたしは  結婚して  います。")
         self.assertEqual(ex["zh"], "我結婚了。")
 
+    def test_l14_item3_te_form_exception_keeps_quoted_japanese(self):
+        """14.pdf 第 3 則「動詞て形」的內文行『例外：要注意「いきます」
+        的て形是「いって」』——いきます 的 fragment 錨點 x=144.00 小於
+        緊接在後的『例外：要注意「』的錨點 x=150.60，`_naive_concat`
+        依既有 x 序直接串接會把 いきます 誤放到句首、引號中間變空
+        （`「」`）。這是 Task 13 複審回合發現的真缺陷（見 grammar.py
+        模組說明「內文改用 Line.text()」），這裡鎖定具體字串防止回
+        歸。"""
+        _section, _frags, items = _grammar_items(14)
+        it = [i for i in items if i["no"] == 3][0]
+        self.assertIn(
+            "例外：要注意「いきます」的て形是「いって」", it["body_zh"]
+        )
+        self.assertNotIn("「」", it["body_zh"])
+
     def test_l06_bare_examples_without_circled_marker_land_in_body_not_lost(self):
         """06.pdf 第２則「名詞を します」底下的例句（「サッカーを
         します。踢足球」等）沒有印圈號數字，不符合本模組『例句』的判
@@ -302,6 +317,19 @@ class TestGrammarAllLessonsContentPreservation(unittest.TestCase):
                             "第 %d 課第 %d 則例句 zh 殘留圈號 %r：%r"
                             % (lesson, it["no"], c, e),
                         )
+
+    def test_no_empty_quotes_in_any_body_zh(self):
+        """角度四：全 15 課 `文法` 的 `body_zh` 都不得出現空引號
+        `「」`——那是引號內日文被誤放到引號外的指紋（14.pdf 第 3 則
+        「動詞て形」曾經出現的真缺陷，見 grammar.py 模組說明），驗收
+        條件明確要求全 15 課這個數字是 0，不是只鎖 14.pdf 一課。"""
+        for lesson, (_section, _frags, items) in self.data.items():
+            for it in items:
+                self.assertNotIn(
+                    "「」", it["body_zh"],
+                    "第 %d 課第 %d 則 body_zh 出現空引號：%r"
+                    % (lesson, it["no"], it["body_zh"]),
+                )
 
     def test_every_example_has_non_empty_japanese(self):
         """所有解析出來的例句，日文欄位不得為空——空的日文欄位代表日

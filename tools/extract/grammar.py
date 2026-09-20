@@ -16,31 +16,38 @@ fragment 整批被丟棄。這個缺陷已經在上游 `fragments.py`（Task 7 �
 fragment 依字型過濾，日文與中文 fragment 一律保留，只依座標（x 排序、
 縮排層級）決定歸局。
 
-## 標題／內文：直接依 fragment 既有的 x 序串接，不套用 `Line.text()`
+## 標題用 `_naive_concat`，內文用 `Line.text()`——兩者角色不同，各自
+## 選用不會犯錯的那一個
 
 `layout.Line._build_line` 已把同一行的 fragment 依 x 由小到大排序
-（`line.frags`）。日文夾在中文引號中間（例如「助詞「で」表示手段」）
-在這批資料裡，都是**三個各自獨立、彼此不重疊、依 x 遞增排列**的
-fragment（「助詞「」」「で」「」表示...」），單純依 `line.frags` 既有
-順序串接文字（`_naive_concat`）就能正確還原，不需要 `Line.text()` 的
-字元級「插入 vs. 原子性」判定。
+（`line.frags`）。**標題**行維持依既有順序串接（`_naive_concat`）：
+07.pdf 第 5 點標題「もう〜ました　動詞」的原始 fragment 是
+`'もう ました'`（cp932，錨點 x=67.2）＋`'動'`／`'詞'`（gb18030，錨點
+x=100.2／110.7）。`char_width` 估計「もう ました」的估計跨距達到
+x≈131（半形空白估計成 0.5 倍字級，但這裡的實際字距比估計值窄），導致
+`layout.py` 的插入判定誤判「動」的錨點（100.2）落在「もう ました」跨
+距內部，把它插入字串中間，錯誤產出「もう ま動詞した」——這正是
+`patterns.py`「練習Ｂ 絕對不能用 `Line.text()`」教訓的又一個真實案
+例。改用 `_naive_concat` 後，這一行正確還原成「もう ました動詞」。
 
-**這裡刻意不用 `Line.text()`／`Line.cells()`**：07.pdf 第 5 點標題
-「もう〜ました　動詞」的原始 fragment 是 `'もう ました'`（cp932，錨點
-x=67.2）＋`'動'`／`'詞'`（gb18030，錨點 x=100.2／110.7）。`char_width`
-估計「もう ました」的估計跨距達到 x≈131（半形空白估計成 0.5 倍字級，
-但這裡的實際字距比估計值窄），導致 `layout.py` 的插入判定誤判「動」
-的錨點（100.2）落在「もう ました」跨距內部，把它插入字串中間，錯誤
-產出「もう ま動詞した」——這正是 `patterns.py`「練習Ｂ 絕對不能用
-`Line.text()`」教訓的又一個真實案例，同一根因（`char_width` 對字元
-間距的估計與實際印刷有落差）在不同區段各自觸發一次。改用
-`_naive_concat`（依既有 fragment 順序直接串接，不做任何字元級重排）
-後，這一行正確還原成「もう ました動詞」（無重排問題，見下方驗證）。
+**內文（`body_zh`）改用 `Line.text()`**（Task 13 複審回合修正）：舊版
+全內文也套用 `_naive_concat`，對 14.pdf 第 1 則「例外：要注意「いきま
+す」的て形是「いって」」這一行輸出錯誤結果——`いきます` 的 fragment
+錨點 x=144.00 小於緊接在後的「例外：要注意「」的錨點 x=150.60，`char_
+width` 對 `いきます` 估計出的跨距（144.0~203.4）剛好涵蓋「例外：要注
+意「」的起點，naive 依既有 x 序直接串接會把 `いきます` 誤放到句首、
+引號中間變空（`「」`），這正是本模組要避免重犯的「日文從引號裡消失」
+缺陷的變體：這次不是整批日文消失，是被插入位置的估計錯誤，錯放到句
+外。`Line.text()` 的字元級插入判定正確識別「例外：要注意「」的錨點落
+在 `いきます` 估計跨距內部，把它插入 `いきます` 自身字元之間，正確還
+原成「例外：要注意「いきます」的て形是「いって」」（已用
+`tools/render.swift` 算繪 14.pdf p.8 核對）。08.pdf 同一頁另有兩處同
+類案例（な形容詞說明句、「1) 2)」分項列舉句）也已核對 `Line.text()`
+的重排結果與算繪版面吻合，一併受益於這次修正。
 
-全 15 課「精確等於某個區段名」以外的 `文法` 內容，均已逐課核對過
-`_naive_concat` 與 `Line.text()` 的輸出差異：僅此一處（07.pdf 第 5
-點標題）不同，其餘完全一致——`_naive_concat` 在此語料下是安全的選
-擇，也避免了 `Line.text()` 的插入誤判風險。
+標題行是唯一必須維持 `_naive_concat` 的例外——這正是為什麼本模組對
+「標題」與「內文」兩種角色刻意選用不同的重建函式，而不是整個模組二
+選一。
 
 ## 版面縮排層級：辨識文法點的四種角色
 
@@ -303,6 +310,10 @@ def parse_grammar(section: Section, all_frags: List[Fragment]) -> List[Dict]:
 
         m = _TITLE_RE.match(stripped)
         if m:
+            # 標題刻意繼續用 `_naive_concat`／`stripped`，不套用
+            # `line.text()`——見模組說明「標題／內文：直接依 fragment
+            # 既有的 x 序串接」（07.pdf 第 5 點標題「もう ました動詞」
+            # 是唯一一個 `Line.text()` 插入判定會誤判的已知案例）。
             if cur is not None:
                 items.append(cur.finalize())
             no = int(m.group(1).translate(_FULLWIDTH_DIGITS))
@@ -318,15 +329,26 @@ def parse_grammar(section: Section, all_frags: List[Fragment]) -> List[Dict]:
             cur.start_example(x0, frags)
             continue
 
+        # 內文（含替代形註記）改用 `line.text()` 而非 `_naive_concat`：
+        # 課本會把日文詞插在中文說明的字元之間（例如 14.pdf 第 1 則
+        # 「例外：要注意「いきます」的て形是「いって」」——いきます 的
+        # fragment 錨點 x=144.00 小於「例外：要注意「」的 x=150.60，依
+        # fragment 既有 x 序直接串接會把 いきます 抽到句首、引號變空。
+        # `line.text()` 的字元級插入判定（見 `layout.py`）能正確處理這
+        # 種情形，且已用全 15 課逐課核對，`_naive_concat` 與
+        # `line.text()` 在「內文」角色只有這裡（及同課本頁 08.pdf 兩處
+        # 同類案例）不同，`line.text()` 一律比較貼近算繪出來的實際版
+        # 面。標題行仍是唯一必須維持 `_naive_concat` 的例外（見上）。
+        line_text = line.text()
         if _ALT_ANNOTATION_RE.match(stripped):
-            cur.add_body(text)
+            cur.add_body(line_text)
             continue
 
         if cur.is_continuation_x(x0):
             cur.continue_example(frags)
             continue
 
-        cur.add_body(text)
+        cur.add_body(line_text)
 
     if cur is not None:
         items.append(cur.finalize())

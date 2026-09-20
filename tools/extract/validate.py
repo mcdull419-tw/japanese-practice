@@ -84,6 +84,12 @@ _TERMINATORS = "。？！"
 # 容，殘留代表抽取時忘了剝除。
 _CIRCLED_MARK_RE = re.compile("[①-⑳]")
 
+# `sentences.py` 的區段名稱之一：`問題`（選擇題／代換題參考素材）。控
+# 制端已裁決該區段維持「整題」粗顆粒度（不拆子項），見模組說明「`問
+# 題` 區段的兩個誤判」——句尾終止符檢查與圈號殘留檢查都不適用於這個
+# 區段，其餘區段（`文型`／`例文`／`会話`）不受影響。
+_PROBLEM_SECTION = "問題"
+
 # 文法內文不得出現的空引號。
 _EMPTY_QUOTE_RE = re.compile("「」")
 
@@ -165,9 +171,20 @@ def _check_vocab(vocab: List[Dict], problems: List[str]) -> None:
             problems.append("單字「%s」漢字欄為純標點：%r" % (label, kanji))
         usage = v.get("usage")
         if usage is not None:
-            if not (usage.get("kana") or "").strip() or not (usage.get("kanji") or "").strip():
+            usage_kana = (usage.get("kana") or "").strip()
+            usage_kanji = (usage.get("kanji") or "").strip()
+            if not usage_kana and not usage_kanji:
+                # 兩側都空才是缺陷（真的什麼都沒抽到）。只有一側非空是
+                # 合法狀態：課本印刷的搭配用法本來就常常只給假名（例如
+                # 第 6 課「吸います」的「［たばこを～］」只印假名，
+                # `tabako`〔煙草〕這個漢字寫法課本原文根本沒印——已用
+                # `tools/render.swift` 算繪第 1 頁核對，同頁鄰近詞條
+                # 「撮ります」「会います」的 usage 才兩側都有），或詞
+                # 彙本身就沒有漢字寫法（第 12 課「いい」`kanji` 欄本身
+                # 就是 `None`，其 usage 沒有漢字是同一個原因的自然結
+                # 果，不該用更嚴格的標準要求 usage 比詞彙本身還完整）。
                 problems.append(
-                    "單字「%s」的搭配用法（usage）假名或漢字缺漏：%r" % (label, usage)
+                    "單字「%s」的搭配用法（usage）假名與漢字皆缺漏：%r" % (label, usage)
                 )
 
 
@@ -175,11 +192,21 @@ def _check_sentences(sentences: List[Dict], problems: List[str]) -> None:
     for s in sentences:
         sid = s.get("id", "?")
         jp = s.get("jp") or ""
-        text = jp.rstrip()
-        if text and text[-1] not in _TERMINATORS and not text.endswith("→"):
-            problems.append("句子 %s 結尾不是「。？！」或「→」：%r" % (sid, jp))
-        if _CIRCLED_MARK_RE.search(jp):
-            problems.append("句子 %s 的 jp 殘留課本圈號標記：%r" % (sid, jp))
+        section = s.get("section")
+        if section != _PROBLEM_SECTION:
+            # `問題` 區段的句尾終止符檢查與圈號殘留檢查都不適用（見模組
+            # 說明「`問題` 區段的兩個誤判」）：`sentences.py` 對 `問題`
+            # 刻意採「整題」而非「每個子項」的粗顆粒度（控制端已裁決維
+            # 持，見模組說明），整題內容合法地以「（②）」這類選擇題答
+            # 案代號結尾，也合法地含有課本印的 `①②③` 選擇題選項本身
+            # ——那些不是抽取時忘了剝除的標記殘留，是題目原文的一部
+            # 分。全 15 課實測：含圈號的句子共 6 句，全部落在 `問題`
+            # 區段，其餘區段 0 句。
+            text = jp.rstrip()
+            if text and text[-1] not in _TERMINATORS and not text.endswith("→"):
+                problems.append("句子 %s 結尾不是「。？！」或「→」：%r" % (sid, jp))
+            if _CIRCLED_MARK_RE.search(jp):
+                problems.append("句子 %s 的 jp 殘留課本圈號標記：%r" % (sid, jp))
         for ruby in s.get("ruby") or []:
             base = ruby.get("base", "")
             at = ruby.get("at")
@@ -236,8 +263,6 @@ def _check_grammar(grammar: List[Dict], problems: List[str]) -> None:
         title = g.get("title", "?")
         examples = g.get("examples") or []
         has_japanese_example = any((ex.get("jp") or "").strip() for ex in examples)
-        if not has_japanese_example:
-            problems.append("文法「%s」缺少至少一句日文例句" % title)
         for ex in examples:
             jp = ex.get("jp") or ""
             if _CIRCLED_MARK_RE.search(jp):
@@ -245,6 +270,17 @@ def _check_grammar(grammar: List[Dict], problems: List[str]) -> None:
         body_zh = g.get("body_zh") or ""
         if _EMPTY_QUOTE_RE.search(body_zh):
             problems.append("文法「%s」內文出現空引號「」：%r" % (title, body_zh))
+        if not has_japanese_example and _CIRCLED_MARK_RE.search(body_zh):
+            # 「缺少日文例句」本身不是缺陷——全 15 課 91 則文法點裡有 9
+            # 則課本原文就沒有圈號例句（Task 10 已對照課本核對，內容都
+            # 在 `body_zh` 裡）。但若 `body_zh` 殘留圈號標記字元，代表
+            # 這一則原本有例句標記，卻沒有任何一句被解析成功抽出
+            # ——那才是真正需要攔的情形（標記存在但抽取失敗），比單純
+            # 「examples 是空的」精確：全 15 課實測那 9 則的 `body_zh`
+            # 均不含圈號殘留，這個檢查對它們不會誤報。
+            problems.append(
+                "文法「%s」有圈號例句標記卻未抽出任何例句：%r" % (title, body_zh)
+            )
 
 
 def _check_misdecoding(data: Dict, problems: List[str]) -> None:

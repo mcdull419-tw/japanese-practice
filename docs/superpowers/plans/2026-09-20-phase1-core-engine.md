@@ -1551,7 +1551,7 @@ export async function openStore(indexedDBFactory) {
 priority = (1 - R_item) × max over c∈covers (1 - R_concept) × freshness
 ```
 - **加權隨機抽樣**（權重 `priority^2`），**不是排序取前 N**——純排序會讓每次練習都是同幾題，使用者會背下順序而非內容。
-- 未練過的題目 `R = 0`（最高優先），但新題比例上限 30%／session。
+- 未練過的題目 `R = 0`（最高優先），但**新題比例上限 30%／session**——這條必須實作，否則首次使用時新題會無上限湧入，使用者一次面對上千道沒見過的題目。
 
 - [ ] **Step 1: 寫失敗的測試**
 
@@ -1642,11 +1642,14 @@ export function buildConceptStates(itemStates, items) {
 /** 規格 §8：(1-R_item) × max(1-R_concept) × freshness */
 export function priority(item, itemStates, conceptStates, seenThisSession = new Set()) {
   const itemR = itemStates.get(item.id)?.R ?? UNSEEN_R;
-  let conceptGap = 1;
+  // 初始值必須是 0：(1-R) 的值域上界就是 1，若初始化為 1 則 max 恆等於 1，
+  // 概念熟悉度對優先度的影響會完全歸零——規格 §8 的「跨題型傳導」會靜默失能。
+  let conceptGap = 0;
   for (const c of item.covers || []) {
     const r = conceptStates.get(c)?.R ?? UNSEEN_R;
     conceptGap = Math.max(conceptGap, 1 - r);
   }
+  if (!(item.covers || []).length) conceptGap = 1;   // 無概念標註者不因此被壓到 0
   const freshness = seenThisSession.has(item.id) ? 0.05 : 1;
   return Math.max(1e-6, (1 - itemR)) * conceptGap * freshness;
 }

@@ -1,0 +1,1613 @@
+{
+ "drills": [
+  {
+   "id": "L01-B1",
+   "items": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "model_answer": "ミラーさんは アメリカ人です。",
+   "model_cue": ""
+  },
+  {
+   "id": "L01-B2",
+   "items": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "model_answer": "ミラーさんは 会社員です。",
+   "model_cue": ""
+  },
+  {
+   "id": "L01-B3",
+   "items": [
+    "山田さん・エンジニア",
+    "ワットさん・ドイツ人",
+    "タワポンさん・先生",
+    "シュミットさん・アメリカ人"
+   ],
+   "model_answer": "ミラーさんは 銀行員じゃ ありません。",
+   "model_cue": "ミラーさん・銀行員"
+  },
+  {
+   "id": "L01-B4",
+   "items": [
+    "山田さん・銀行員",
+    "ワットさん・フランス人",
+    "タワポンさん・会社員",
+    "シュミットさん・エンジニア"
+   ],
+   "model_answer": "ミラーさんは アメリカ人ですか。 はい、アメリカ人です。｜ミラーさんは 医者ですか。 いいえ、医者じゃ ありません。",
+   "model_cue": "ミラーさん・アメリカ人｜ミラーさん・医者"
+  },
+  {
+   "id": "L01-B5",
+   "items": [
+    "山田さんは 銀行員です。 イーさんも 銀行員ですか。",
+    "ワットさんは 先生です。 ワンさんも 先生ですか。",
+    "タワポンさんは 学生です。 カリナさんも 学生ですか。",
+    "シュミットさんは ドイツ人です。 サントスさんも ドイツ人ですか。"
+   ],
+   "model_answer": "はい、グプタさんも 会社員です。｜いいえ、グプタさんは アメリカ人じゃ ありません。",
+   "model_cue": "ミラーさんは 会社員です。 グプタさんも 会社員ですか。｜ミラーさんは アメリカ人です。 グプタさんも アメリカ人ですか。"
+  },
+  {
+   "id": "L01-B6",
+   "items": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "model_answer": "あの 方は どなたですか。 グプタさんです。 IMCの 社員です。",
+   "model_cue": ""
+  },
+  {
+   "id": "L01-B7",
+   "items": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "model_answer": "グプタさんは 42歳です。",
+   "model_cue": ""
+  }
+ ],
+ "grammar": [
+  {
+   "body_zh": "1) 助詞「は」 助詞「は」表示之前的名詞是句子的主題。說話人用「は」來提示想說的主題， 再加上各種敘述構成句子。〔註〕助詞的「は」要唸成「わ」。2) です 名詞加上「です」構成述語。 「です」表示判斷、斷定的意思。 「です」表示說話人對聽話人的禮貌態度。 「です」在否定句（參考２.）和過去時態（參考第12課）時，形態會產生變化。",
+   "examples": [
+    {
+     "jp": "わたしは　マイク・ミラーです。",
+     "zh": "我是邁克米勒。"
+    },
+    {
+     "jp": "わたしは  エンジニアです。",
+     "zh": "我是工程師。"
+    }
+   ],
+   "no": 1,
+   "title": "名詞は 名詞です"
+  },
+  {
+   "body_zh": "「じゃ ありません」是「です」的否定形。這是日常會話中使用的形式，在 正式的演講和書面語中用「では ありません」。 （では）〔註〕「では」的「は」要唸成「わ」。",
+   "examples": [
+    {
+     "jp": "サントスさんは 学生じゃ ありません。",
+     "zh": "山多斯先生不是學生。"
+    }
+   ],
+   "no": 2,
+   "title": "名詞は じゃ 名詞ありません"
+  },
+  {
+   "body_zh": "1) 助詞「か」 助詞「か」表示說話人不確定的情緒或帶有疑問的情緒。「か」附在句尾構成 疑問句。疑問句的句尾音調一般會上揚。2) 根據句子內容回答「はい」或「いいえ」的疑問句 在敘述句句尾加上助詞「か」構成，句子的語序不變。這種疑問句是詢問敘述 的內容是否正確。敘述的內容正確時回答「はい」，錯誤時回答「いいえ」。3) 帶疑問詞的疑問句 用疑問詞取代想要詢問的內容。句子的語序不變。句尾加「か」。",
+   "examples": [
+    {
+     "jp": "ミラーさんは　アメリカ人ですか。 はい、アメリカ人です。",
+     "zh": "米勒先生是美國人嗎？是的，美國人。"
+    },
+    {
+     "jp": "ミラーさんは　先生ですか。 いいえ、先生じゃ ありません。",
+     "zh": "米勒先生是老師嗎？不，不是老師。"
+    },
+    {
+     "jp": "あの  方は  どなたですか。 〔あの  方は〕 ミラーさんです。",
+     "zh": "那位是誰？〔那位是〕米勒先生。"
+    }
+   ],
+   "no": 3,
+   "title": "句子か"
+  },
+  {
+   "body_zh": "關於成為主題的名詞的敘述，與之前關於其他主題的敘述相同時，用「も」取代「は」。",
+   "examples": [
+    {
+     "jp": "ミラーさんは  会社員です。 グプタさんも  会社員です。",
+     "zh": "米勒先生是公司職員。古普達先生也是公司職員。"
+    }
+   ],
+   "no": 4,
+   "title": "名詞も"
+  },
+  {
+   "body_zh": "當前面的名詞修飾限定後面的名詞時，用「の」連接兩個名詞。在第一課中，「名詞」表示「名詞」的公司。",
+   "examples": [
+    {
+     "jp": "ミラーさんは  IMCの  社員です。",
+     "zh": "米勒先生是IMC公司的職員。"
+    }
+   ],
+   "no": 5,
+   "title": "名詞の 名詞"
+  },
+  {
+   "body_zh": "日語會在聽話人或第三者的姓氏後加上「さん」。「さん」是表達敬意的，所以不能加在說話者自己的姓氏後。如果知道聽話人的姓名，提到他時一般不說「あなた」，而是在姓氏後加上「さん」。",
+   "examples": [
+    {
+     "jp": "あの  方は  ミラーさんです。",
+     "zh": "那位是米勒先生。"
+    },
+    {
+     "jp": "鈴  木：ミラーさんは  学生ですか。 ミラー：いいえ、会社員です。",
+     "zh": "鈴木：米勒先生你是學生嗎？米勒：不，我是公司職員。"
+    }
+   ],
+   "no": 6,
+   "title": "～さん"
+  }
+ ],
+ "images": [
+  {
+   "file": "data/images/01-p02-01.png",
+   "h": 1.8,
+   "page": 2,
+   "w": 6.0,
+   "x": 26.4,
+   "y": 458.0003
+  },
+  {
+   "file": "data/images/01-p02-02.png",
+   "h": 4.8,
+   "page": 2,
+   "w": 1.2,
+   "x": 31.8,
+   "y": 454.4003
+  },
+  {
+   "file": "data/images/01-p02-03.png",
+   "h": 1.8,
+   "page": 2,
+   "w": 6.0,
+   "x": 38.4,
+   "y": 376.4003
+  },
+  {
+   "file": "data/images/01-p02-04.png",
+   "h": 1.8,
+   "page": 2,
+   "w": 34.0,
+   "x": 39.6,
+   "y": 315.2003
+  },
+  {
+   "file": "data/images/01-p02-05.png",
+   "h": 4.8,
+   "page": 2,
+   "w": 1.2,
+   "x": 71.4,
+   "y": 311.6004
+  },
+  {
+   "file": "data/images/01-p02-06.png",
+   "h": 4.8,
+   "page": 2,
+   "w": 1.2,
+   "x": 137.4,
+   "y": 311.6004
+  },
+  {
+   "file": "data/images/01-p02-07.png",
+   "h": 1.8,
+   "page": 2,
+   "w": 34.0,
+   "x": 72.0,
+   "y": 294.2003
+  },
+  {
+   "file": "data/images/01-p02-08.png",
+   "h": 4.8,
+   "page": 2,
+   "w": 1.2,
+   "x": 105.0,
+   "y": 290.6004
+  },
+  {
+   "file": "data/images/01-p02-09.png",
+   "h": 4.8,
+   "page": 2,
+   "w": 1.2,
+   "x": 60.6,
+   "y": 230.0003
+  },
+  {
+   "file": "data/images/01-p03-01.png",
+   "h": 130.2,
+   "page": 3,
+   "w": 180.0,
+   "x": 322.2,
+   "y": 260.6003
+  },
+  {
+   "file": "data/images/01-p04-01.png",
+   "h": 142.2,
+   "page": 4,
+   "w": 338.0,
+   "x": 41.4,
+   "y": 458.0003
+  },
+  {
+   "file": "data/images/01-p04-02.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 132.0,
+   "y": 411.2003
+  },
+  {
+   "file": "data/images/01-p04-03.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 238.8,
+   "y": 411.2003
+  },
+  {
+   "file": "data/images/01-p04-04.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 456.6,
+   "y": 411.8003
+  },
+  {
+   "file": "data/images/01-p04-05.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 342.0,
+   "y": 413.0003
+  },
+  {
+   "file": "data/images/01-p04-06.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 133.2,
+   "y": 348.2003
+  },
+  {
+   "file": "data/images/01-p04-07.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 456.6,
+   "y": 350.6003
+  },
+  {
+   "file": "data/images/01-p04-08.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 238.8,
+   "y": 350.0003
+  },
+  {
+   "file": "data/images/01-p04-09.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 342.0,
+   "y": 350.6003
+  },
+  {
+   "file": "data/images/01-p04-10.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 279.6,
+   "y": 290.6003
+  },
+  {
+   "file": "data/images/01-p04-11.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 279.6,
+   "y": 269.0003
+  },
+  {
+   "file": "data/images/01-p04-12.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 264.0,
+   "y": 251.0003
+  },
+  {
+   "file": "data/images/01-p04-13.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 320.4,
+   "y": 228.2003
+  },
+  {
+   "file": "data/images/01-p04-14.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 253.2,
+   "y": 106.4003
+  },
+  {
+   "file": "data/images/01-p04-15.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 293.4,
+   "y": 86.0003
+  },
+  {
+   "file": "data/images/01-p04-16.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 279.6,
+   "y": 65.0003
+  },
+  {
+   "file": "data/images/01-p04-17.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 316.2,
+   "y": 45.2003
+  },
+  {
+   "file": "data/images/01-p05-01.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 483.0,
+   "y": 738.2003
+  },
+  {
+   "file": "data/images/01-p05-02.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 480.6,
+   "y": 717.2003
+  },
+  {
+   "file": "data/images/01-p05-03.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 490.8,
+   "y": 695.6003
+  },
+  {
+   "file": "data/images/01-p05-04.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 133.2,
+   "y": 654.2003
+  },
+  {
+   "file": "data/images/01-p05-05.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 131.4,
+   "y": 575.6003
+  },
+  {
+   "file": "data/images/01-p05-06.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 240.6,
+   "y": 573.2003
+  },
+  {
+   "file": "data/images/01-p05-07.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 343.8,
+   "y": 575.6003
+  },
+  {
+   "file": "data/images/01-p05-08.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 456.6,
+   "y": 575.0003
+  },
+  {
+   "file": "data/images/01-p05-09.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 129.6,
+   "y": 513.8004
+  },
+  {
+   "file": "data/images/01-p05-10.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 342.0,
+   "y": 513.8004
+  },
+  {
+   "file": "data/images/01-p05-11.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 456.6,
+   "y": 513.8004
+  },
+  {
+   "file": "data/images/01-p05-12.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 235.8,
+   "y": 513.2003
+  },
+  {
+   "file": "data/images/01-p05-13.png",
+   "h": 79.8,
+   "page": 5,
+   "w": 131.0,
+   "x": 298.2,
+   "y": 351.2003
+  },
+  {
+   "file": "data/images/01-p05-14.png",
+   "h": 82.8,
+   "page": 5,
+   "w": 95.0,
+   "x": 331.8,
+   "y": 101.0003
+  },
+  {
+   "file": "data/images/01-p06-01.png",
+   "h": 74.4,
+   "page": 6,
+   "w": 116.0,
+   "x": 353.4,
+   "y": 722.0004
+  },
+  {
+   "file": "data/images/01-p06-02.png",
+   "h": 49.2,
+   "page": 6,
+   "w": 63.0,
+   "x": 324.6,
+   "y": 446.6003
+  },
+  {
+   "file": "data/images/01-p06-03.png",
+   "h": 47.4,
+   "page": 6,
+   "w": 61.0,
+   "x": 223.8,
+   "y": 447.2003
+  },
+  {
+   "file": "data/images/01-p06-04.png",
+   "h": 49.8,
+   "page": 6,
+   "w": 60.0,
+   "x": 126.6,
+   "y": 446.0003
+  },
+  {
+   "file": "data/images/01-p06-05.png",
+   "h": 48.0,
+   "page": 6,
+   "w": 61.0,
+   "x": 126.6,
+   "y": 366.2003
+  },
+  {
+   "file": "data/images/01-p06-06.png",
+   "h": 47.4,
+   "page": 6,
+   "w": 63.0,
+   "x": 324.6,
+   "y": 366.8003
+  },
+  {
+   "file": "data/images/01-p06-07.png",
+   "h": 49.2,
+   "page": 6,
+   "w": 61.0,
+   "x": 225.6,
+   "y": 365.0003
+  },
+  {
+   "file": "data/images/01-p06-08.png",
+   "h": 49.2,
+   "page": 6,
+   "w": 63.0,
+   "x": 324.6,
+   "y": 283.4004
+  },
+  {
+   "file": "data/images/01-p06-09.png",
+   "h": 49.2,
+   "page": 6,
+   "w": 62.0,
+   "x": 126.6,
+   "y": 283.4004
+  },
+  {
+   "file": "data/images/01-p06-10.png",
+   "h": 48.6,
+   "page": 6,
+   "w": 61.0,
+   "x": 226.2,
+   "y": 283.4003
+  }
+ ],
+ "lesson": 1,
+ "patterns": [
+  {
+   "id": "L01-A1",
+   "question_variant": null,
+   "requires_lesson": 1,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ]
+   ],
+   "slots": {
+    "S": [
+     "マイク・ミラー",
+     "かいしゃいん"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "わたしは{S}です。"
+  },
+  {
+   "id": "L01-A2",
+   "question_variant": null,
+   "requires_lesson": 1,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ]
+   ],
+   "slots": {
+    "S": [
+     "カール・シュミット",
+     "エンジニア"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "わたしは{S}じゃありません。"
+  },
+  {
+   "id": "L01-A3",
+   "question_variant": null,
+   "requires_lesson": 1,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "きむらさん",
+     "マリアさん",
+     "だれ（どなた）"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "あの人 （方）は{S}ですか。"
+  },
+  {
+   "id": "L01-A4",
+   "question_variant": null,
+   "requires_lesson": 1,
+   "rows": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "サントスさんは",
+     "マリアさん",
+     "あの ひと"
+    ],
+    "T": [
+     "ブラジル人です。",
+     "も ブラジル人です。",
+     ""
+    ]
+   },
+   "table_type": "substitution",
+   "template": "{S}{T}"
+  },
+  {
+   "id": "L01-A5",
+   "question_variant": null,
+   "requires_lesson": 1,
+   "rows": [
+    [
+     0,
+     0,
+     0
+    ],
+    [
+     1,
+     1,
+     1
+    ]
+   ],
+   "slots": {
+    "S": [
+     "ミラーさん",
+     "カリナさん"
+    ],
+    "T": [
+     "IMC",
+     "ふじだいがく"
+    ],
+    "U": [
+     "しゃいん",
+     "がくせい"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "{S}は{T}の{U}です。"
+  },
+  {
+   "id": "L01-A6",
+   "question_variant": "テレサちゃんはなんさい（おいくつ）ですか。",
+   "requires_lesson": 1,
+   "rows": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "slots": {
+    "S": [
+     "テレサちゃん",
+     "たろうくん"
+    ],
+    "T": [
+     "9さい",
+     "8さい"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "{S}は{T}です。"
+  }
+ ],
+ "sentences": [
+  {
+   "alt": [],
+   "id": "L01-文型-1",
+   "jp": "わたしは  マイク・ミラーです。",
+   "no": 1,
+   "ruby": [],
+   "section": "文型",
+   "zh": null
+  },
+  {
+   "alt": [
+    "では"
+   ],
+   "id": "L01-文型-2",
+   "jp": "サントスさんは  学生じゃ  ありません。",
+   "no": 2,
+   "ruby": [
+    {
+     "at": 9,
+     "base": "学生",
+     "kana": "がくせい"
+    }
+   ],
+   "section": "文型",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-文型-3",
+   "jp": "ミラーさんは  会社員ですか。",
+   "no": 3,
+   "ruby": [
+    {
+     "at": 8,
+     "base": "会社員",
+     "kana": "かいしゃいん"
+    }
+   ],
+   "section": "文型",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-文型-4",
+   "jp": "サントスさんも  会社員です。",
+   "no": 4,
+   "ruby": [
+    {
+     "at": 9,
+     "base": "会社員",
+     "kana": "かいしゃいん"
+    }
+   ],
+   "section": "文型",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-例文-1",
+   "jp": "［あなたは］ マイク・ミラーさんですか。\n…はい、［わたしは］ マイク・ミラーです。",
+   "no": 1,
+   "ruby": [],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-例文-2",
+   "jp": "ミラーさんは  学生ですか。\n…いいえ、［わたしは］ 学生じゃ  ありません。\n会社員です。",
+   "no": 2,
+   "ruby": [
+    {
+     "at": 8,
+     "base": "学生",
+     "kana": "がくせい"
+    },
+    {
+     "at": 27,
+     "base": "学生",
+     "kana": "がくせい"
+    },
+    {
+     "at": 40,
+     "base": "会社員",
+     "kana": "かいしゃいん"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-例文-3",
+   "jp": "ワンさんは  エンジニアですか。\n…いいえ、ワンさんは  エンジニアじゃ  ありません。\n医者です。",
+   "no": 3,
+   "ruby": [
+    {
+     "at": 45,
+     "base": "医者",
+     "kana": "いしゃ"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-例文-4",
+   "jp": "あの  方は  どなたですか。\n…ワットさんです。  さくら大学の  先生です。",
+   "no": 4,
+   "ruby": [
+    {
+     "at": 4,
+     "base": "方",
+     "kana": "かた"
+    },
+    {
+     "at": 30,
+     "base": "大学",
+     "kana": "だいがく"
+    },
+    {
+     "at": 35,
+     "base": "先生",
+     "kana": "せんせい"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-例文-5",
+   "jp": "テレサちゃんは  何歳ですか。\n…9歳です。",
+   "no": 5,
+   "ruby": [
+    {
+     "at": 9,
+     "base": "何歳",
+     "kana": "なんさい"
+    },
+    {
+     "at": 18,
+     "base": "歳",
+     "kana": "さい"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-会話-1",
+   "jp": "佐  藤：おはよう  ございます。",
+   "no": 1,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-会話-2",
+   "jp": "山  田：おはよう  ございます。",
+   "no": 2,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-会話-3",
+   "jp": "佐藤さん、こちらは  マイク・ミラーさんです。",
+   "no": 3,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "佐藤",
+     "kana": "さとう"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-会話-4",
+   "jp": "ミラー：初めまして。",
+   "no": 4,
+   "ruby": [
+    {
+     "at": 4,
+     "base": "初",
+     "kana": "はじ"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-会話-5",
+   "jp": "マイク・ミラーです。",
+   "no": 5,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-会話-6",
+   "jp": "アメリカから  来ました。",
+   "no": 6,
+   "ruby": [
+    {
+     "at": 8,
+     "base": "来",
+     "kana": "き"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-会話-7",
+   "jp": "どうぞ  よろしく。",
+   "no": 7,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-会話-8",
+   "jp": "佐  藤：佐藤けい子です。",
+   "no": 8,
+   "ruby": [
+    {
+     "at": 5,
+     "base": "佐藤",
+     "kana": "さとう"
+    },
+    {
+     "at": 9,
+     "base": "子",
+     "kana": "こ"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-会話-9",
+   "jp": "どうぞ  よろしく。",
+   "no": 9,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-問題-1",
+   "jp": "例：  いいえ、［わたしは］  先生じゃ  ありません。\n1)   …例：いいえ、わたしは サントスでは ありません。\n2)   …例：マイク・ミラーです。\n3)   …例：28歳です。\n4)   …例：はい、アメリカ人です。\n5)   …例：いいえ、エンジニアじゃありません。",
+   "no": 1,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 16,
+     "base": "先生",
+     "kana": "せんせい"
+    },
+    {
+     "at": 35,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 66,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 85,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 89,
+     "base": "歳",
+     "kana": "さい"
+    },
+    {
+     "at": 100,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 109,
+     "base": "人",
+     "kana": "じん"
+    },
+    {
+     "at": 120,
+     "base": "例",
+     "kana": "れい"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-問題-4",
+   "jp": "例：  あなたは （ 学生 ）ですか。\n……はい、学生です。\n1)  あなたは （ ミラーさん ） ですか。\n……はい、わたしは ミラーです。\n2)  ミラーさんは （ アメリカ人 ） ですか。\n……はい、アメリカ人です。\n3)  ワットさんも （ アメリカ人 ） ですか。\n……いいえ、アメリカ人じゃ あリません。 イギリス人です。\n4)  あの  方は （ どなた（ だれ ） ）ですか。\n……サントスさんです。\n5)  テレサちゃんは  （ 何歳（ おいくつ ） ） ですか。\n……9歳です。",
+   "no": 4,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 11,
+     "base": "学生",
+     "kana": "がくせい"
+    },
+    {
+     "at": 25,
+     "base": "学生",
+     "kana": "がくせい"
+    },
+    {
+     "at": 89,
+     "base": "人",
+     "kana": "じん"
+    },
+    {
+     "at": 107,
+     "base": "人",
+     "kana": "じん"
+    },
+    {
+     "at": 129,
+     "base": "人",
+     "kana": "じん"
+    },
+    {
+     "at": 148,
+     "base": "人",
+     "kana": "じん"
+    },
+    {
+     "at": 163,
+     "base": "人",
+     "kana": "じん"
+    },
+    {
+     "at": 176,
+     "base": "方",
+     "kana": "かた"
+    },
+    {
+     "at": 224,
+     "base": "何歳",
+     "kana": "なんさい"
+    },
+    {
+     "at": 245,
+     "base": "歳",
+     "kana": "さい"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-問題-5",
+   "jp": "例：  わたし （ は ） ミラーです。\n1)  ワンさん （ は ） 医者です。\n2)  カリナさん （ は ） 先生です（ か ）。\n……いいえ、先生じゃ  ありません。\n3)  ミラーさんは　IMC（ の ）　社員です。\n4)  ミラーさんは　会社員です。\nサントスさん （ も ） 会社員です。",
+   "no": 5,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 36,
+     "base": "医者",
+     "kana": "いしゃ"
+    },
+    {
+     "at": 58,
+     "base": "先生",
+     "kana": "せんせい"
+    },
+    {
+     "at": 75,
+     "base": "先生",
+     "kana": "せんせい"
+    },
+    {
+     "at": 108,
+     "base": "社員",
+     "kana": "しゃいん"
+    },
+    {
+     "at": 125,
+     "base": "会社員",
+     "kana": "かいしゃいん"
+    },
+    {
+     "at": 145,
+     "base": "会社員",
+     "kana": "かいしゃいん"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L01-問題-6",
+   "jp": "初めまして。\nわたしは （ マイク・ミラー ）です。\n（ アメリカ ） から 来ました。\nどうぞ よろしく。",
+   "no": 6,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "初",
+     "kana": "はじ"
+    },
+    {
+     "at": 39,
+     "base": "来",
+     "kana": "き"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  }
+ ],
+ "vocab": [
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "わたし",
+   "kanji": null,
+   "no": 1,
+   "usage": null,
+   "zh": "我"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "わたしたち",
+   "kanji": null,
+   "no": 2,
+   "usage": null,
+   "zh": "我們"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "あなた",
+   "kanji": null,
+   "no": 3,
+   "usage": null,
+   "zh": "你，妳"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "あの ひと",
+   "kanji": "あの 人",
+   "no": 4,
+   "usage": null,
+   "zh": "他，她，那個人 （ あの かた ） （ あの 方 ） （“あのかた”是“あのひと”的禮貌形）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "みなさん",
+   "kanji": "皆さん",
+   "no": 5,
+   "usage": null,
+   "zh": "各位，大家"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "～さん",
+   "kanji": null,
+   "no": 6,
+   "usage": null,
+   "zh": "～先生，～小姐，～女士"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "～ちゃん",
+   "kanji": null,
+   "no": 7,
+   "usage": null,
+   "zh": "（用於小孩的名字後）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "～くん",
+   "kanji": "～君",
+   "no": 8,
+   "usage": null,
+   "zh": "～君（用於男孩的名字後）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "～じん",
+   "kanji": "～人",
+   "no": 9,
+   "usage": null,
+   "zh": "（表國籍，如“アメリカじん”）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "せんせい",
+   "kanji": "先生",
+   "no": 10,
+   "usage": null,
+   "zh": "老師，教導者"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "きょうし",
+   "kanji": "教師",
+   "no": 11,
+   "usage": null,
+   "zh": "教師"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "がくせい",
+   "kanji": "学生",
+   "no": 12,
+   "usage": null,
+   "zh": "學生"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "かいしゃいん",
+   "kanji": "会社員",
+   "no": 13,
+   "usage": null,
+   "zh": "公司職員"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "しゃいん",
+   "kanji": "社員",
+   "no": 14,
+   "usage": null,
+   "zh": "～公司的職員（和公司的名稱一起使用，如IMCの しゃいん）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ぎんこういん",
+   "kanji": "銀行員",
+   "no": 15,
+   "usage": null,
+   "zh": "銀行員"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "いしゃ",
+   "kanji": "医者",
+   "no": 16,
+   "usage": null,
+   "zh": "醫生"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "けんきゅうしゃ",
+   "kanji": "研究者",
+   "no": 17,
+   "usage": null,
+   "zh": "研究人員"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "エンジニア",
+   "kanji": null,
+   "no": 18,
+   "usage": null,
+   "zh": "工程師"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "だいがく",
+   "kanji": "大学",
+   "no": 19,
+   "usage": null,
+   "zh": "大學"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "びょういん",
+   "kanji": "病院",
+   "no": 20,
+   "usage": null,
+   "zh": "醫院"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "でんき",
+   "kanji": "電気",
+   "no": 21,
+   "usage": null,
+   "zh": "電，電燈"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "だれ（ どなた ）",
+   "kanji": null,
+   "no": 22,
+   "usage": null,
+   "zh": "誰（哪位）（“どなた”是“だれ”禮貌形）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "…さい",
+   "kanji": "…歳",
+   "no": 23,
+   "usage": null,
+   "zh": "…歲"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "なんさい",
+   "kanji": "何歳",
+   "no": 24,
+   "usage": null,
+   "zh": "幾歲 （ おいくつ ） （“おいくつ”是“なんさい”的禮貌形）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "はい",
+   "kanji": null,
+   "no": 25,
+   "usage": null,
+   "zh": "是，對"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "いいえ",
+   "kanji": null,
+   "no": 26,
+   "usage": null,
+   "zh": "不，不是"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "しつれいですが",
+   "kanji": "失礼ですが",
+   "no": 27,
+   "usage": null,
+   "zh": "冒昧請教一下"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "おなまえは？",
+   "kanji": "お名前は？",
+   "no": 28,
+   "usage": null,
+   "zh": "您貴姓？"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "はじめまして。",
+   "kanji": "初めまして。",
+   "no": 29,
+   "usage": null,
+   "zh": "初次見面。（第一次見面時的寒喧）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "どうぞ よろしく［おねがいします］。",
+   "kanji": null,
+   "no": 30,
+   "usage": {
+    "kana": "どうぞ よろしく［",
+    "kanji": "お願いします］。"
+   },
+   "zh": "請多關照。（第一次見面的問候語）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "こちらは  ～さんです。",
+   "kanji": null,
+   "no": 31,
+   "usage": null,
+   "zh": "這位是～先生/小姐。"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "～から  きました。",
+   "kanji": null,
+   "no": 32,
+   "usage": null,
+   "zh": "我從～來。 ～から  来ました。"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "アメリカ",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "美國"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "イギリス",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "英國"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "インド",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "印度"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "インドネシア",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "印尼"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "かんこく",
+   "kanji": "韓国",
+   "no": null,
+   "usage": null,
+   "zh": "韓國"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "タイ",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "泰國"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "ちゅうごく",
+   "kanji": "中国",
+   "no": null,
+   "usage": null,
+   "zh": "中國"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "ドイツ",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "德國"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "にほん",
+   "kanji": "日本",
+   "no": null,
+   "usage": null,
+   "zh": "日本"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "フランス",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "法國"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "ブラジル",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "巴西"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "さくらだいがく╱ふじだいがく",
+   "kanji": "さくら大学╱富士大学",
+   "no": null,
+   "usage": null,
+   "zh": "櫻花大學/富士大學"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "IMC／パワーでんき／ブラジルエアー",
+   "kanji": "IMC／パワー電気／ブラジルエアー",
+   "no": null,
+   "usage": null,
+   "zh": "IMC/動力電器/巴西空調（虛構的公司名）"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "AKC",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "AKC研究所（虛構的研究所名）"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "こうべびょういん",
+   "kanji": "神戸病院",
+   "no": null,
+   "usage": null,
+   "zh": "神戶醫院（虛構的醫院名）"
+  }
+ ]
+}

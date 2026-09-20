@@ -1,0 +1,1629 @@
+{
+ "drills": [
+  {
+   "id": "L03-B1",
+   "items": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "model_answer": "ここは 食堂です。",
+   "model_cue": ""
+  },
+  {
+   "id": "L03-B2",
+   "items": [
+    "会議室",
+    "電話",
+    "山田さん"
+   ],
+   "model_answer": "ロビーは どこですか。 あそこです。",
+   "model_cue": ""
+  },
+  {
+   "id": "L03-B3",
+   "items": [
+    "トイレ（ 1階 ）",
+    "コンピューター（ 事務所 ）",
+    "テレサちゃん（ 教室 ）",
+    "ワイン売り場（ 地下 ）"
+   ],
+   "model_answer": "電話は どこですか。 2階です。",
+   "model_cue": "電話（ 2階 ）"
+  },
+  {
+   "id": "L03-B4",
+   "items": [
+    "エスカレーター（ そちら ）",
+    "電話（ こちら ）",
+    "カリナさんの 部屋（ 3階 ）",
+    "うち（ 大阪 ）"
+   ],
+   "model_answer": "階段は どちらですか。 あちらです。",
+   "model_cue": "階段（ あちら ）"
+  },
+  {
+   "id": "L03-B5",
+   "items": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "model_answer": "ミラーさんの お国は どちらですか。 アメリカです。",
+   "model_cue": ""
+  },
+  {
+   "id": "L03-B6",
+   "items": [
+    "会社",
+    "大学",
+    "会社",
+    "大学"
+   ],
+   "model_answer": "ミラーさんの 会社は どちらですか。 IMCです。",
+   "model_cue": "会社"
+  },
+  {
+   "id": "L03-B7",
+   "items": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "model_answer": "これは どこの ネクタイですか。 イタリアの ネクタイです。",
+   "model_cue": ""
+  },
+  {
+   "id": "L03-B8",
+   "items": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "model_answer": "この ネクタイは いくらですか。 8,400円です。",
+   "model_cue": ""
+  }
+ ],
+ "grammar": [
+  {
+   "body_zh": "第二課學到的「これ」「それ」「あれ」是表示物的指示代名詞，而「ここ」「そこ」「あそこ」則是表示場所的指示代名詞。「ここ」是指說話人所在的場所，「そこ」是指聽話人所在的場所，「あそこ」是指離二人都遠的場所。此外，「こちら」「そちら」「あちら」雖是表示方向的指示代名詞，但可以取代「ここ」「そこ」「あそこ」指示眼前的場所。這時的語氣更為鄭重。〔註〕說話人把聽話人也視為自己的領域內時，則二人所在的場所為「ここ」，稍遠的地方為「そこ」，更遠為「あそこ」。",
+   "examples": [],
+   "no": 1,
+   "title": "ここ／そこ／あそこ／こちら／そちら／あちら"
+  },
+  {
+   "body_zh": "使用這個句型，可以表現出物、人等的存在場所。",
+   "examples": [
+    {
+     "jp": "お手洗いは  あそこです。",
+     "zh": "洗手間在那裡。"
+    },
+    {
+     "jp": "電話は  ２階です。",
+     "zh": "電話在二樓。"
+    },
+    {
+     "jp": "山田さんは  事務所です。",
+     "zh": "山田先生在辦公室。"
+    }
+   ],
+   "no": 2,
+   "title": "名詞は 名詞（場所）です"
+  },
+  {
+   "body_zh": "「どこ」「どちら」是分別表示場所和方向的疑問詞。詢問場所時也可以用「どちら」，這時會比「どこ」更鄭重。此外，在詢問國家、公司、學校等所屬的場所和組織名時，疑問詞應是「どこ」「どちら」，而不是「なん（什麼）」。「どちら」比「どこ」更鄭重。",
+   "examples": [
+    {
+     "jp": "お手洗いは  どこですか。 あそこです。",
+     "zh": "洗手間在哪裡？在那裡。"
+    },
+    {
+     "jp": "エレベーターは  どちらですか。 あちらです。",
+     "zh": "電梯在哪裡？在那裡。"
+    },
+    {
+     "jp": "学校は  どこですか。",
+     "zh": "學校在哪裡？"
+    },
+    {
+     "jp": "会社は  どちらですか。",
+     "zh": "公司在哪裡？"
+    }
+   ],
+   "no": 3,
+   "title": "どこ／どちら"
+  },
+  {
+   "body_zh": "名詞是國家名稱，名詞是產品名時，「名詞の」是指該國家製造的意思。而名詞是公司名稱，名詞是產品名時，「名詞の」是指該公司生產的。這個疑問句中的疑問詞用「どこ」。",
+   "examples": [
+    {
+     "jp": "これは  どこの  コンピューターですか。  日本の  コンピューターです。 IMC の  コンピューターです。",
+     "zh": "這是哪裡的電腦呢？ 這是日本的電腦。 IMC的電腦。"
+    }
+   ],
+   "no": 4,
+   "title": "名詞の 名詞"
+  },
+  {
+   "body_zh": "「こ」系列「そ」系列 「あ」系列「ど」系列物これそれあれどれ(第8課)物この 名詞その 名詞あの 名詞どの 名詞人(第16課)場所ここそこあそこどこ方向こちらそちらあちらどちら場所（鄭重）",
+   "examples": [],
+   "no": 5,
+   "title": "「こ／そ／あ／ど」（指示詞）一覽表"
+  },
+  {
+   "body_zh": "接頭語「お」加在關於聽話人或第三者的事物前，表達說話人的敬意。",
+   "examples": [
+    {
+     "jp": "〔お〕国は  どちらですか。",
+     "zh": "您是從哪裡來的？"
+    }
+   ],
+   "no": 6,
+   "title": "お国"
+  }
+ ],
+ "images": [
+  {
+   "file": "data/images/03-p02-01.png",
+   "h": 1.8,
+   "page": 2,
+   "w": 9.0,
+   "x": 72.6,
+   "y": 641.6003
+  },
+  {
+   "file": "data/images/03-p02-02.png",
+   "h": 4.8,
+   "page": 2,
+   "w": 1.2,
+   "x": 80.4,
+   "y": 638.0003
+  },
+  {
+   "file": "data/images/03-p02-03.png",
+   "h": 1.8,
+   "page": 2,
+   "w": 15.0,
+   "x": 31.2,
+   "y": 560.0004
+  },
+  {
+   "file": "data/images/03-p02-04.png",
+   "h": 4.8,
+   "page": 2,
+   "w": 1.2,
+   "x": 45.0,
+   "y": 556.4003
+  },
+  {
+   "file": "data/images/03-p03-01.png",
+   "h": 111.6,
+   "page": 3,
+   "w": 183.0,
+   "x": 330.0,
+   "y": 451.4003
+  },
+  {
+   "file": "data/images/03-p04-01.png",
+   "h": 190.8,
+   "page": 4,
+   "w": 286.0,
+   "x": 211.8,
+   "y": 451.4003
+  },
+  {
+   "file": "data/images/03-p04-02.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 130.8,
+   "y": 600.2003
+  },
+  {
+   "file": "data/images/03-p04-03.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 130.8,
+   "y": 579.8003
+  },
+  {
+   "file": "data/images/03-p04-04.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 130.8,
+   "y": 559.4003
+  },
+  {
+   "file": "data/images/03-p04-05.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 130.8,
+   "y": 539.0003
+  },
+  {
+   "file": "data/images/03-p04-06.png",
+   "h": 85.8,
+   "page": 4,
+   "w": 339.0,
+   "x": 66.0,
+   "y": 284.0003
+  },
+  {
+   "file": "data/images/03-p04-07.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 183.6,
+   "y": 375.8003
+  },
+  {
+   "file": "data/images/03-p04-08.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 509.4,
+   "y": 375.8003
+  },
+  {
+   "file": "data/images/03-p04-09.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 328.8,
+   "y": 375.8003
+  },
+  {
+   "file": "data/images/03-p04-10.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 241.2,
+   "y": 212.6003
+  },
+  {
+   "file": "data/images/03-p04-11.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 575.4,
+   "y": 212.6003
+  },
+  {
+   "file": "data/images/03-p04-12.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 289.2,
+   "y": 192.2003
+  },
+  {
+   "file": "data/images/03-p04-13.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 548.9999,
+   "y": 192.2003
+  },
+  {
+   "file": "data/images/03-p04-14.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 315.6,
+   "y": 110.6003
+  },
+  {
+   "file": "data/images/03-p04-15.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 548.9999,
+   "y": 110.6003
+  },
+  {
+   "file": "data/images/03-p04-16.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 322.8,
+   "y": 90.2003
+  },
+  {
+   "file": "data/images/03-p04-17.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 535.8,
+   "y": 90.2003
+  },
+  {
+   "file": "data/images/03-p04-18.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 130.8,
+   "y": 8.6003
+  },
+  {
+   "file": "data/images/03-p04-19.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 351.0,
+   "y": 8.6003
+  },
+  {
+   "file": "data/images/03-p04-20.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 456.6,
+   "y": 8.6003
+  },
+  {
+   "file": "data/images/03-p04-21.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 236.4,
+   "y": 8.6003
+  },
+  {
+   "file": "data/images/03-p05-01.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 170.4,
+   "y": 779.0003
+  },
+  {
+   "file": "data/images/03-p05-02.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 390.6,
+   "y": 779.0003
+  },
+  {
+   "file": "data/images/03-p05-03.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 170.4,
+   "y": 758.6003
+  },
+  {
+   "file": "data/images/03-p05-04.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 390.6,
+   "y": 758.6003
+  },
+  {
+   "file": "data/images/03-p05-05.png",
+   "h": 117.6,
+   "page": 5,
+   "w": 345.0,
+   "x": 64.2,
+   "y": 549.2003
+  },
+  {
+   "file": "data/images/03-p05-06.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 130.8,
+   "y": 677.0003
+  },
+  {
+   "file": "data/images/03-p05-07.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 351.0,
+   "y": 677.0003
+  },
+  {
+   "file": "data/images/03-p05-08.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 456.6,
+   "y": 677.0003
+  },
+  {
+   "file": "data/images/03-p05-09.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 236.4,
+   "y": 677.0003
+  },
+  {
+   "file": "data/images/03-p05-10.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 130.8,
+   "y": 473.0003
+  },
+  {
+   "file": "data/images/03-p05-11.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 456.6,
+   "y": 473.0003
+  },
+  {
+   "file": "data/images/03-p05-12.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 351.0,
+   "y": 473.0003
+  },
+  {
+   "file": "data/images/03-p05-13.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 236.4,
+   "y": 473.0003
+  },
+  {
+   "file": "data/images/03-p05-14.png",
+   "h": 95.4,
+   "page": 5,
+   "w": 88.0,
+   "x": 315.6,
+   "y": 314.0003
+  },
+  {
+   "file": "data/images/03-p05-15.png",
+   "h": 102.6,
+   "page": 5,
+   "w": 120.0,
+   "x": 289.2,
+   "y": 143.6004
+  },
+  {
+   "file": "data/images/03-p05-16.png",
+   "h": 22.8,
+   "page": 5,
+   "w": 122.0,
+   "x": 302.4,
+   "y": -0.9997
+  },
+  {
+   "file": "data/images/03-p06-01.png",
+   "h": 48.6,
+   "page": 6,
+   "w": 122.0,
+   "x": 302.4,
+   "y": 794.0003
+  },
+  {
+   "file": "data/images/03-p06-02.png",
+   "h": 135.6,
+   "page": 6,
+   "w": 227.0,
+   "x": 64.8,
+   "y": 277.4004
+  },
+  {
+   "file": "data/images/03-p07-01.png",
+   "h": 199.8,
+   "page": 7,
+   "w": 227.0,
+   "x": 285.0,
+   "y": 209.6004
+  },
+  {
+   "file": "data/images/03-p07-02.png",
+   "h": 199.8,
+   "page": 7,
+   "w": 245.0,
+   "x": 271.8,
+   "y": 5.6004
+  }
+ ],
+ "lesson": 3,
+ "patterns": [
+  {
+   "id": "L03-A1",
+   "question_variant": null,
+   "requires_lesson": 3,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "きょうしつ",
+     "だいがく",
+     "ひろしま"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "ここは{S}です。"
+  },
+  {
+   "id": "L03-A2",
+   "question_variant": "受付はどこですか。",
+   "requires_lesson": 3,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "ここ",
+     "そこ",
+     "あそこ"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "受付は{S}です。"
+  },
+  {
+   "id": "L03-A3",
+   "question_variant": "佐藤さんはどこですか。",
+   "requires_lesson": 3,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "あそこ",
+     "じむしょ",
+     "ロビー"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "佐藤さんは{S}です。"
+  },
+  {
+   "id": "L03-A4",
+   "question_variant": "エレベーターはどちらですか。",
+   "requires_lesson": 3,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "こちら",
+     "そちら",
+     "あちら"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "エレベーターは{S}です。"
+  },
+  {
+   "id": "L03-A5",
+   "question_variant": "これはどこの自動車ですか。",
+   "requires_lesson": 3,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "にほん",
+     "アメリカ",
+     "ドイツ"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "これは{S}の自動車です。"
+  },
+  {
+   "id": "L03-A6",
+   "question_variant": "このネクタイはいくらですか。",
+   "requires_lesson": 3,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "1,500えん",
+     "5,800えん",
+     "13,000えん"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "このネクタイは{S}です。"
+  }
+ ],
+ "sentences": [
+  {
+   "alt": [],
+   "id": "L03-文型-1",
+   "jp": "ここは  食堂です。",
+   "no": 1,
+   "ruby": [
+    {
+     "at": 5,
+     "base": "食堂",
+     "kana": "しょくどう"
+    }
+   ],
+   "section": "文型",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-文型-2",
+   "jp": "電話は  あそこです。",
+   "no": 2,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "電話",
+     "kana": "でんわ"
+    }
+   ],
+   "section": "文型",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-例文-1",
+   "jp": "ここは  新大阪ですか。\n…はい、そうです。",
+   "no": 1,
+   "ruby": [
+    {
+     "at": 5,
+     "base": "新大阪",
+     "kana": "しんおおさか"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-例文-2",
+   "jp": "お手洗いは  どこですか。\n…あそこです。",
+   "no": 2,
+   "ruby": [
+    {
+     "at": 1,
+     "base": "手洗",
+     "kana": "てあら"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-例文-3",
+   "jp": "山田さんは  どこですか。\n…事務所です。",
+   "no": 3,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "山田",
+     "kana": "やまだ"
+    },
+    {
+     "at": 15,
+     "base": "事務所",
+     "kana": "じむしょ"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-例文-4",
+   "jp": "エレベーターは  どちらですか。\n…そちらです。",
+   "no": 4,
+   "ruby": [],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-例文-5",
+   "jp": "［お］国は  どちらですか。\n…アメリカです。",
+   "no": 5,
+   "ruby": [
+    {
+     "at": 3,
+     "base": "国",
+     "kana": "くに"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-例文-6",
+   "jp": "それは  どこの  靴ですか。\n…イタリアの  靴です。",
+   "no": 6,
+   "ruby": [
+    {
+     "at": 10,
+     "base": "靴",
+     "kana": "くつ"
+    },
+    {
+     "at": 24,
+     "base": "靴",
+     "kana": "くつ"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-例文-7",
+   "jp": "この  時計は  いくらですか。\n…18,600円です。",
+   "no": 7,
+   "ruby": [
+    {
+     "at": 4,
+     "base": "時計",
+     "kana": "とけい"
+    },
+    {
+     "at": 24,
+     "base": "円",
+     "kana": "えん"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-会話-1",
+   "jp": "マリア：すみません。",
+   "no": 1,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-会話-2",
+   "jp": "ワイン売り場は  どこですか。",
+   "no": 2,
+   "ruby": [
+    {
+     "at": 3,
+     "base": "売",
+     "kana": "う"
+    },
+    {
+     "at": 5,
+     "base": "場",
+     "kana": "ば"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-会話-3",
+   "jp": "店員Ａ：地下1階で  ございます。",
+   "no": 3,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "店員",
+     "kana": "てんいん"
+    },
+    {
+     "at": 4,
+     "base": "地下",
+     "kana": "ちか"
+    },
+    {
+     "at": 7,
+     "base": "階",
+     "kana": "かい"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-会話-4",
+   "jp": "マリア：どうも。",
+   "no": 4,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-会話-5",
+   "jp": "マリア：すみません。",
+   "no": 5,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-会話-6",
+   "jp": "その  ワインを  見せて  ください。",
+   "no": 6,
+   "ruby": [
+    {
+     "at": 10,
+     "base": "見",
+     "kana": "み"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-会話-7",
+   "jp": "店員Ｂ：はい、どうぞ。",
+   "no": 7,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "店員",
+     "kana": "てんいん"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-会話-8",
+   "jp": "マリア：これは  フランスの  ワインですか。",
+   "no": 8,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-会話-9",
+   "jp": "店員Ｂ：いいえ、イタリアのです。",
+   "no": 9,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "店員",
+     "kana": "てんいん"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-会話-10",
+   "jp": "マリア：いくらですか。",
+   "no": 10,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-会話-11",
+   "jp": "店員Ｂ：2,500円です。",
+   "no": 11,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "店員",
+     "kana": "てんいん"
+    },
+    {
+     "at": 9,
+     "base": "円",
+     "kana": "えん"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-会話-12",
+   "jp": "マリア：じゃ、これを  ください。",
+   "no": 12,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-問題-1",
+   "jp": "1)…例：  イギリスです。\n2)…例：  東京です。\n3)…例：  日本のです。\n4)…例：  いいえ、日本のじゃありません。\n5)…例：  16,500円です。",
+   "no": 1,
+   "ruby": [
+    {
+     "at": 3,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 18,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 22,
+     "base": "東京",
+     "kana": "とうきょう"
+    },
+    {
+     "at": 31,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 35,
+     "base": "日本",
+     "kana": "にほん"
+    },
+    {
+     "at": 45,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 53,
+     "base": "日本",
+     "kana": "にほん"
+    },
+    {
+     "at": 68,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 78,
+     "base": "円",
+     "kana": "えん"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-問題-3",
+   "jp": "例：  （ ここ ）は （ 受付 ）です。\n1)    （ そこ ）は  （ 会議室 ）です。\n2)    （ あそこ ）は （ トイレ （お手洗い） ）です。\n3)    （ ここ ）は  （ 食堂 ）です。\n4)    （ あそこ ）は  （ 事務所 ）です。\n5)    （ そこ ）は  （ 教室 ）です。",
+   "no": 3,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 14,
+     "base": "受付",
+     "kana": "うけつけ"
+    },
+    {
+     "at": 39,
+     "base": "会議室",
+     "kana": "かいぎしつ"
+    },
+    {
+     "at": 71,
+     "base": "手洗",
+     "kana": "てあら"
+    },
+    {
+     "at": 98,
+     "base": "食堂",
+     "kana": "しょくどう"
+    },
+    {
+     "at": 124,
+     "base": "事務所",
+     "kana": "じむしょ"
+    },
+    {
+     "at": 150,
+     "base": "教室",
+     "kana": "きょうしつ"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-問題-4",
+   "jp": "例：  （ ①わたし、 ②わたしは、 ③わたしの ）  ミラーです。（②）\n1)（ ①これ、 ②この、 ③ここ ）は  ドイツの  自動車です。（①）\n2)（ ①それ、 ②その、 ③そこ ）  かばんは  （ ①わたし、 ②わたしは、 ③\nわたしの ）です。（②）（③）\n3) 事務所は  （ ①あれ、 ②あの、 ③あそこ ）です。（③）\n4) すみません。  電話は  （ ①だれ、 ②何、 ③どこ ）ですか。（③）",
+   "no": 4,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 66,
+     "base": "自動車",
+     "kana": "じどうしゃ"
+    },
+    {
+     "at": 139,
+     "base": "事務所",
+     "kana": "じむしょ"
+    },
+    {
+     "at": 181,
+     "base": "電話",
+     "kana": "でんわ"
+    },
+    {
+     "at": 194,
+     "base": "何",
+     "kana": "なん"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L03-問題-5",
+   "jp": "例：   それは  （ 何 ）ですか。\n……辞書です。\n1) すみません。  お手洗いは  （ どちら （どこ） ）ですか。\n……あちらです。\n2) ミラーさんは  （ どこ（どちら） ）ですか。\n……会議室です。\n3) カメラ売り場は  （ 何階（どこ） ）ですか。\n……5階です。\n4) お国は  （ どちら ）ですか。\n……アメリカです。\n5) 会社は（ どちら（どこ） ）ですか。\n……MTです。\n6) MTは  （ 何 ）の  会社ですか。\n……たばこの  会社です。\n7) これは  （ どこ ）の  ワインですか。\n……イタリアの  ワインです。\n8) この  ワインは  （ いくら ）ですか。\n……2,800円です。",
+   "no": 5,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 12,
+     "base": "何",
+     "kana": "なん"
+    },
+    {
+     "at": 22,
+     "base": "辞書",
+     "kana": "じしょ"
+    },
+    {
+     "at": 40,
+     "base": "手洗",
+     "kana": "てあら"
+    },
+    {
+     "at": 101,
+     "base": "会議室",
+     "kana": "かいぎしつ"
+    },
+    {
+     "at": 114,
+     "base": "売",
+     "kana": "う"
+    },
+    {
+     "at": 116,
+     "base": "場",
+     "kana": "ば"
+    },
+    {
+     "at": 122,
+     "base": "何階",
+     "kana": "なんがい"
+    },
+    {
+     "at": 138,
+     "base": "階",
+     "kana": "かい"
+    },
+    {
+     "at": 147,
+     "base": "国",
+     "kana": "くに"
+    },
+    {
+     "at": 176,
+     "base": "会社",
+     "kana": "かいしゃ"
+    },
+    {
+     "at": 213,
+     "base": "何",
+     "kana": "なん"
+    },
+    {
+     "at": 219,
+     "base": "会社",
+     "kana": "かいしゃ"
+    },
+    {
+     "at": 234,
+     "base": "会社",
+     "kana": "かいしゃ"
+    },
+    {
+     "at": 313,
+     "base": "円",
+     "kana": "えん"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  }
+ ],
+ "vocab": [
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ここ",
+   "kanji": null,
+   "no": 1,
+   "usage": null,
+   "zh": "這裡，這個地方"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "そこ",
+   "kanji": null,
+   "no": 2,
+   "usage": null,
+   "zh": "那裡，那個地方"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "あそこ",
+   "kanji": null,
+   "no": 3,
+   "usage": null,
+   "zh": "那裡，那個地方"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "どこ",
+   "kanji": null,
+   "no": 4,
+   "usage": null,
+   "zh": "哪裡，哪個地方"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "こちら",
+   "kanji": null,
+   "no": 5,
+   "usage": null,
+   "zh": "這邊（“ここ”的禮貌形）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "そちら",
+   "kanji": null,
+   "no": 6,
+   "usage": null,
+   "zh": "那邊（“そこ”的禮貌形）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "あちら",
+   "kanji": null,
+   "no": 7,
+   "usage": null,
+   "zh": "那邊（“あそこ”的禮貌形）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "どちら",
+   "kanji": null,
+   "no": 8,
+   "usage": null,
+   "zh": "哪邊（“どこ”的禮貌形）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "きょうしつ",
+   "kanji": "教室",
+   "no": 9,
+   "usage": null,
+   "zh": "教室"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "しょくどう",
+   "kanji": "食堂",
+   "no": 10,
+   "usage": null,
+   "zh": "餐廳，食堂"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "じむしょ",
+   "kanji": "事務所",
+   "no": 11,
+   "usage": null,
+   "zh": "辦公室"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "かいぎしつ",
+   "kanji": "会議室",
+   "no": 12,
+   "usage": null,
+   "zh": "會議室"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "うけつけ",
+   "kanji": "受付",
+   "no": 13,
+   "usage": null,
+   "zh": "傳達室，接待"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ロビー",
+   "kanji": null,
+   "no": 14,
+   "usage": null,
+   "zh": "大廳，休息室"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "へや",
+   "kanji": "部屋",
+   "no": 15,
+   "usage": null,
+   "zh": "房間"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "トイレ（ おてあらい ） （ お",
+   "kanji": "手洗い ）",
+   "no": 16,
+   "usage": null,
+   "zh": "廁所（洗手間）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "かいだん",
+   "kanji": "階段",
+   "no": 17,
+   "usage": null,
+   "zh": "樓梯"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "エレベーター",
+   "kanji": null,
+   "no": 18,
+   "usage": null,
+   "zh": "電梯"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "エスカレーター",
+   "kanji": null,
+   "no": 19,
+   "usage": null,
+   "zh": "電扶梯"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "［お］くに ［お］",
+   "kanji": "国",
+   "no": 20,
+   "usage": null,
+   "zh": "貴國"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "かいしゃ",
+   "kanji": "会社",
+   "no": 21,
+   "usage": null,
+   "zh": "公司"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "うち",
+   "kanji": null,
+   "no": 22,
+   "usage": null,
+   "zh": "家，房子"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "でんわ",
+   "kanji": "電話",
+   "no": 23,
+   "usage": null,
+   "zh": "電話，電話呼叫"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "くつ",
+   "kanji": "靴",
+   "no": 24,
+   "usage": null,
+   "zh": "鞋子"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ネクタイ",
+   "kanji": null,
+   "no": 25,
+   "usage": null,
+   "zh": "領帶"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ワイン",
+   "kanji": null,
+   "no": 26,
+   "usage": null,
+   "zh": "葡萄酒"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "たばこ",
+   "kanji": null,
+   "no": 27,
+   "usage": null,
+   "zh": "香煙"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "うりば",
+   "kanji": "売り場",
+   "no": 28,
+   "usage": null,
+   "zh": "櫃台，賣場"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ちか",
+   "kanji": "地下",
+   "no": 29,
+   "usage": null,
+   "zh": "地下"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "…かい（ …がい ）",
+   "kanji": "…階",
+   "no": 30,
+   "usage": null,
+   "zh": "…樓"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "なんがい",
+   "kanji": "何階",
+   "no": 31,
+   "usage": null,
+   "zh": "幾樓"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "…えん",
+   "kanji": "…円",
+   "no": 32,
+   "usage": null,
+   "zh": "…日元"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "いくら",
+   "kanji": null,
+   "no": 33,
+   "usage": null,
+   "zh": "多少錢"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ひゃく",
+   "kanji": "百",
+   "no": 34,
+   "usage": null,
+   "zh": "百"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "せん",
+   "kanji": "千",
+   "no": 35,
+   "usage": null,
+   "zh": "千"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "まん",
+   "kanji": "万",
+   "no": 36,
+   "usage": null,
+   "zh": "萬"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "すみません",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "對不起，請問。"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "～で  ございます。",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "（「です」的禮貌形）"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "「～を」みせて  ください。",
+   "kanji": "「～を」見せて  ください。",
+   "no": null,
+   "usage": null,
+   "zh": "請讓我看一下［～］。"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "じゃ",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "那麼"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "「～を」ください。",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "請給我［～］。"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "しんおおさか",
+   "kanji": "新大阪",
+   "no": null,
+   "usage": null,
+   "zh": "新大阪車站"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "イタリア",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "義大利"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "スイス",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "瑞士"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "MT／ヨーネン／アキックス",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "MT／有年／阿奇克斯（虛構的公司名）"
+  }
+ ]
+}

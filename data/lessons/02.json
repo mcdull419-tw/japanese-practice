@@ -1,0 +1,1799 @@
+{
+ "drills": [
+  {
+   "id": "L02-B1",
+   "items": [
+    "",
+    "",
+    ""
+   ],
+   "model_answer": "これは 雑誌です。｜それは ノートです。｜あれは 辞書です。",
+   "model_cue": "｜｜"
+  },
+  {
+   "id": "L02-B2",
+   "items": [
+    "時計",
+    "ラジオ",
+    "ボールペン",
+    "いす"
+   ],
+   "model_answer": "これは 本ですか。 はい、そうです。 本です。｜これは 手帳ですか。 いいえ、そうじゃ ありません。 本です。",
+   "model_cue": "本｜手帳"
+  },
+  {
+   "id": "L02-B3",
+   "items": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "model_answer": "あれは 何ですか。 本です。",
+   "model_cue": ""
+  },
+  {
+   "id": "L02-B4",
+   "items": [
+    "本・雑誌（本）",
+    "「い」・「り」（「り」）",
+    "「1」・「7」（「7」）",
+    "「シ」・「ツ」（「シ」）"
+   ],
+   "model_answer": "これは シャープぺンシルですか、ボールペンですか。 ボールペンです。",
+   "model_cue": "シャープペンシル・ボールペン（ ボールペン ）"
+  },
+  {
+   "id": "L02-B5",
+   "items": [
+    "本",
+    "テープ",
+    "雑誌",
+    "本"
+   ],
+   "model_answer": "それは 何の 雑誌ですか。 コンピューターの 雑誌です。",
+   "model_cue": "雑誌"
+  },
+  {
+   "id": "L02-B6",
+   "items": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "model_answer": "これは だれの ノートですか。 カリナさんの ノートです。",
+   "model_cue": ""
+  },
+  {
+   "id": "L02-B7",
+   "items": [
+    "ワンさん",
+    "サントスさん",
+    "佐藤さん",
+    "ワットさん"
+   ],
+   "model_answer": "この ノートは カリナさんのですか。 はい、カリナさんのです。｜この ノートは ミラーさんのですか。 いいえ、ミラーさんのじゃ ありません。",
+   "model_cue": "カリナさん｜ミラーさん"
+  },
+  {
+   "id": "L02-B8",
+   "items": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "model_answer": "この ノートは だれのですか。 カリナさんのです。",
+   "model_cue": ""
+  }
+ ],
+ "grammar": [
+  {
+   "body_zh": "「これ」「それ」「あれ」是代表物的詞，在語法上作為名詞使用。「これ」是指在說話人附近的物，「それ」是指在聽話人附近的物，「あれ」是指離說話人和聽話人都遠的物。",
+   "examples": [
+    {
+     "jp": "それは  辞書ですか。",
+     "zh": "那是字典嗎？"
+    },
+    {
+     "jp": "これを  ください。",
+     "zh": "請給我這個。"
+    }
+   ],
+   "no": 1,
+   "title": "これ／それ／あれ"
+  },
+  {
+   "body_zh": "「この」「その」「あの」修飾名詞。「この 名詞」「その 名詞」「あの 名詞」分別表示在說話人附近的物（或人），在聽話人附近的物（或人），離雙方都遠的物（或人）。",
+   "examples": [
+    {
+     "jp": "この  本は  わたしのです。",
+     "zh": "這本書是我的。"
+    },
+    {
+     "jp": "あの  方は  どなたですか。",
+     "zh": "那一位是誰？"
+    }
+   ],
+   "no": 2,
+   "title": "この 名詞／その 名詞／あの 名詞"
+  },
+  {
+   "body_zh": "名詞句中，常常使用「そう」來回答詢問是否的疑問句。肯定回答用「はい、そうです」，否定回答用「いいえ、そうじゃ　ありません」。還可以用和「そうじゃ ありません」意思相同的動詞「ちがいます」。",
+   "examples": [
+    {
+     "jp": "それは  テレホンカードですか。 はい、そうです。",
+     "zh": "那是電話卡嗎？是的。（對，它是。）"
+    },
+    {
+     "jp": "それは  テレホンカードですか。 いいえ、そうじゃ　　ありません。",
+     "zh": "那是電話卡嗎？不是。（不，它不是。）"
+    },
+    {
+     "jp": "それは  テレホンカードですか。 いいえ、違います。",
+     "zh": "那是電話卡嗎？不，不是。"
+    }
+   ],
+   "no": 3,
+   "title": "そうです／そうじゃ ありません"
+  },
+  {
+   "body_zh": "這是將二個（以上）疑問句並列，並要求選擇正確一方的選擇疑問句。回答中不說「はい」「いいえ」，而是直接說出其中正確的句子。",
+   "examples": [
+    {
+     "jp": "これは　「９」ですか、「７」ですか。 「９」です。",
+     "zh": "這是９，還是７？是９。"
+    }
+   ],
+   "no": 4,
+   "title": "句子か、句子か"
+  },
+  {
+   "body_zh": "在第一課中學過當名詞修飾名詞時，名詞和名詞之間要用「の」。而再本課中，「の」將成為如下的意思。1)「名詞」說明「名詞」關係到的事物。2)「名詞」說明「名詞」屬於什麼人。名詞在很明確的情況下可以省略。但是名詞在表示人時不能省略。",
+   "examples": [
+    {
+     "jp": "これは  コンピューターの  本です。",
+     "zh": "這是有關電腦的書。"
+    },
+    {
+     "jp": "これは  わたしの  本です。",
+     "zh": "這是我的書。"
+    },
+    {
+     "jp": "あれは  だれの  かばんですか。 佐藤さんの  です。",
+     "zh": "那是誰的皮包？是佐藤小姐的。"
+    },
+    {
+     "jp": "この  かばんは  あなたのですか。 いいえ、わたしのじゃ　ありません。",
+     "zh": "這個皮包是你的嗎？不，不是我的。"
+    },
+    {
+     "jp": "ミラーさんは  IMCの  社員ですか。 はい、IMCの  社員です。",
+     "zh": "米勒先生是IMC公司的職員嗎？ 是的，是IMC公司的職員。"
+    }
+   ],
+   "no": 5,
+   "title": "名詞 の 名詞"
+  },
+  {
+   "body_zh": "在聽到新的資訊時，用這句話表示知道了。",
+   "examples": [
+    {
+     "jp": "この  傘は  あなたのですか。 いいえ、違います。シュミットさんのです。そうですか。",
+     "zh": "這把傘是你的嗎？ 不，是舒密特先生的。 哦，這樣呀。"
+    }
+   ],
+   "no": 6,
+   "title": "そうですか"
+  }
+ ],
+ "images": [
+  {
+   "file": "data/images/02-p02-01.png",
+   "h": 1.8,
+   "page": 2,
+   "w": 9.0,
+   "x": 107.4,
+   "y": 396.8003
+  },
+  {
+   "file": "data/images/02-p03-01.png",
+   "h": 114.6,
+   "page": 3,
+   "w": 196.0,
+   "x": 355.2,
+   "y": 279.2003
+  },
+  {
+   "file": "data/images/02-p04-01.png",
+   "h": 84.6,
+   "page": 4,
+   "w": 343.0,
+   "x": 63.0,
+   "y": 241.4003
+  },
+  {
+   "file": "data/images/02-p04-02.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 135.0,
+   "y": 330.8004
+  },
+  {
+   "file": "data/images/02-p04-03.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 294.0,
+   "y": 331.4004
+  },
+  {
+   "file": "data/images/02-p04-04.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 456.6,
+   "y": 330.2003
+  },
+  {
+   "file": "data/images/02-p04-05.png",
+   "h": 85.2,
+   "page": 4,
+   "w": 355.9999,
+   "x": 62.4,
+   "y": 23.0004
+  },
+  {
+   "file": "data/images/02-p04-06.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 175.8,
+   "y": 126.2003
+  },
+  {
+   "file": "data/images/02-p04-07.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 398.4,
+   "y": 126.8003
+  },
+  {
+   "file": "data/images/02-p04-08.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 210.0,
+   "y": 105.8003
+  },
+  {
+   "file": "data/images/02-p04-09.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 390.6,
+   "y": 105.8003
+  },
+  {
+   "file": "data/images/02-p05-01.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 132.6,
+   "y": 799.4003
+  },
+  {
+   "file": "data/images/02-p05-02.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 456.6,
+   "y": 799.4003
+  },
+  {
+   "file": "data/images/02-p05-03.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 345.6,
+   "y": 800.0003
+  },
+  {
+   "file": "data/images/02-p05-04.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 238.2,
+   "y": 799.4003
+  },
+  {
+   "file": "data/images/02-p05-05.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 232.2,
+   "y": 698.0003
+  },
+  {
+   "file": "data/images/02-p05-06.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 562.2,
+   "y": 697.4003
+  },
+  {
+   "file": "data/images/02-p05-07.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 268.8,
+   "y": 678.2003
+  },
+  {
+   "file": "data/images/02-p05-08.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 562.2,
+   "y": 677.0003
+  },
+  {
+   "file": "data/images/02-p05-09.png",
+   "h": 69.6,
+   "page": 5,
+   "w": 341.0,
+   "x": 63.6,
+   "y": 501.2004
+  },
+  {
+   "file": "data/images/02-p05-10.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 159.6,
+   "y": 596.0003
+  },
+  {
+   "file": "data/images/02-p05-11.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 403.8,
+   "y": 595.4003
+  },
+  {
+   "file": "data/images/02-p05-12.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 171.0,
+   "y": 575.6003
+  },
+  {
+   "file": "data/images/02-p05-13.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 377.4,
+   "y": 575.0003
+  },
+  {
+   "file": "data/images/02-p05-14.png",
+   "h": 68.4,
+   "page": 5,
+   "w": 337.0,
+   "x": 64.8,
+   "y": 362.6003
+  },
+  {
+   "file": "data/images/02-p05-15.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 132.0,
+   "y": 434.6003
+  },
+  {
+   "file": "data/images/02-p05-16.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 237.0,
+   "y": 433.4003
+  },
+  {
+   "file": "data/images/02-p05-17.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 351.0,
+   "y": 432.2003
+  },
+  {
+   "file": "data/images/02-p05-18.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 456.6,
+   "y": 432.2003
+  },
+  {
+   "file": "data/images/02-p05-19.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 197.4,
+   "y": 248.6003
+  },
+  {
+   "file": "data/images/02-p05-20.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 443.4,
+   "y": 248.6003
+  },
+  {
+   "file": "data/images/02-p05-21.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 195.0,
+   "y": 228.8003
+  },
+  {
+   "file": "data/images/02-p05-22.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 430.2,
+   "y": 228.2003
+  },
+  {
+   "file": "data/images/02-p05-23.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 133.2,
+   "y": 147.8003
+  },
+  {
+   "file": "data/images/02-p05-24.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 456.6,
+   "y": 146.6003
+  },
+  {
+   "file": "data/images/02-p05-25.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 241.8,
+   "y": 146.6003
+  },
+  {
+   "file": "data/images/02-p05-26.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 351.0,
+   "y": 146.6003
+  },
+  {
+   "file": "data/images/02-p05-27.png",
+   "h": 22.8,
+   "page": 5,
+   "w": 122.0,
+   "x": 262.8,
+   "y": -0.9997
+  },
+  {
+   "file": "data/images/02-p06-01.png",
+   "h": 52.8,
+   "page": 6,
+   "w": 122.0,
+   "x": 262.8,
+   "y": 789.8003
+  },
+  {
+   "file": "data/images/02-p06-02.png",
+   "h": 75.0,
+   "page": 6,
+   "w": 119.0,
+   "x": 289.2,
+   "y": 563.6003
+  },
+  {
+   "file": "data/images/02-p06-03.png",
+   "h": 78.6,
+   "page": 6,
+   "w": 116.0,
+   "x": 328.8,
+   "y": 396.8003
+  },
+  {
+   "file": "data/images/02-p06-04.png",
+   "h": 52.2,
+   "page": 6,
+   "w": 230.0,
+   "x": 60.6,
+   "y": 280.4004
+  },
+  {
+   "file": "data/images/02-p06-05.png",
+   "h": 48.6,
+   "page": 6,
+   "w": 61.0,
+   "x": 219.0,
+   "y": 100.4003
+  },
+  {
+   "file": "data/images/02-p06-06.png",
+   "h": 47.4,
+   "page": 6,
+   "w": 63.0,
+   "x": 337.8,
+   "y": 101.6003
+  },
+  {
+   "file": "data/images/02-p06-07.png",
+   "h": 49.2,
+   "page": 6,
+   "w": 62.0,
+   "x": 113.4,
+   "y": 99.8003
+  },
+  {
+   "file": "data/images/02-p06-08.png",
+   "h": 50.4,
+   "page": 6,
+   "w": 63.0,
+   "x": 219.0,
+   "y": 37.4003
+  },
+  {
+   "file": "data/images/02-p06-09.png",
+   "h": 49.8,
+   "page": 6,
+   "w": 63.0,
+   "x": 337.8,
+   "y": 38.0003
+  },
+  {
+   "file": "data/images/02-p06-10.png",
+   "h": 52.2,
+   "page": 6,
+   "w": 63.0,
+   "x": 113.4,
+   "y": 35.6003
+  },
+  {
+   "file": "data/images/02-p07-01.png",
+   "h": 52.2,
+   "page": 7,
+   "w": 228.0,
+   "x": 64.8,
+   "y": 586.4003
+  },
+  {
+   "file": "data/images/02-p08-01.png",
+   "h": 180.0,
+   "page": 8,
+   "w": 449.0,
+   "x": 60.0,
+   "y": 396.8004
+  }
+ ],
+ "lesson": 2,
+ "patterns": [
+  {
+   "id": "L02-A1",
+   "question_variant": "これはなんですか。",
+   "requires_lesson": 2,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "じしょ",
+     "しんぶん",
+     "めいし"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "これは{S}です。"
+  },
+  {
+   "id": "L02-A2",
+   "question_variant": null,
+   "requires_lesson": 2,
+   "rows": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "ボールペン",
+     "「1」",
+     "「あ」"
+    ],
+    "T": [
+     "シャープペンシル",
+     "「7」",
+     "「お」"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "それは{S}ですか、{T}ですか。"
+  },
+  {
+   "id": "L02-A3",
+   "question_variant": "これはなんの本ですか。",
+   "requires_lesson": 2,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "じどうしゃ",
+     "コンピューター",
+     "にほんご"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "これは{S}の本です。"
+  },
+  {
+   "id": "L02-A4",
+   "question_variant": "あれはだれの机ですか。",
+   "requires_lesson": 2,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "わたし",
+     "さとうさん",
+     "せんせい"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "あれは{S}の机です。"
+  },
+  {
+   "id": "L02-A5",
+   "question_variant": "あれはだれのですか。",
+   "requires_lesson": 2,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "わたし",
+     "さとうさん",
+     "せんせい"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "あれは{S}のです。"
+  },
+  {
+   "id": "L02-A6",
+   "question_variant": null,
+   "requires_lesson": 2,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "てちょう",
+     "かぎ",
+     "かばん"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "この{S}はわたしのです。"
+  }
+ ],
+ "sentences": [
+  {
+   "alt": [],
+   "id": "L02-文型-1",
+   "jp": "これは  辞書です。",
+   "no": 1,
+   "ruby": [
+    {
+     "at": 5,
+     "base": "辞書",
+     "kana": "じしょ"
+    }
+   ],
+   "section": "文型",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-文型-2",
+   "jp": "これは  コンピューターの  本です。",
+   "no": 2,
+   "ruby": [
+    {
+     "at": 15,
+     "base": "本",
+     "kana": "ほん"
+    }
+   ],
+   "section": "文型",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-文型-3",
+   "jp": "それは  わたしの  傘です。",
+   "no": 3,
+   "ruby": [
+    {
+     "at": 11,
+     "base": "傘",
+     "kana": "かさ"
+    }
+   ],
+   "section": "文型",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-文型-4",
+   "jp": "この  傘は  わたしのです。",
+   "no": 4,
+   "ruby": [
+    {
+     "at": 4,
+     "base": "傘",
+     "kana": "かさ"
+    }
+   ],
+   "section": "文型",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-例文-1",
+   "jp": "これは  テレホンカードですか。\n…はい、そうです。",
+   "no": 1,
+   "ruby": [],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-例文-2",
+   "jp": "それは  ノートですか。\n…いいえ、そうじゃ  ありません。 手帳です。",
+   "no": 2,
+   "ruby": [
+    {
+     "at": 31,
+     "base": "手帳",
+     "kana": "てちょう"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-例文-3",
+   "jp": "それは  何ですか。\n…［これは］ 名刺です。",
+   "no": 3,
+   "ruby": [
+    {
+     "at": 5,
+     "base": "何",
+     "kana": "なん"
+    },
+    {
+     "at": 18,
+     "base": "名刺",
+     "kana": "めいし"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-例文-4",
+   "jp": "これは 「9」 ですか、「7」ですか。\n…「9」です。",
+   "no": 4,
+   "ruby": [],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-例文-5",
+   "jp": "それは  何の  雑誌ですか。\n…自動車の  雑誌です。",
+   "no": 5,
+   "ruby": [
+    {
+     "at": 5,
+     "base": "何",
+     "kana": "なん"
+    },
+    {
+     "at": 9,
+     "base": "雑誌",
+     "kana": "ざっし"
+    },
+    {
+     "at": 17,
+     "base": "自動車",
+     "kana": "じどうしゃ"
+    },
+    {
+     "at": 23,
+     "base": "雑誌",
+     "kana": "ざっし"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-例文-6",
+   "jp": "あれは  だれの  かばんですか。\n…佐藤さんの  かばんです。",
+   "no": 6,
+   "ruby": [
+    {
+     "at": 19,
+     "base": "佐藤",
+     "kana": "さとう"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-例文-7",
+   "jp": "この  傘は  あなたのですか。\n…いいえ、わたしのじゃ  ありません。",
+   "no": 7,
+   "ruby": [
+    {
+     "at": 4,
+     "base": "傘",
+     "kana": "かさ"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-例文-8",
+   "jp": "この  かぎは  だれのですか。\n…わたしのです。",
+   "no": 8,
+   "ruby": [],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-会話-1",
+   "jp": "山田一郎：はい。",
+   "no": 1,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "山田一郎",
+     "kana": "やまだいちろう"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-会話-2",
+   "jp": "どなたですか。",
+   "no": 2,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-会話-3",
+   "jp": "サントス：408の  サントスです。",
+   "no": 3,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-会話-4",
+   "jp": "サントス：こんにちは。",
+   "no": 4,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-会話-5",
+   "jp": "サントスです。",
+   "no": 5,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-会話-6",
+   "jp": "これから  お世話に  なります。",
+   "no": 6,
+   "ruby": [
+    {
+     "at": 7,
+     "base": "世話",
+     "kana": "せわ"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-会話-7",
+   "jp": "どうぞ  よろしく  お願いします。",
+   "no": 7,
+   "ruby": [
+    {
+     "at": 12,
+     "base": "願",
+     "kana": "ねが"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-会話-8",
+   "jp": "山田：こちらこそ  よろしく。",
+   "no": 8,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-会話-9",
+   "jp": "サントス：あのう、これ、ほんの  気持ちです。",
+   "no": 9,
+   "ruby": [
+    {
+     "at": 17,
+     "base": "気持",
+     "kana": "きも"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-会話-10",
+   "jp": "山    田：あ、どうも……。",
+   "no": 10,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-会話-11",
+   "jp": "何ですか。",
+   "no": 11,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "何",
+     "kana": "なん"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-会話-12",
+   "jp": "サントス：コーヒーです。",
+   "no": 12,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-会話-13",
+   "jp": "どうぞ。",
+   "no": 13,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-会話-14",
+   "jp": "山    田：どうも  ありがとう  ございます。",
+   "no": 14,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-問題-1",
+   "jp": "1)… はい、  そうです\n2)…コンピューターです\n3)…名刺です。\n4)…自動車の雑誌です。\n5)…いいえ、わたしのじゃありません。",
+   "no": 1,
+   "ruby": [
+    {
+     "at": 30,
+     "base": "名刺",
+     "kana": "めいし"
+    },
+    {
+     "at": 39,
+     "base": "自動車",
+     "kana": "じどうしゃ"
+    },
+    {
+     "at": 43,
+     "base": "雑誌",
+     "kana": "ざっし"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-問題-4",
+   "jp": "例：  それは （ ①だれ、②何、③本 ） ですか。 ……本です。（②）\n1)  ミラーさんは （ ①どなた、②何歳、③何 ） ですか。……28歳です。（②）\n2)  ワンさんは （ ①だれ、②先生、③何 ） ですか。……いいえ、違います。（②）\n3)  それは （ ①イーさん、②だれ、③何 ） の  雑誌ですか。\n……カメラの  雑誌です。（③）\n4)  これは （ ①わたし、②あなた、③あの  人 ） のですか。\n……はい、わたしのです。（②）",
+   "no": 4,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 15,
+     "base": "何",
+     "kana": "なん"
+    },
+    {
+     "at": 18,
+     "base": "本",
+     "kana": "ほん"
+    },
+    {
+     "at": 29,
+     "base": "本",
+     "kana": "ほん"
+    },
+    {
+     "at": 56,
+     "base": "何歳",
+     "kana": "なんさい"
+    },
+    {
+     "at": 60,
+     "base": "何",
+     "kana": "なん"
+    },
+    {
+     "at": 72,
+     "base": "歳",
+     "kana": "さい"
+    },
+    {
+     "at": 97,
+     "base": "先生",
+     "kana": "せんせい"
+    },
+    {
+     "at": 101,
+     "base": "何",
+     "kana": "なん"
+    },
+    {
+     "at": 115,
+     "base": "違",
+     "kana": "ちが"
+    },
+    {
+     "at": 145,
+     "base": "何",
+     "kana": "なん"
+    },
+    {
+     "at": 152,
+     "base": "雑誌",
+     "kana": "ざっし"
+    },
+    {
+     "at": 167,
+     "base": "雑誌",
+     "kana": "ざっし"
+    },
+    {
+     "at": 201,
+     "base": "人",
+     "kana": "ひと"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-問題-5",
+   "jp": "例：  （ これ ）は  かぎです。\n1)（ それ ）は  ラジオです。\n2)（ あれ ）は  コンピューターです。\n3)（ これ ）は  辞書です。",
+   "no": 5,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 70,
+     "base": "辞書",
+     "kana": "じしょ"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-問題-6",
+   "jp": "例：  あの 人は （ だれ ） ですか。 ……ミラーさんです。\n1)これは（ 新聞 ） ですか。……はい、新聞です。\n2)それは（ 何 ） ですか。……テレホンカードです。\n3)それは（ 何 ） の  テープですか。 ……韓国語の  テープです。\n4)これは（ だれ ） の  鉛筆ですか。 ……木村さんの 鉛筆です。",
+   "no": 6,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 7,
+     "base": "人",
+     "kana": "ひと"
+    },
+    {
+     "at": 40,
+     "base": "新聞",
+     "kana": "しんぶん"
+    },
+    {
+     "at": 54,
+     "base": "新聞",
+     "kana": "しんぶん"
+    },
+    {
+     "at": 67,
+     "base": "何",
+     "kana": "なん"
+    },
+    {
+     "at": 95,
+     "base": "何",
+     "kana": "なん"
+    },
+    {
+     "at": 112,
+     "base": "韓国語",
+     "kana": "かんこくご"
+    },
+    {
+     "at": 140,
+     "base": "鉛筆",
+     "kana": "えんぴつ"
+    },
+    {
+     "at": 149,
+     "base": "木村",
+     "kana": "きむら"
+    },
+    {
+     "at": 155,
+     "base": "鉛筆",
+     "kana": "えんぴつ"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-問題-7",
+   "jp": "例：  は／本／です／これ  →  これは 本です。\n1)です／それ／は／の／わたし／かぎ  →  それはわたしのかぎです。\n2)の／です／ミラーさん／辞書／は／この  →  この辞書はミラーさんのです。\n3)だれ／その／の／か／傘／です／は  →  その傘はだれのですか。\n4)あれ／です／先生／机／の／は  →  あれは先生の机です。",
+   "no": 7,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 6,
+     "base": "本",
+     "kana": "ほん"
+    },
+    {
+     "at": 22,
+     "base": "本",
+     "kana": "ほん"
+    },
+    {
+     "at": 76,
+     "base": "辞書",
+     "kana": "じしょ"
+    },
+    {
+     "at": 90,
+     "base": "辞書",
+     "kana": "じしょ"
+    },
+    {
+     "at": 115,
+     "base": "傘",
+     "kana": "かさ"
+    },
+    {
+     "at": 128,
+     "base": "傘",
+     "kana": "かさ"
+    },
+    {
+     "at": 146,
+     "base": "先生",
+     "kana": "せんせい"
+    },
+    {
+     "at": 149,
+     "base": "机",
+     "kana": "つくえ"
+    },
+    {
+     "at": 162,
+     "base": "先生",
+     "kana": "せんせい"
+    },
+    {
+     "at": 165,
+     "base": "机",
+     "kana": "つくえ"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L02-問題-8",
+   "jp": "例：  山    田：  はい。  どなたですか。\nサントス：  408の （サントスです）。\n1)サントス：  これから （お世話になります）。\nどうぞ  よろしく。\n山    田：  こちらこそ  よろしく。\n2)  サントス：  あのう、これ、（ほんの気持ちです）。 （どうぞ）。\n山    田：  どうも……。  何ですか。\nサントス：  コーヒーです。\n山    田：  （どうもありがとうございます）。",
+   "no": 8,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 64,
+     "base": "世話",
+     "kana": "せわ"
+    },
+    {
+     "at": 129,
+     "base": "気持",
+     "kana": "きも"
+    },
+    {
+     "at": 161,
+     "base": "何",
+     "kana": "なん"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  }
+ ],
+ "vocab": [
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "これ",
+   "kanji": null,
+   "no": 1,
+   "usage": null,
+   "zh": "這（事物近己方）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "それ",
+   "kanji": null,
+   "no": 2,
+   "usage": null,
+   "zh": "那（事物近對方）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "あれ",
+   "kanji": null,
+   "no": 3,
+   "usage": null,
+   "zh": "那（事物在遠方）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "この～",
+   "kanji": null,
+   "no": 4,
+   "usage": null,
+   "zh": "這～（近己方）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "その～",
+   "kanji": null,
+   "no": 5,
+   "usage": null,
+   "zh": "那～（近對方）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "あの～",
+   "kanji": null,
+   "no": 6,
+   "usage": null,
+   "zh": "那～（遠方）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ほん",
+   "kanji": "本",
+   "no": 7,
+   "usage": null,
+   "zh": "書本，書籍"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "じしょ",
+   "kanji": "辞書",
+   "no": 8,
+   "usage": null,
+   "zh": "辭典"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ざっし",
+   "kanji": "雑誌",
+   "no": 9,
+   "usage": null,
+   "zh": "雜誌"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "しんぶん",
+   "kanji": "新聞",
+   "no": 10,
+   "usage": null,
+   "zh": "報紙"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ノート",
+   "kanji": null,
+   "no": 11,
+   "usage": null,
+   "zh": "筆記本"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "てちょう",
+   "kanji": "手帳",
+   "no": 12,
+   "usage": null,
+   "zh": "記事本"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "めいし",
+   "kanji": "名刺",
+   "no": 13,
+   "usage": null,
+   "zh": "名片"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "カード",
+   "kanji": null,
+   "no": 14,
+   "usage": null,
+   "zh": "卡片"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "テレホンカード",
+   "kanji": null,
+   "no": 15,
+   "usage": null,
+   "zh": "電話卡"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "えんぴつ",
+   "kanji": "鉛筆",
+   "no": 16,
+   "usage": null,
+   "zh": "鉛筆"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ボールペン",
+   "kanji": null,
+   "no": 17,
+   "usage": null,
+   "zh": "原子筆"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "シャープペンシル",
+   "kanji": null,
+   "no": 18,
+   "usage": null,
+   "zh": "自動鉛筆"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "かぎ",
+   "kanji": null,
+   "no": 19,
+   "usage": null,
+   "zh": "鑰匙"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "とけい",
+   "kanji": "時計",
+   "no": 20,
+   "usage": null,
+   "zh": "鐘錶"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "かさ",
+   "kanji": "傘",
+   "no": 21,
+   "usage": null,
+   "zh": "傘"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "かばん",
+   "kanji": null,
+   "no": 22,
+   "usage": null,
+   "zh": "書包，手提包，皮包"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "［カセット］テープ",
+   "kanji": null,
+   "no": 23,
+   "usage": null,
+   "zh": "錄音帶"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "テープレコーダー",
+   "kanji": null,
+   "no": 24,
+   "usage": null,
+   "zh": "錄音機"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "テレビ",
+   "kanji": null,
+   "no": 25,
+   "usage": null,
+   "zh": "電視"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ラジオ",
+   "kanji": null,
+   "no": 26,
+   "usage": null,
+   "zh": "收音機"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "カメラ",
+   "kanji": null,
+   "no": 27,
+   "usage": null,
+   "zh": "照相機"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "コンピューター",
+   "kanji": null,
+   "no": 28,
+   "usage": null,
+   "zh": "電腦"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "じどうしゃ",
+   "kanji": "自動車",
+   "no": 29,
+   "usage": null,
+   "zh": "汽車"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "つくえ",
+   "kanji": "机",
+   "no": 30,
+   "usage": null,
+   "zh": "桌子"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "いす",
+   "kanji": null,
+   "no": 31,
+   "usage": null,
+   "zh": "椅子"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "チョコレート",
+   "kanji": null,
+   "no": 32,
+   "usage": null,
+   "zh": "巧克力"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "コーヒー",
+   "kanji": null,
+   "no": 33,
+   "usage": null,
+   "zh": "咖啡"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "えいご",
+   "kanji": "英語",
+   "no": 34,
+   "usage": null,
+   "zh": "英語"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "にほんご",
+   "kanji": "日本語",
+   "no": 35,
+   "usage": null,
+   "zh": "日語"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "～ご",
+   "kanji": "～語",
+   "no": 36,
+   "usage": null,
+   "zh": "～語"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "なん",
+   "kanji": "何",
+   "no": 37,
+   "usage": null,
+   "zh": "什麼"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "そう",
+   "kanji": null,
+   "no": 38,
+   "usage": null,
+   "zh": "是的"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ちがいます。",
+   "kanji": "違います。",
+   "no": 39,
+   "usage": null,
+   "zh": "不對。/不是。"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "そうですか。",
+   "kanji": null,
+   "no": 40,
+   "usage": null,
+   "zh": "我了解了/是嗎？"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "あのう",
+   "kanji": null,
+   "no": 41,
+   "usage": null,
+   "zh": "嗯（用於表示躊躇）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ほんの  きもちです。",
+   "kanji": null,
+   "no": 42,
+   "usage": null,
+   "zh": "小意思。/只是一點心意。 ほんの  気持ちです。"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "どうぞ。",
+   "kanji": null,
+   "no": 43,
+   "usage": null,
+   "zh": "請。/給你。"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "どうも。",
+   "kanji": null,
+   "no": 44,
+   "usage": null,
+   "zh": "謝了。"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "［どうも］ ありがとう ［ございます］。",
+   "kanji": null,
+   "no": 45,
+   "usage": null,
+   "zh": "（非常）謝謝你。"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "これから  おせわに  なります。",
+   "kanji": "これから  お世話に  なります。",
+   "no": null,
+   "usage": null,
+   "zh": "今後還請你多多關照。"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "こちらこそ  よろしく。",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "哪裡哪裡，請多關照。（用於回應「うぞ よろしく」時）"
+  }
+ ]
+}

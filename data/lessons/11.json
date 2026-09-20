@@ -1,0 +1,2278 @@
+{
+ "drills": [
+  {
+   "id": "L11-B1",
+   "items": [
+    "いす",
+    "卵",
+    "かばん",
+    "かぎ"
+   ],
+   "model_answer": "りんごが いくつ ありますか。 3つ あります。",
+   "model_cue": "りんご"
+  },
+  {
+   "id": "L11-B2",
+   "items": [
+    "ＣＤ",
+    "コンピューター",
+    "封筒",
+    "自動車"
+   ],
+   "model_answer": "テレビが 何台 ありますか。 2台 あります。｜シャツが 何枚 ありますか。 1枚 あります。",
+   "model_cue": "テレビ｜シャツ"
+  },
+  {
+   "id": "L11-B3",
+   "items": [
+    "外国人の 社員",
+    "女の 人",
+    "男の 子",
+    "子ども"
+   ],
+   "model_answer": "学生が 何人 いますか。 4人 います。",
+   "model_cue": "学生"
+  },
+  {
+   "id": "L11-B4",
+   "items": [
+    "撮ります",
+    "買います",
+    "食べます",
+    "送ります"
+   ],
+   "model_answer": "はがきを 何枚 買いましたか。 10枚 買いました。",
+   "model_cue": "買います"
+  },
+  {
+   "id": "L11-B5",
+   "items": [
+    "1日・彼女に 電話を かけます （ 2 ）",
+    "1週間・日本語を 習います （ 3 ）",
+    "1か月・東京へ 行きます （ 1 ）",
+    "1年・国へ 帰ります （ 1 ）"
+   ],
+   "model_answer": "1か月に 何回 映画を 見ますか。 1回 見ます。",
+   "model_cue": "1か月・映画を 見ます（ 1 ）"
+  },
+  {
+   "id": "L11-B6",
+   "items": [
+    "大学で 勉強します（ 4年 ）",
+    "旅行を しました（ 2週間 ）",
+    "毎日 働きます（ 8時間 ）",
+    "休みます（ 10分だけ ）"
+   ],
+   "model_answer": "先月 何日 会社を 休みましたか。 4日 休みました。",
+   "model_cue": "先月 会社を 休みました（ 4日 ）"
+  },
+  {
+   "id": "L11-B7",
+   "items": [
+    "旅行を します（ 1週間ぐらい ）",
+    "フランス語を 習いました （ 5年 ）",
+    "スーパーで 働ました （ 4か月ぐらい ）",
+    "日本に います（ 2年 ）"
+   ],
+   "model_answer": "どのくらい日本語を 勉強しましたか。 3か月 勉強しました。",
+   "model_cue": "日本語を 勉強しました（ 3か月 ）"
+  }
+ ],
+ "grammar": [
+  {
+   "body_zh": "1)ひとつ、ふたつ……とお計算物品時的說法。11以上用數字計算。2)量詞計算人、物時，或要表示某種數量時，對象不同使用的量詞也會不同。量詞直接放在數字後面使用。－人計算人數。但是，一個人時說「ひとり（１人）」，兩個人時用「ふたり（２人）」，「４人」要唸「よにん」。－台計算機械，或汽車、自行車等交通工具時使用。－枚計算薄或扁平的物品。紙張、襯衫、盤子、CD等。－回計算次數。－分分鐘－時間小時－日天數跟日期的說法一樣，只有一天要說成「いちにち」。－週間星期－か月月數－年年數其他量詞參考書尾的附錄。3)數量詞的用法數字加上量詞叫做數量詞。數量詞一般直接放在要修飾的動詞前面。但是表示時間長度的數量詞不在此限。4)疑問詞(1)用「ひとつ、ふたつ……」計算的物品數量，用「いくつ」詢問。(2)詢問帶有量詞的數字時，用「なん」。(3)用「どのくらい」詢問時間的長度。時間的長度單位有很多種。5)ぐらい「ぐらい」放在數量詞後面，表示大約的意思。",
+   "examples": [
+    {
+     "jp": "りんごを  ４つ  買いました。",
+     "zh": "買了４個蘋果。"
+    },
+    {
+     "jp": "外国人の  学生が  ２人  います。",
+     "zh": "有兩個外國學生。"
+    },
+    {
+     "jp": "国で  ２か月  日本語を  勉強しました。",
+     "zh": "在國內學了兩個月的日語。"
+    },
+    {
+     "jp": "みかんを  いくつ  買いましたか。 …８つ  買いました。",
+     "zh": "買了幾個橘子？買了８個。"
+    },
+    {
+     "jp": "この  会社に  外国人が  何人  いますか。 …５人  います。",
+     "zh": "這家公司有幾個外國人？ 有５個。"
+    },
+    {
+     "jp": "毎晩  何時間  日本語を  勉強しますか。 ２時間  勉強します。",
+     "zh": "每天晚上念幾個小時的日語？ 念２個小時。"
+    },
+    {
+     "jp": "どのくらい  日本語を  勉強しましたか。 …３年  勉強しました。",
+     "zh": "學多久的日語了？ 學３年了。"
+    },
+    {
+     "jp": "大阪から  東京まで  どのくらい  かかりますか。 …新幹線で  ２時間半  かかります。",
+     "zh": "從大阪到東京要花多少時間呢？ 搭新幹線要兩個半小時。"
+    },
+    {
+     "jp": "学校に  先生が  ３０人ぐらい  います。",
+     "zh": "學校大約有30位老師。"
+    },
+    {
+     "jp": "１５分ぐらい  かかります。",
+     "zh": "大約要花15分鐘左右。"
+    }
+   ],
+   "no": 1,
+   "title": "數量的說法"
+  },
+  {
+   "body_zh": "使用這個句型，可以表達出進行某動作的頻率。",
+   "examples": [
+    {
+     "jp": "１か月に  ２回  映画を  見ます。",
+     "zh": "一個月看兩次電影。"
+    }
+   ],
+   "no": 2,
+   "title": "數量詞（期間）に 回 －動詞"
+  },
+  {
+   "body_zh": "「だけ（只）」放在數量詞或名詞後面，表示只有這些，沒有其他的的意思。",
+   "examples": [
+    {
+     "jp": "パワー電気に  外国人の  社員が  １人だけ  います。",
+     "zh": "動力電氣公司只有一個外國職員。"
+    },
+    {
+     "jp": "休みは  日曜日だけです。",
+     "zh": "休假只有星期天。"
+    }
+   ],
+   "no": 3,
+   "title": "數量詞だけ／名詞だけ"
+  }
+ ],
+ "images": [
+  {
+   "file": "data/images/11-p02-01.png",
+   "h": 1.8,
+   "page": 2,
+   "w": 9.0,
+   "x": 90.0,
+   "y": 151.4003
+  },
+  {
+   "file": "data/images/11-p02-02.png",
+   "h": 4.8,
+   "page": 2,
+   "w": 1.2,
+   "x": 98.4,
+   "y": 147.8003
+  },
+  {
+   "file": "data/images/11-p02-03.png",
+   "h": 4.8,
+   "page": 2,
+   "w": 1.2,
+   "x": 94.2,
+   "y": 127.4003
+  },
+  {
+   "file": "data/images/11-p02-04.png",
+   "h": 1.8,
+   "page": 2,
+   "w": 53.0,
+   "x": 41.4,
+   "y": 131.0003
+  },
+  {
+   "file": "data/images/11-p03-01.png",
+   "h": 114.6,
+   "page": 3,
+   "w": 197.0,
+   "x": 377.4,
+   "y": 34.4004
+  },
+  {
+   "file": "data/images/11-p04-01.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 166.8,
+   "y": 29.0003
+  },
+  {
+   "file": "data/images/11-p04-02.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 367.8,
+   "y": 30.8003
+  },
+  {
+   "file": "data/images/11-p04-03.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 183.0,
+   "y": 8.6003
+  },
+  {
+   "file": "data/images/11-p04-04.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 382.2,
+   "y": 7.4003
+  },
+  {
+   "file": "data/images/11-p05-01.png",
+   "h": 54.0,
+   "page": 5,
+   "w": 239.0,
+   "x": 66.0,
+   "y": 653.0003
+  },
+  {
+   "file": "data/images/11-p05-02.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 173.4,
+   "y": 737.6003
+  },
+  {
+   "file": "data/images/11-p05-03.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 457.8,
+   "y": 738.8003
+  },
+  {
+   "file": "data/images/11-p05-04.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 173.4,
+   "y": 714.8003
+  },
+  {
+   "file": "data/images/11-p05-05.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 396.6,
+   "y": 718.4003
+  },
+  {
+   "file": "data/images/11-p05-06.png",
+   "h": 55.2,
+   "page": 5,
+   "w": 237.0,
+   "x": 64.8,
+   "y": 463.4003
+  },
+  {
+   "file": "data/images/11-p05-07.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 233.4,
+   "y": 554.6003
+  },
+  {
+   "file": "data/images/11-p05-08.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 406.2,
+   "y": 555.2003
+  },
+  {
+   "file": "data/images/11-p05-09.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 198.0,
+   "y": 533.6003
+  },
+  {
+   "file": "data/images/11-p05-10.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 392.4,
+   "y": 534.8004
+  },
+  {
+   "file": "data/images/11-p05-11.png",
+   "h": 59.4,
+   "page": 5,
+   "w": 240.0,
+   "x": 64.2,
+   "y": 279.8004
+  },
+  {
+   "file": "data/images/11-p05-12.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 195.6,
+   "y": 371.0003
+  },
+  {
+   "file": "data/images/11-p05-13.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 407.4,
+   "y": 370.4003
+  },
+  {
+   "file": "data/images/11-p05-14.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 197.4,
+   "y": 348.2003
+  },
+  {
+   "file": "data/images/11-p05-15.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 408.6,
+   "y": 348.2003
+  },
+  {
+   "file": "data/images/11-p05-16.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 390.6,
+   "y": 187.4003
+  },
+  {
+   "file": "data/images/11-p05-17.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 363.0,
+   "y": 164.0003
+  },
+  {
+   "file": "data/images/11-p05-18.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 338.4,
+   "y": 146.6003
+  },
+  {
+   "file": "data/images/11-p05-19.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 315.6,
+   "y": 123.8003
+  },
+  {
+   "file": "data/images/11-p05-20.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 323.4,
+   "y": 26.0003
+  },
+  {
+   "file": "data/images/11-p05-21.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 321.6,
+   "y": 3.2003
+  },
+  {
+   "file": "data/images/11-p05-22.png",
+   "h": 1.8,
+   "page": 5,
+   "w": 18.0,
+   "x": 306.0,
+   "y": -0.9997
+  },
+  {
+   "file": "data/images/11-p06-01.png",
+   "h": 3.0,
+   "page": 6,
+   "w": 18.0,
+   "x": 321.6,
+   "y": 839.6003
+  },
+  {
+   "file": "data/images/11-p06-02.png",
+   "h": 18.0,
+   "page": 6,
+   "w": 18.0,
+   "x": 306.0,
+   "y": 819.2003
+  },
+  {
+   "file": "data/images/11-p06-03.png",
+   "h": 18.0,
+   "page": 6,
+   "w": 18.0,
+   "x": 289.8,
+   "y": 798.2003
+  },
+  {
+   "file": "data/images/11-p06-04.png",
+   "h": 18.0,
+   "page": 6,
+   "w": 18.0,
+   "x": 346.2,
+   "y": 696.2003
+  },
+  {
+   "file": "data/images/11-p06-05.png",
+   "h": 18.0,
+   "page": 6,
+   "w": 18.0,
+   "x": 367.8,
+   "y": 677.6003
+  },
+  {
+   "file": "data/images/11-p06-06.png",
+   "h": 18.0,
+   "page": 6,
+   "w": 18.0,
+   "x": 400.2,
+   "y": 656.0003
+  },
+  {
+   "file": "data/images/11-p06-07.png",
+   "h": 18.0,
+   "page": 6,
+   "w": 18.0,
+   "x": 297.6,
+   "y": 636.2003
+  },
+  {
+   "file": "data/images/11-p06-08.png",
+   "h": 70.2,
+   "page": 6,
+   "w": 122.0,
+   "x": 297.6,
+   "y": 449.0003
+  },
+  {
+   "file": "data/images/11-p06-09.png",
+   "h": 87.0,
+   "page": 6,
+   "w": 106.0,
+   "x": 311.4,
+   "y": 233.6004
+  },
+  {
+   "file": "data/images/11-p06-10.png",
+   "h": 85.8,
+   "page": 6,
+   "w": 102.0,
+   "x": 322.8,
+   "y": 16.4003
+  },
+  {
+   "file": "data/images/11-p07-01.png",
+   "h": 10.2,
+   "page": 7,
+   "w": 102.0,
+   "x": 322.8,
+   "y": 832.4003
+  },
+  {
+   "file": "data/images/11-p07-02.png",
+   "h": 47.4,
+   "page": 7,
+   "w": 61.0,
+   "x": 337.8,
+   "y": 586.4003
+  },
+  {
+   "file": "data/images/11-p07-03.png",
+   "h": 51.0,
+   "page": 7,
+   "w": 60.0,
+   "x": 113.4,
+   "y": 582.8003
+  },
+  {
+   "file": "data/images/11-p07-04.png",
+   "h": 48.0,
+   "page": 7,
+   "w": 62.0,
+   "x": 223.2,
+   "y": 584.0003
+  },
+  {
+   "file": "data/images/11-p07-05.png",
+   "h": 52.8,
+   "page": 7,
+   "w": 63.0,
+   "x": 222.6,
+   "y": 518.6003
+  },
+  {
+   "file": "data/images/11-p07-06.png",
+   "h": 50.4,
+   "page": 7,
+   "w": 63.0,
+   "x": 337.8,
+   "y": 522.2003
+  },
+  {
+   "file": "data/images/11-p07-07.png",
+   "h": 48.0,
+   "page": 7,
+   "w": 61.0,
+   "x": 113.4,
+   "y": 524.6003
+  }
+ ],
+ "lesson": 11,
+ "patterns": [
+  {
+   "id": "L11-A1",
+   "question_variant": "みかんをいくつ買いましたか。",
+   "requires_lesson": 11,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "いつつ",
+     "やっつ",
+     "とお"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "みかんを{S}買いました。"
+  },
+  {
+   "id": "L11-A2",
+   "question_variant": null,
+   "requires_lesson": 11,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "1まい",
+     "2まい",
+     "5まい"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "90円の切手を{S}ください。"
+  },
+  {
+   "id": "L11-A3",
+   "question_variant": "この会社に外国人がなんにんいますか。",
+   "requires_lesson": 11,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "ひとり",
+     "ふたり",
+     "4 にん"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "この会社に外国人が{S}います。"
+  },
+  {
+   "id": "L11-A4",
+   "question_variant": "1しゅうかんになんかい映画を見ますか。",
+   "requires_lesson": 11,
+   "rows": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "1しゅうかん",
+     "1かげつ",
+     "1ねん"
+    ],
+    "T": [
+     "1かい",
+     "2かい",
+     "5かいぐらい"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "{S}に{T}映画を見ます"
+  },
+  {
+   "id": "L11-A5",
+   "question_variant": "あなたは国でどのくらい日本語を勉強しましたか。",
+   "requires_lesson": 11,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "5しゅうかん",
+     "6かげつ",
+     "1ねんぐらい"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "わたしは国で{S}日本語を勉強しました。"
+  },
+  {
+   "id": "L11-A6",
+   "question_variant": "あなたの国から日本まで飛行機でどのくらいかかりますか。",
+   "requires_lesson": 11,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "4じかん",
+     "5じかんはん",
+     "12じかん"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "わたしの国から日本まで飛行機で{S}かかります。"
+  }
+ ],
+ "sentences": [
+  {
+   "alt": [],
+   "id": "L11-文型-1",
+   "jp": "会議室に  テーブルが   7つ  あります。",
+   "no": 1,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "会議室",
+     "kana": "かいぎしつ"
+    },
+    {
+     "at": 14,
+     "base": "7",
+     "kana": "なな"
+    }
+   ],
+   "section": "文型",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-文型-2",
+   "jp": "わたしは  日本に  1年  います。",
+   "no": 2,
+   "ruby": [
+    {
+     "at": 6,
+     "base": "日本",
+     "kana": "にほん"
+    },
+    {
+     "at": 12,
+     "base": "年",
+     "kana": "ねん"
+    }
+   ],
+   "section": "文型",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-例文-1",
+   "jp": "りんごを  いくつ  買いましたか。\n…4つ  買いました。",
+   "no": 1,
+   "ruby": [
+    {
+     "at": 11,
+     "base": "買",
+     "kana": "か"
+    },
+    {
+     "at": 20,
+     "base": "4",
+     "kana": "よっ"
+    },
+    {
+     "at": 24,
+     "base": "買",
+     "kana": "か"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-例文-2",
+   "jp": "80円の  切手を  5枚と  はがきを  2枚  ください。\n…はい。全部で  500円です。",
+   "no": 2,
+   "ruby": [
+    {
+     "at": 2,
+     "base": "円",
+     "kana": "えん"
+    },
+    {
+     "at": 6,
+     "base": "切手",
+     "kana": "きって"
+    },
+    {
+     "at": 12,
+     "base": "枚",
+     "kana": "まい"
+    },
+    {
+     "at": 23,
+     "base": "枚",
+     "kana": "まい"
+    },
+    {
+     "at": 36,
+     "base": "全部",
+     "kana": "ぜんぶ"
+    },
+    {
+     "at": 44,
+     "base": "円",
+     "kana": "えん"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-例文-3",
+   "jp": "富士大学に  外国人の  先生が  いますか。\n…はい、  3人  います。  みんな  アメリカ人です。",
+   "no": 3,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "富士大学",
+     "kana": "ふじだいがく"
+    },
+    {
+     "at": 7,
+     "base": "外国人",
+     "kana": "がいこくじん"
+    },
+    {
+     "at": 13,
+     "base": "先生",
+     "kana": "せんせい"
+    },
+    {
+     "at": 31,
+     "base": "人",
+     "kana": "にん"
+    },
+    {
+     "at": 49,
+     "base": "人",
+     "kana": "じん"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-例文-4",
+   "jp": "家族 は  何人ですか。\n…5人です。  両親と  姉と  兄が  います。",
+   "no": 4,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "家族",
+     "kana": "かぞく"
+    },
+    {
+     "at": 6,
+     "base": "何人",
+     "kana": "なんにん"
+    },
+    {
+     "at": 15,
+     "base": "人",
+     "kana": "にん"
+    },
+    {
+     "at": 21,
+     "base": "両親",
+     "kana": "りょうしん"
+    },
+    {
+     "at": 26,
+     "base": "姉",
+     "kana": "あね"
+    },
+    {
+     "at": 30,
+     "base": "兄",
+     "kana": "あに"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-例文-5",
+   "jp": "1週間に  何回  テニスを  しますか。\n…2回ぐらい  します。",
+   "no": 5,
+   "ruby": [
+    {
+     "at": 1,
+     "base": "週間",
+     "kana": "しゅうかん"
+    },
+    {
+     "at": 6,
+     "base": "何回",
+     "kana": "なんかい"
+    },
+    {
+     "at": 24,
+     "base": "回",
+     "kana": "かい"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-例文-6",
+   "jp": "田中さんは  どのくらい  スペイン語を  勉強しましたか。\n…3か月  勉強しました。\nえっ、3か月だけですか。  上手ですね。",
+   "no": 6,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "田中",
+     "kana": "たなか"
+    },
+    {
+     "at": 18,
+     "base": "語",
+     "kana": "ご"
+    },
+    {
+     "at": 22,
+     "base": "勉強",
+     "kana": "べんきょう"
+    },
+    {
+     "at": 34,
+     "base": "月",
+     "kana": "げつ"
+    },
+    {
+     "at": 37,
+     "base": "勉強",
+     "kana": "べんきょう"
+    },
+    {
+     "at": 50,
+     "base": "月",
+     "kana": "げつ"
+    },
+    {
+     "at": 59,
+     "base": "上手",
+     "kana": "じょうず"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-例文-7",
+   "jp": "大阪から  東京まで  新幹線で  どのくらい  かかりますか。\n…2時間半  かかります。",
+   "no": 7,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "大阪",
+     "kana": "おおさか"
+    },
+    {
+     "at": 6,
+     "base": "東京",
+     "kana": "とうきょう"
+    },
+    {
+     "at": 12,
+     "base": "新幹線",
+     "kana": "しんかんせん"
+    },
+    {
+     "at": 35,
+     "base": "時間半",
+     "kana": "じかんはん"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-会話-1",
+   "jp": "管 理 人：いい  天気ですね。",
+   "no": 1,
+   "ruby": [
+    {
+     "at": 10,
+     "base": "天気",
+     "kana": "てんき"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-会話-2",
+   "jp": "お出かけですか。",
+   "no": 2,
+   "ruby": [
+    {
+     "at": 1,
+     "base": "出",
+     "kana": "で"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-会話-3",
+   "jp": "ワ    ン：ええ、ちょっと  郵便局まで。",
+   "no": 3,
+   "ruby": [
+    {
+     "at": 16,
+     "base": "郵便局",
+     "kana": "ゆうびんきょく"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-会話-4",
+   "jp": "管 理 人：そうですか。",
+   "no": 4,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-会話-5",
+   "jp": "行って  いらっしゃい。",
+   "no": 5,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "行",
+     "kana": "い"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-会話-6",
+   "jp": "ワ    ン：行って  まいります。",
+   "no": 6,
+   "ruby": [
+    {
+     "at": 7,
+     "base": "行",
+     "kana": "い"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-会話-7",
+   "jp": "ワ    ン：これ、速達で  お願いします。",
+   "no": 7,
+   "ruby": [
+    {
+     "at": 10,
+     "base": "速達",
+     "kana": "そくたつ"
+    },
+    {
+     "at": 16,
+     "base": "願",
+     "kana": "ねが"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-会話-8",
+   "jp": "郵便局員：はい、オーストラリアですね。",
+   "no": 8,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "郵便局員",
+     "kana": "ゆうびんきょくいん"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-会話-9",
+   "jp": "370円です。",
+   "no": 9,
+   "ruby": [
+    {
+     "at": 3,
+     "base": "円",
+     "kana": "えん"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-会話-10",
+   "jp": "ワ    ン：それから この  荷物も  お願いします。",
+   "no": 10,
+   "ruby": [
+    {
+     "at": 16,
+     "base": "荷物",
+     "kana": "にもつ"
+    },
+    {
+     "at": 22,
+     "base": "願",
+     "kana": "ねが"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-会話-11",
+   "jp": "郵便局員：船便ですか、航空便ですか。",
+   "no": 11,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "郵便局員",
+     "kana": "ゆうびんきょくいん"
+    },
+    {
+     "at": 5,
+     "base": "船便",
+     "kana": "ふなびん"
+    },
+    {
+     "at": 11,
+     "base": "航空便",
+     "kana": "こうくうびん"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-会話-12",
+   "jp": "ワ    ン：船便は  いくらですか。",
+   "no": 12,
+   "ruby": [
+    {
+     "at": 7,
+     "base": "船便",
+     "kana": "ふなびん"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-会話-13",
+   "jp": "郵便局員：500円です",
+   "no": 13,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "郵便局員",
+     "kana": "ゆうびんきょくいん"
+    },
+    {
+     "at": 8,
+     "base": "円",
+     "kana": "えん"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-会話-14",
+   "jp": "ワ    ン：どのくらい  かかりますか。",
+   "no": 14,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-会話-15",
+   "jp": "郵便局員：1か月ぐらいです。",
+   "no": 15,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "郵便局員",
+     "kana": "ゆうびんきょくいん"
+    },
+    {
+     "at": 7,
+     "base": "月",
+     "kana": "げつ"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-会話-16",
+   "jp": "ワ    ン：じゃ、船便で  お願いします。",
+   "no": 16,
+   "ruby": [
+    {
+     "at": 10,
+     "base": "船便",
+     "kana": "ふなびん"
+    },
+    {
+     "at": 16,
+     "base": "願",
+     "kana": "ねが"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-問題-1",
+   "jp": "1)  …例：  4人です。\n2)…例：  4つあります。\n3)   …例：  5時間かかります。\n4) …例：  2か月勉強しました。\n5)…例：  1回見ます。",
+   "no": 1,
+   "ruby": [
+    {
+     "at": 5,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 10,
+     "base": "人",
+     "kana": "にん"
+    },
+    {
+     "at": 18,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 22,
+     "base": "4",
+     "kana": "よっ"
+    },
+    {
+     "at": 36,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 41,
+     "base": "時間",
+     "kana": "じかん"
+    },
+    {
+     "at": 54,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 60,
+     "base": "月勉強",
+     "kana": "げつべんきょう"
+    },
+    {
+     "at": 72,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 77,
+     "base": "回見",
+     "kana": "かいみ"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-問題-4",
+   "jp": "例：  みかんが  （  8→  やっつ ）  あります。\n1)  子どもが  （ 2→  ふたり ）  います。\n2)  車が  （ 4→  よんだい ）あります。\n3)  切手を  （ 10→  じゅうまい ）  買いました。\n4)  りんごを （ 5→  いつつ ）  ください。",
+   "no": 4,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 34,
+     "base": "子",
+     "kana": "こ"
+    },
+    {
+     "at": 62,
+     "base": "車",
+     "kana": "くるま"
+    },
+    {
+     "at": 88,
+     "base": "切手",
+     "kana": "きって"
+    },
+    {
+     "at": 109,
+     "base": "買",
+     "kana": "か"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-問題-5",
+   "jp": "例：  子どもが  （ 何人 ）  いますか。……3人  います。\n1)  いすが  （ いくつ ）  ありますか。……3つ  あります。\n2)  毎日  （ 何時間 ）  働きますか。……8時間  働きます。\n3)  切符を  （ 何枚 ）  買いますか。……2枚  買います。\n4)  寮に  自転車が  （ 何台 ）  ありますか。……5台  あります。",
+   "no": 5,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 4,
+     "base": "子",
+     "kana": "こ"
+    },
+    {
+     "at": 12,
+     "base": "何人",
+     "kana": "なんにん"
+    },
+    {
+     "at": 26,
+     "base": "人",
+     "kana": "にん"
+    },
+    {
+     "at": 60,
+     "base": "3",
+     "kana": "みっ"
+    },
+    {
+     "at": 74,
+     "base": "毎日",
+     "kana": "まいにち"
+    },
+    {
+     "at": 80,
+     "base": "何時間",
+     "kana": "なんじかん"
+    },
+    {
+     "at": 87,
+     "base": "働",
+     "kana": "はたら"
+    },
+    {
+     "at": 96,
+     "base": "時間",
+     "kana": "じかん"
+    },
+    {
+     "at": 100,
+     "base": "働",
+     "kana": "はたら"
+    },
+    {
+     "at": 110,
+     "base": "切符",
+     "kana": "きっぷ"
+    },
+    {
+     "at": 117,
+     "base": "何枚",
+     "kana": "なんまい"
+    },
+    {
+     "at": 123,
+     "base": "買",
+     "kana": "か"
+    },
+    {
+     "at": 132,
+     "base": "枚",
+     "kana": "まい"
+    },
+    {
+     "at": 135,
+     "base": "買",
+     "kana": "か"
+    },
+    {
+     "at": 145,
+     "base": "寮",
+     "kana": "りょう"
+    },
+    {
+     "at": 149,
+     "base": "自転車",
+     "kana": "じてんしゃ"
+    },
+    {
+     "at": 157,
+     "base": "何台",
+     "kana": "なんだい"
+    },
+    {
+     "at": 172,
+     "base": "台",
+     "kana": "だい"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-問題-6",
+   "jp": "例：  電車 （ で ）  1時間 （ × ）かかります。\n1)  1週間 （ に ）  3回 （ × ）  彼女に  電話を  かけます。\n2)  この  荷物は  アメリカまで  船便 （ で ）  いくらですか。\n3)  日本 （ に ）  2年 （ × ）  います。\n4)  りんご （ を ）  5つ （ × ）  ください。\n……はい。  600円です。",
+   "no": 6,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 4,
+     "base": "電車",
+     "kana": "でんしゃ"
+    },
+    {
+     "at": 15,
+     "base": "時間",
+     "kana": "じかん"
+    },
+    {
+     "at": 35,
+     "base": "週間",
+     "kana": "しゅうかん"
+    },
+    {
+     "at": 46,
+     "base": "回",
+     "kana": "かい"
+    },
+    {
+     "at": 55,
+     "base": "彼女",
+     "kana": "かのじょ"
+    },
+    {
+     "at": 60,
+     "base": "電話",
+     "kana": "でんわ"
+    },
+    {
+     "at": 79,
+     "base": "荷物",
+     "kana": "にもつ"
+    },
+    {
+     "at": 92,
+     "base": "船便",
+     "kana": "ふなびん"
+    },
+    {
+     "at": 114,
+     "base": "日本",
+     "kana": "にほん"
+    },
+    {
+     "at": 125,
+     "base": "年",
+     "kana": "ねん"
+    },
+    {
+     "at": 154,
+     "base": "5",
+     "kana": "いつ"
+    },
+    {
+     "at": 180,
+     "base": "円",
+     "kana": "えん"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L11-問題-7",
+   "jp": "1)  田中さんは  ご主人と  子どもが  2人  います。  田中さんの  家族は\n全部で  何人ですか。\n……4人です。\n2)    りんごを  15  もらいました。  4つ  食べました。  隣の  うちの\n人に  6つ  あげました。  今  りんごが  いくつ  ありますか。\n……5つあります。\n3)     80円の  切手を  5枚と、50円の  切手を  5枚  買います。  全部で\nいくらですか。\n……650円です。\n4)     わたしは  中国語を  3か月  習いました。  1か月に  8回\n勉強しました。  1回は  2時間です。  全部で  何時間  習いましたか。\n……48時間習いました。",
+   "no": 7,
+   "ruby": [
+    {
+     "at": 4,
+     "base": "田中",
+     "kana": "たなか"
+    },
+    {
+     "at": 12,
+     "base": "主人",
+     "kana": "しゅじん"
+    },
+    {
+     "at": 17,
+     "base": "子",
+     "kana": "こ"
+    },
+    {
+     "at": 23,
+     "base": "2人",
+     "kana": "ふたり"
+    },
+    {
+     "at": 33,
+     "base": "田中",
+     "kana": "たなか"
+    },
+    {
+     "at": 40,
+     "base": "家族",
+     "kana": "かぞく"
+    },
+    {
+     "at": 44,
+     "base": "全部",
+     "kana": "ぜんぶ"
+    },
+    {
+     "at": 49,
+     "base": "何人",
+     "kana": "なんにん"
+    },
+    {
+     "at": 59,
+     "base": "人",
+     "kana": "にん"
+    },
+    {
+     "at": 89,
+     "base": "4",
+     "kana": "よっ"
+    },
+    {
+     "at": 93,
+     "base": "食",
+     "kana": "た"
+    },
+    {
+     "at": 101,
+     "base": "隣",
+     "kana": "となり"
+    },
+    {
+     "at": 109,
+     "base": "人",
+     "kana": "ひと"
+    },
+    {
+     "at": 113,
+     "base": "6",
+     "kana": "むっ"
+    },
+    {
+     "at": 125,
+     "base": "今",
+     "kana": "いま"
+    },
+    {
+     "at": 148,
+     "base": "5",
+     "kana": "いつ"
+    },
+    {
+     "at": 165,
+     "base": "円",
+     "kana": "えん"
+    },
+    {
+     "at": 169,
+     "base": "切手",
+     "kana": "きって"
+    },
+    {
+     "at": 175,
+     "base": "枚",
+     "kana": "まい"
+    },
+    {
+     "at": 180,
+     "base": "円",
+     "kana": "えん"
+    },
+    {
+     "at": 184,
+     "base": "切手",
+     "kana": "きって"
+    },
+    {
+     "at": 190,
+     "base": "枚",
+     "kana": "まい"
+    },
+    {
+     "at": 193,
+     "base": "買",
+     "kana": "か"
+    },
+    {
+     "at": 200,
+     "base": "全部",
+     "kana": "ぜんぶ"
+    },
+    {
+     "at": 217,
+     "base": "円",
+     "kana": "えん"
+    },
+    {
+     "at": 235,
+     "base": "中国語",
+     "kana": "ちゅうごくご"
+    },
+    {
+     "at": 243,
+     "base": "月",
+     "kana": "げつ"
+    },
+    {
+     "at": 246,
+     "base": "習",
+     "kana": "なら"
+    },
+    {
+     "at": 256,
+     "base": "月",
+     "kana": "げつ"
+    },
+    {
+     "at": 261,
+     "base": "回",
+     "kana": "かい"
+    },
+    {
+     "at": 263,
+     "base": "勉強",
+     "kana": "べんきょう"
+    },
+    {
+     "at": 273,
+     "base": "回",
+     "kana": "かい"
+    },
+    {
+     "at": 278,
+     "base": "時間",
+     "kana": "じかん"
+    },
+    {
+     "at": 285,
+     "base": "全部",
+     "kana": "ぜんぶ"
+    },
+    {
+     "at": 290,
+     "base": "何時間",
+     "kana": "なんじかん"
+    },
+    {
+     "at": 295,
+     "base": "習",
+     "kana": "なら"
+    },
+    {
+     "at": 307,
+     "base": "時間習",
+     "kana": "じかんなら"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  }
+ ],
+ "vocab": [
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "います",
+   "kanji": null,
+   "no": 1,
+   "usage": {
+    "kana": "こどもが～",
+    "kanji": "子どもが～"
+   },
+   "zh": "有〔孩子〕"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "います",
+   "kanji": null,
+   "no": 2,
+   "usage": {
+    "kana": "にほんに～",
+    "kanji": "日本に～"
+   },
+   "zh": "在〔日本〕"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "かかります",
+   "kanji": null,
+   "no": 3,
+   "usage": null,
+   "zh": "花費（金錢或時間）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "やすみます",
+   "kanji": "休みます",
+   "no": 4,
+   "usage": {
+    "kana": "かいしゃを～",
+    "kanji": "会社を～"
+   },
+   "zh": "向〔公司〕請假"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ひとつ                    1つ",
+   "kanji": null,
+   "no": 5,
+   "usage": null,
+   "zh": "一個（用於計算物品）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ふたつ                    2つ",
+   "kanji": null,
+   "no": 6,
+   "usage": null,
+   "zh": "二個"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "みっつ                    3つ",
+   "kanji": null,
+   "no": 7,
+   "usage": null,
+   "zh": "三個"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "よっつ                    4つ",
+   "kanji": null,
+   "no": 8,
+   "usage": null,
+   "zh": "四個"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "いつつ                    5つ",
+   "kanji": null,
+   "no": 9,
+   "usage": null,
+   "zh": "五個"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "むっつ                    6つ",
+   "kanji": null,
+   "no": 10,
+   "usage": null,
+   "zh": "六個"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ななつ                    7つ",
+   "kanji": null,
+   "no": 11,
+   "usage": null,
+   "zh": "七個"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "やっつ                    8つ",
+   "kanji": null,
+   "no": 12,
+   "usage": null,
+   "zh": "八個"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ここのつ                  9つ",
+   "kanji": null,
+   "no": 13,
+   "usage": null,
+   "zh": "九個"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "とお                      10つ",
+   "kanji": null,
+   "no": 14,
+   "usage": null,
+   "zh": "十個"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "いくつ",
+   "kanji": null,
+   "no": 15,
+   "usage": null,
+   "zh": "幾個"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ひとり                    1",
+   "kanji": "人",
+   "no": 16,
+   "usage": null,
+   "zh": "一個人"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ふたり                    2",
+   "kanji": "人",
+   "no": 17,
+   "usage": null,
+   "zh": "二個人"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "…にん                    …",
+   "kanji": "人",
+   "no": 18,
+   "usage": null,
+   "zh": "…個人"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "…だい                    …",
+   "kanji": "台",
+   "no": 19,
+   "usage": null,
+   "zh": "（用於計算機械、車輛等機械類時）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "…まい                    …",
+   "kanji": "枚",
+   "no": 20,
+   "usage": null,
+   "zh": "（用於計算紙張、郵票等薄的物品時"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "…かい                    …",
+   "kanji": "回",
+   "no": 21,
+   "usage": null,
+   "zh": "…次"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "りんご",
+   "kanji": null,
+   "no": 22,
+   "usage": null,
+   "zh": "蘋果"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "みかん",
+   "kanji": null,
+   "no": 23,
+   "usage": null,
+   "zh": "橘子"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "サンドイッチ",
+   "kanji": null,
+   "no": 24,
+   "usage": null,
+   "zh": "三明治"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "カレー［ライス］",
+   "kanji": null,
+   "no": 25,
+   "usage": null,
+   "zh": "咖哩〔飯〕"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "アイスクリーム",
+   "kanji": null,
+   "no": 26,
+   "usage": null,
+   "zh": "冰淇淋"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "きって",
+   "kanji": "切手",
+   "no": 27,
+   "usage": null,
+   "zh": "郵票"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "はがき",
+   "kanji": null,
+   "no": 28,
+   "usage": null,
+   "zh": "明信片"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ふうとう",
+   "kanji": "封筒",
+   "no": 29,
+   "usage": null,
+   "zh": "信封"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "そくたつ",
+   "kanji": "速達",
+   "no": 30,
+   "usage": null,
+   "zh": "限時信"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "かきとめ",
+   "kanji": "書留",
+   "no": 31,
+   "usage": null,
+   "zh": "掛號信"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "エアメール",
+   "kanji": null,
+   "no": 32,
+   "usage": null,
+   "zh": "航空郵件，航空信 （ こうくうびん ） （ 航空便 ）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ふなびん",
+   "kanji": "船便",
+   "no": 33,
+   "usage": null,
+   "zh": "船運"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "りょうしん",
+   "kanji": "両親",
+   "no": 34,
+   "usage": null,
+   "zh": "雙親"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "きょうだい",
+   "kanji": "兄弟",
+   "no": 35,
+   "usage": null,
+   "zh": "兄弟姊妹"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "あに",
+   "kanji": "兄",
+   "no": 36,
+   "usage": null,
+   "zh": "（我）哥哥"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "おにいさん                お",
+   "kanji": "兄さん",
+   "no": 37,
+   "usage": null,
+   "zh": "（他人的）哥哥"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "あね",
+   "kanji": "姉",
+   "no": 38,
+   "usage": null,
+   "zh": "（我）姊姊"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "おねえさん                お",
+   "kanji": "姉さん",
+   "no": 39,
+   "usage": null,
+   "zh": "（他人的）姊姊"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "おとうと",
+   "kanji": "弟",
+   "no": 40,
+   "usage": null,
+   "zh": "（我）弟弟"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "おとうとさん",
+   "kanji": "弟さん",
+   "no": 41,
+   "usage": null,
+   "zh": "（他人的）弟弟"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "いもうと",
+   "kanji": "妹",
+   "no": 42,
+   "usage": null,
+   "zh": "（我）妹妹"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "いもうとさん",
+   "kanji": "妹さん",
+   "no": 43,
+   "usage": null,
+   "zh": "（他人的）妹妹"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "がいこく",
+   "kanji": "外国",
+   "no": 44,
+   "usage": null,
+   "zh": "外國"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "…じかん                  …",
+   "kanji": "時間",
+   "no": 45,
+   "usage": null,
+   "zh": "…小時"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "…しゅうかん              …",
+   "kanji": "週間",
+   "no": 46,
+   "usage": null,
+   "zh": "…星期"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "…かげつ                  …",
+   "kanji": "か月",
+   "no": 47,
+   "usage": null,
+   "zh": "…個月"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "…ねん                    …",
+   "kanji": "年",
+   "no": 48,
+   "usage": null,
+   "zh": "…年"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "～ぐらい",
+   "kanji": null,
+   "no": 49,
+   "usage": null,
+   "zh": "～左右"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "どのぐらい",
+   "kanji": null,
+   "no": 50,
+   "usage": null,
+   "zh": "多久"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ぜんぶで",
+   "kanji": "全部で",
+   "no": 51,
+   "usage": null,
+   "zh": "一共"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "みんな",
+   "kanji": null,
+   "no": 52,
+   "usage": null,
+   "zh": "全部，全體"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "～だけ",
+   "kanji": null,
+   "no": 53,
+   "usage": null,
+   "zh": "只～，僅～"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "いらっしゃいませ。",
+   "kanji": null,
+   "no": 54,
+   "usage": null,
+   "zh": "歡迎光臨（商店、行號在顧客光臨時用）"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "いい［お］てんきですね。",
+   "kanji": "いい［お］天気ですね。",
+   "no": null,
+   "usage": null,
+   "zh": "真是好天氣呀。"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "おでかけですか。",
+   "kanji": "お出かけですか。",
+   "no": null,
+   "usage": null,
+   "zh": "您外出呀。"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "ちょっと  ～まで。",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "我去一下～。"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "いって いらっしゃい。",
+   "kanji": "行って いらっしゃい。",
+   "no": null,
+   "usage": null,
+   "zh": "你慢走（會再回來）。"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "いって  まいります。",
+   "kanji": "行って  まいります。",
+   "no": null,
+   "usage": null,
+   "zh": "我走了（會再回來）。"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "それから",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "還有，另外"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "オーストラリア",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "澳洲"
+  }
+ ]
+}

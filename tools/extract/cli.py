@@ -139,7 +139,19 @@ def extract_lesson(lesson: int, image_dir: Optional[str] = None) -> Dict:
     if "文法" in sections:
         data["grammar"] = parse_grammar(sections["文法"], frags)
     if image_dir:
-        data["images"] = extract_images(doc, lesson, image_dir)
+        images = extract_images(doc, lesson, image_dir)
+        for img in images:
+            # `images.py` 回傳的 `file` 是實際寫檔用的路徑，字面等於呼叫
+            # 端傳入的 `--images` 目錄——同樣條件下重跑位元組相同，但換
+            # 一個 `--images` 目錄，這個欄位就變，使得 JSON 內容取決於執
+            # 行時的參數，違反「重跑管線必須能重現已提交的資料」（spec
+            # §5.3）。這裡改存規範化的相對識別碼：固定為
+            # `data/images/<檔名>`（符合 spec §4.5 範例、目錄結構
+            # §6.4 的既定慣例），與實際物理寫檔位置解耦——物理檔案仍照
+            # `--images` 指定的目錄寫出（供人工核對／算繪比對使用），但
+            # JSON 內容本身不再受呼叫參數影響。
+            img["file"] = "data/images/%s" % os.path.basename(img["file"])
+        data["images"] = images
     return data
 
 

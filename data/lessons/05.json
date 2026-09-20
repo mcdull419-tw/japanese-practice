@@ -1,0 +1,2166 @@
+{
+ "drills": [
+  {
+   "id": "L05-B1",
+   "items": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "model_answer": "スーパーへ 行きます。",
+   "model_cue": ""
+  },
+  {
+   "id": "L05-B2",
+   "items": [
+    "先月",
+    "きのうの 午後",
+    "来週の 月曜日",
+    "先週の 日曜日"
+   ],
+   "model_answer": "けさ どこへ 行きましたか。 スーパーへ 行きました。",
+   "model_cue": "けさ"
+  },
+  {
+   "id": "L05-B3",
+   "items": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "model_answer": "何で 京都へ 行きますか。 電車で 行きます。",
+   "model_cue": ""
+  },
+  {
+   "id": "L05-B4",
+   "items": [
+    "大阪城 （ 彼女 ）",
+    "広島 （ 会社の 人 ）",
+    "フランス （ 家族 ）",
+    "病院 （ 一人で ）"
+   ],
+   "model_answer": "だれと 京都へ 行きますか。 友達と 行きます。",
+   "model_cue": "京都 （ 友達 ）"
+  },
+  {
+   "id": "L05-B5",
+   "items": [
+    "さくら大学（ 9月 14 日 ）",
+    "アメリカ（ 来年の 3月 ）",
+    "病院（ 今週の 水曜日 ）",
+    "広島（ 来月 ）"
+   ],
+   "model_answer": "いつ 京都へ 行きますか。 3月3日に 行きます。｜いつ 東京へ 行きますか。 来週 行きます。",
+   "model_cue": "京都（ 3月3日 ）｜東京（ 来週 ）"
+  },
+  {
+   "id": "L05-B6",
+   "items": [
+    "いつ 日本へ 来ましたか。（ 去年 ）",
+    "だれと 日本へ 来ましたか。（ 一人で ）",
+    "いつ 国へ 帰りますか。（ 来年 ）",
+    "先週の 土曜日 どこへ 行きましたか。（ どこも ）",
+    "きょう 何時に ここへ 来ましたか。（ 9時 ）",
+    "だれと ここへ 来ましたか。（ 佐藤さん ）",
+    "何で うちへ 帰りますか。（ バス ）",
+    "きのう 何時に うちへ 帰りましたか。（ 7時 ）"
+   ],
+   "model_answer": "来週 行きます。",
+   "model_cue": "いつ アメリカヘ 行きますか。（ 来週 ）"
+  },
+  {
+   "id": "L05-B7",
+   "items": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "model_answer": "ミラーさんの 誕生日は いつですか。 10月6日です。",
+   "model_cue": ""
+  }
+ ],
+ "grammar": [
+  {
+   "body_zh": "使用移動動詞時，移動的方向用助詞「へ」表示。〔註〕助詞「へ」讀作「え」。",
+   "examples": [
+    {
+     "jp": "京都へ  行きます。",
+     "zh": "我要去京都。"
+    },
+    {
+     "jp": "日本へ  来ました。",
+     "zh": "我來到了日本。"
+    },
+    {
+     "jp": "うちへ  帰ります。",
+     "zh": "我要回家。"
+    }
+   ],
+   "no": 1,
+   "title": "名詞（場所）へ 行きます／来ます／帰ります"
+  },
+  {
+   "body_zh": "完全否定疑問詞所問的全部範疇時，用助詞「も」。與否定形一起使用。",
+   "examples": [
+    {
+     "jp": "どこ〔へ〕も  行きません。",
+     "zh": "哪裡也不去。"
+    },
+    {
+     "jp": "何も  食べません。",
+     "zh": "什麼也不吃。（第 ６課）"
+    },
+    {
+     "jp": "だれも  いません。",
+     "zh": "沒有任何人在。（第 10 課）"
+    }
+   ],
+   "no": 2,
+   "title": "どこ〔へ〕も  行きません／行きませんでした"
+  },
+  {
+   "body_zh": "助詞「で」表示手段、方法。接表示交通工具的名詞後，與移動動詞（いきます、きます、かえります等）一起使用，表示交通工具。走路時，用「あるいて」表示，不用助詞「で」。",
+   "examples": [
+    {
+     "jp": "電車で  行きます。",
+     "zh": "坐電車去。"
+    },
+    {
+     "jp": "タクシーで  来ました。",
+     "zh": "坐計程車來的。"
+    },
+    {
+     "jp": "駅から  歩いて  帰りました。",
+     "zh": "我從車站走回來的。"
+    }
+   ],
+   "no": 3,
+   "title": "名詞（交通工具）で  行きます／来ます／帰ります"
+  },
+  {
+   "body_zh": "用助詞「と」表示一起做某個動作的人（動物）。單獨行動時，用「ひとりで」表示。這時，不用助詞「と」。",
+   "examples": [
+    {
+     "jp": "家族と  日本へ  来ました。",
+     "zh": "我和家人來到了日本。"
+    },
+    {
+     "jp": "一人で  東京へ  行きます。",
+     "zh": "一個人去東京。"
+    }
+   ],
+   "no": 4,
+   "title": "名詞（人／動物）と 動詞"
+  },
+  {
+   "body_zh": "詢問時間時，除了使用「なんじ」「なんようび」「なんがつなんにち」等量詞前面加「なん」的疑問詞以外，還可以用疑問詞「いつ」。「いつ」後不能加助詞「に」。",
+   "examples": [
+    {
+     "jp": "いつ  日本へ  来ましたか。 …３月２５日に  来ました。",
+     "zh": "什麼時候來到日本的？３月２５日來的。"
+    },
+    {
+     "jp": "いつ  広島へ  行きますか。 …来週  行きます。",
+     "zh": "什麼時候要去廣島？下星期要去。"
+    }
+   ],
+   "no": 5,
+   "title": "いつ"
+  },
+  {
+   "body_zh": "「よ」用於句尾，使用在告知對方不知道的事情，或以強烈語氣告訴對方自己的判斷和意見時。",
+   "examples": [
+    {
+     "jp": "この  電車は  甲子園へ  行きますか。 …いいえ、行きません。次の  普通ですよ。",
+     "zh": "這班電車去甲子園嗎？ 不去。下一班普通車去。"
+    },
+    {
+     "jp": "無理な  ダイエットは  体に  よくないですよ。",
+     "zh": "過度的減肥對身體並不好哦！（第 19課）"
+    }
+   ],
+   "no": 6,
+   "title": "句子よ"
+  }
+ ],
+ "images": [
+  {
+   "file": "data/images/05-p02-01.png",
+   "h": 1.8,
+   "page": 2,
+   "w": 21.0,
+   "x": 30.0,
+   "y": 171.8003
+  },
+  {
+   "file": "data/images/05-p02-02.png",
+   "h": 1.8,
+   "page": 2,
+   "w": 15.0,
+   "x": 33.6,
+   "y": 192.8003
+  },
+  {
+   "file": "data/images/05-p02-03.png",
+   "h": 1.8,
+   "page": 2,
+   "w": 9.0,
+   "x": 24.0,
+   "y": 212.6003
+  },
+  {
+   "file": "data/images/05-p02-04.png",
+   "h": 1.8,
+   "page": 2,
+   "w": 15.0,
+   "x": 32.4,
+   "y": 233.6003
+  },
+  {
+   "file": "data/images/05-p02-05.png",
+   "h": 4.8,
+   "page": 2,
+   "w": 1.2,
+   "x": 31.8,
+   "y": 209.0003
+  },
+  {
+   "file": "data/images/05-p02-06.png",
+   "h": 4.8,
+   "page": 2,
+   "w": 1.2,
+   "x": 47.4,
+   "y": 189.2003
+  },
+  {
+   "file": "data/images/05-p02-07.png",
+   "h": 4.8,
+   "page": 2,
+   "w": 1.2,
+   "x": 49.8,
+   "y": 168.2003
+  },
+  {
+   "file": "data/images/05-p03-01.png",
+   "h": 129.0,
+   "page": 3,
+   "w": 225.0,
+   "x": 375.0,
+   "y": 236.6003
+  },
+  {
+   "file": "data/images/05-p04-01.png",
+   "h": 64.8,
+   "page": 4,
+   "w": 339.0,
+   "x": 64.2,
+   "y": 396.2003
+  },
+  {
+   "file": "data/images/05-p04-02.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 129.0,
+   "y": 473.0003
+  },
+  {
+   "file": "data/images/05-p04-03.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 443.4,
+   "y": 473.0003
+  },
+  {
+   "file": "data/images/05-p04-04.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 337.8,
+   "y": 473.0003
+  },
+  {
+   "file": "data/images/05-p04-05.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 221.4,
+   "y": 472.4003
+  },
+  {
+   "file": "data/images/05-p04-06.png",
+   "h": 66.0,
+   "page": 4,
+   "w": 339.0,
+   "x": 64.2,
+   "y": 219.2004
+  },
+  {
+   "file": "data/images/05-p04-07.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 169.8,
+   "y": 313.4004
+  },
+  {
+   "file": "data/images/05-p04-08.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 456.6,
+   "y": 309.8004
+  },
+  {
+   "file": "data/images/05-p04-09.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 236.4,
+   "y": 289.4004
+  },
+  {
+   "file": "data/images/05-p04-10.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 456.6,
+   "y": 289.4004
+  },
+  {
+   "file": "data/images/05-p04-11.png",
+   "h": 69.0,
+   "page": 4,
+   "w": 338.0,
+   "x": 64.2,
+   "y": 66.2003
+  },
+  {
+   "file": "data/images/05-p04-12.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 130.8,
+   "y": 146.6003
+  },
+  {
+   "file": "data/images/05-p04-13.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 351.0,
+   "y": 146.6003
+  },
+  {
+   "file": "data/images/05-p04-14.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 456.6,
+   "y": 146.6003
+  },
+  {
+   "file": "data/images/05-p04-15.png",
+   "h": 18.0,
+   "page": 4,
+   "w": 18.0,
+   "x": 236.4,
+   "y": 146.6003
+  },
+  {
+   "file": "data/images/05-p04-16.png",
+   "h": 2.4,
+   "page": 4,
+   "w": 18.0,
+   "x": 262.8,
+   "y": -0.9997
+  },
+  {
+   "file": "data/images/05-p05-01.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 262.8,
+   "y": 819.8003
+  },
+  {
+   "file": "data/images/05-p05-02.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 292.2,
+   "y": 798.2003
+  },
+  {
+   "file": "data/images/05-p05-03.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 276.6,
+   "y": 776.0003
+  },
+  {
+   "file": "data/images/05-p05-04.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 261.0,
+   "y": 756.2003
+  },
+  {
+   "file": "data/images/05-p05-05.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 295.8,
+   "y": 635.6003
+  },
+  {
+   "file": "data/images/05-p05-06.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 310.2,
+   "y": 615.2003
+  },
+  {
+   "file": "data/images/05-p05-07.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 303.0,
+   "y": 595.4003
+  },
+  {
+   "file": "data/images/05-p05-08.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 235.8,
+   "y": 574.4003
+  },
+  {
+   "file": "data/images/05-p05-09.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 376.2,
+   "y": 513.8004
+  },
+  {
+   "file": "data/images/05-p05-10.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 408.6,
+   "y": 494.6003
+  },
+  {
+   "file": "data/images/05-p05-11.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 366.0,
+   "y": 471.2003
+  },
+  {
+   "file": "data/images/05-p05-12.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 475.2,
+   "y": 450.8003
+  },
+  {
+   "file": "data/images/05-p05-13.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 441.0,
+   "y": 432.2003
+  },
+  {
+   "file": "data/images/05-p05-14.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 421.8,
+   "y": 411.2003
+  },
+  {
+   "file": "data/images/05-p05-15.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 379.2,
+   "y": 393.2003
+  },
+  {
+   "file": "data/images/05-p05-16.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 457.8,
+   "y": 371.6003
+  },
+  {
+   "file": "data/images/05-p05-17.png",
+   "h": 84.6,
+   "page": 5,
+   "w": 338.0,
+   "x": 63.6,
+   "y": 199.4003
+  },
+  {
+   "file": "data/images/05-p05-18.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 129.0,
+   "y": 288.8004
+  },
+  {
+   "file": "data/images/05-p05-19.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 456.6,
+   "y": 289.4004
+  },
+  {
+   "file": "data/images/05-p05-20.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 238.8,
+   "y": 289.4004
+  },
+  {
+   "file": "data/images/05-p05-21.png",
+   "h": 18.0,
+   "page": 5,
+   "w": 18.0,
+   "x": 351.0,
+   "y": 289.4004
+  },
+  {
+   "file": "data/images/05-p05-22.png",
+   "h": 94.2,
+   "page": 5,
+   "w": 113.0,
+   "x": 336.6,
+   "y": 1.4004
+  },
+  {
+   "file": "data/images/05-p06-01.png",
+   "h": 76.8,
+   "page": 6,
+   "w": 115.0,
+   "x": 323.4,
+   "y": 579.8004
+  },
+  {
+   "file": "data/images/05-p06-02.png",
+   "h": 25.2,
+   "page": 6,
+   "w": 113.0,
+   "x": 336.6,
+   "y": 817.4003
+  },
+  {
+   "file": "data/images/05-p06-03.png",
+   "h": 56.4,
+   "page": 6,
+   "w": 109.0,
+   "x": 299.4,
+   "y": 405.8003
+  },
+  {
+   "file": "data/images/05-p06-04.png",
+   "h": 58.8,
+   "page": 6,
+   "w": 60.0,
+   "x": 113.4,
+   "y": 167.0003
+  },
+  {
+   "file": "data/images/05-p06-05.png",
+   "h": 59.4,
+   "page": 6,
+   "w": 61.0,
+   "x": 232.2,
+   "y": 166.4003
+  },
+  {
+   "file": "data/images/05-p06-06.png",
+   "h": 58.8,
+   "page": 6,
+   "w": 62.0,
+   "x": 337.8,
+   "y": 167.0003
+  },
+  {
+   "file": "data/images/05-p06-07.png",
+   "h": 56.4,
+   "page": 6,
+   "w": 59.0,
+   "x": 113.4,
+   "y": 87.8003
+  },
+  {
+   "file": "data/images/05-p06-08.png",
+   "h": 58.2,
+   "page": 6,
+   "w": 59.0,
+   "x": 232.2,
+   "y": 86.0004
+  },
+  {
+   "file": "data/images/05-p06-09.png",
+   "h": 58.2,
+   "page": 6,
+   "w": 59.0,
+   "x": 337.8,
+   "y": 86.0004
+  },
+  {
+   "file": "data/images/05-p07-01.png",
+   "h": 76.8,
+   "page": 7,
+   "w": 231.0,
+   "x": 165.6,
+   "y": 235.4004
+  }
+ ],
+ "lesson": 5,
+ "patterns": [
+  {
+   "id": "L05-A1",
+   "question_variant": "あなたはどこへ行きますか。",
+   "requires_lesson": 5,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "スーパー",
+     "かいしゃ",
+     "とうきょう"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "わたしは{S}へ行きます。"
+  },
+  {
+   "id": "L05-A2",
+   "question_variant": "あなたはなんで会社へ行きますか。",
+   "requires_lesson": 5,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "バス",
+     "ちかてつ",
+     "じてんしゃ"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "わたしは{S}で会社へ行きます。"
+  },
+  {
+   "id": "L05-A3",
+   "question_variant": "あなたはだれと日本へ来ましたか。",
+   "requires_lesson": 5,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "ミラーさん",
+     "ともだち",
+     "かぞく"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "わたしは{S}と日本へ来ました。"
+  },
+  {
+   "id": "L05-A4",
+   "question_variant": "あなたはいつ国へ帰りますか。",
+   "requires_lesson": 5,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "らいしゅう",
+     "にちようび［に］",
+     "7がつ15にちに"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "わたしは{S}国へ帰ります。"
+  }
+ ],
+ "sentences": [
+  {
+   "alt": [],
+   "id": "L05-文型-1",
+   "jp": "わたしは  京都へ  行きます。",
+   "no": 1,
+   "ruby": [
+    {
+     "at": 6,
+     "base": "京都",
+     "kana": "きょうと"
+    },
+    {
+     "at": 11,
+     "base": "行",
+     "kana": "い"
+    }
+   ],
+   "section": "文型",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-文型-2",
+   "jp": "わたしは  タクシーで  うちへ  帰ります。",
+   "no": 2,
+   "ruby": [
+    {
+     "at": 18,
+     "base": "帰",
+     "kana": "かえ"
+    }
+   ],
+   "section": "文型",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-文型-3",
+   "jp": "わたしは  家族と  日本へ  来ました。",
+   "no": 3,
+   "ruby": [
+    {
+     "at": 6,
+     "base": "家族",
+     "kana": "かぞく"
+    },
+    {
+     "at": 11,
+     "base": "日本",
+     "kana": "にほん"
+    },
+    {
+     "at": 16,
+     "base": "来",
+     "kana": "き"
+    }
+   ],
+   "section": "文型",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-例文-1",
+   "jp": "あした  どこへ  行きますか。\n…奈良へ  行きます。",
+   "no": 1,
+   "ruby": [
+    {
+     "at": 10,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 18,
+     "base": "奈良",
+     "kana": "なら"
+    },
+    {
+     "at": 23,
+     "base": "行",
+     "kana": "い"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-例文-2",
+   "jp": "日曜日  どこへ 行きましたか。\n…どこ[へ]も  行きませんでした。",
+   "no": 2,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "日曜日",
+     "kana": "にちようび"
+    },
+    {
+     "at": 9,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 26,
+     "base": "行",
+     "kana": "い"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-例文-3",
+   "jp": "何で  東京へ  行きますか。\n…新幹線で  行きます。",
+   "no": 3,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "何",
+     "kana": "なん"
+    },
+    {
+     "at": 4,
+     "base": "東京",
+     "kana": "とうきょう"
+    },
+    {
+     "at": 9,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 17,
+     "base": "新幹線",
+     "kana": "しんかんせん"
+    },
+    {
+     "at": 23,
+     "base": "行",
+     "kana": "い"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-例文-4",
+   "jp": "だれと  東京へ  行きますか。\n…山田さんと  行きます。",
+   "no": 4,
+   "ruby": [
+    {
+     "at": 5,
+     "base": "東京",
+     "kana": "とうきょう"
+    },
+    {
+     "at": 10,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 18,
+     "base": "山田",
+     "kana": "やまだ"
+    },
+    {
+     "at": 25,
+     "base": "行",
+     "kana": "い"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-例文-5",
+   "jp": "いつ  日本へ  来ましたか。\n…3月25日に  来ました。",
+   "no": 5,
+   "ruby": [
+    {
+     "at": 4,
+     "base": "日本",
+     "kana": "にほん"
+    },
+    {
+     "at": 9,
+     "base": "来",
+     "kana": "き"
+    },
+    {
+     "at": 18,
+     "base": "月",
+     "kana": "がつ"
+    },
+    {
+     "at": 21,
+     "base": "日",
+     "kana": "にち"
+    },
+    {
+     "at": 25,
+     "base": "来",
+     "kana": "き"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-例文-6",
+   "jp": "誕生日は  いつですか。\n…6月13日です。",
+   "no": 6,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "誕生日",
+     "kana": "たんじょうび"
+    },
+    {
+     "at": 15,
+     "base": "月",
+     "kana": "がつ"
+    },
+    {
+     "at": 18,
+     "base": "日",
+     "kana": "にち"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-会話-1",
+   "jp": "サントス：  すみません。",
+   "no": 1,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-会話-2",
+   "jp": "甲子園まで  いくらですか。",
+   "no": 2,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "甲子園",
+     "kana": "こうしえん"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-会話-3",
+   "jp": "女の  人：  350円です。",
+   "no": 3,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "女",
+     "kana": "おんな"
+    },
+    {
+     "at": 4,
+     "base": "人",
+     "kana": "ひと"
+    },
+    {
+     "at": 11,
+     "base": "円",
+     "kana": "えん"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-会話-4",
+   "jp": "サントス：  350円ですね。",
+   "no": 4,
+   "ruby": [
+    {
+     "at": 10,
+     "base": "円",
+     "kana": "えん"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-会話-5",
+   "jp": "ありがとう  ございました。",
+   "no": 5,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-会話-6",
+   "jp": "女の  人：  どう  いたしまして。",
+   "no": 6,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "女",
+     "kana": "おんな"
+    },
+    {
+     "at": 4,
+     "base": "人",
+     "kana": "ひと"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-会話-7",
+   "jp": "サントス：  すみません。",
+   "no": 7,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-会話-8",
+   "jp": "甲子園は  何番線ですか。",
+   "no": 8,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "甲子園",
+     "kana": "こうしえん"
+    },
+    {
+     "at": 6,
+     "base": "何番線",
+     "kana": "なんばんせん"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-会話-9",
+   "jp": "駅    員：   5番線です。",
+   "no": 9,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "駅",
+     "kana": "えき"
+    },
+    {
+     "at": 5,
+     "base": "員",
+     "kana": "いん"
+    },
+    {
+     "at": 11,
+     "base": "番線",
+     "kana": "ばんせん"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-会話-10",
+   "jp": "サントス：  どうも。",
+   "no": 10,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-会話-11",
+   "jp": "サントス：  あのう、この  電車は  甲子園へ  行きますか。",
+   "no": 11,
+   "ruby": [
+    {
+     "at": 15,
+     "base": "電車",
+     "kana": "でんしゃ"
+    },
+    {
+     "at": 20,
+     "base": "甲子園",
+     "kana": "こうしえん"
+    },
+    {
+     "at": 26,
+     "base": "行",
+     "kana": "い"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-会話-12",
+   "jp": "男の  人：  いいえ。",
+   "no": 12,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "男",
+     "kana": "おとこ"
+    },
+    {
+     "at": 4,
+     "base": "人",
+     "kana": "ひと"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-会話-13",
+   "jp": "次の  「普通」 ですよ。",
+   "no": 13,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "次",
+     "kana": "つぎ"
+    },
+    {
+     "at": 5,
+     "base": "普通",
+     "kana": "ふつう"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-会話-14",
+   "jp": "サントス：  そうですか。",
+   "no": 14,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-会話-15",
+   "jp": "どうも。",
+   "no": 15,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-問題-1",
+   "jp": "1)…例：  京都へ  行きます。\n2)…例：  自動車で行きます。\n3)…例：  一人で行きます。\n4)…例：  どこも行きませんでした。\n5)…例：  4月6日です。",
+   "no": 1,
+   "ruby": [
+    {
+     "at": 3,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 7,
+     "base": "京都",
+     "kana": "きょうと"
+    },
+    {
+     "at": 12,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 21,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 25,
+     "base": "自動車",
+     "kana": "じどうしゃ"
+    },
+    {
+     "at": 29,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 38,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 42,
+     "base": "一人",
+     "kana": "ひとり"
+    },
+    {
+     "at": 45,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 54,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 61,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 74,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 79,
+     "base": "月6日",
+     "kana": "がつむいか"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-問題-4",
+   "jp": "例：  これは （ だれ ）の ノートですか。\n……カリナさんの  ノートです。\n1) （ いつ ） 日本へ  来ましたか。\n……8月17日に  来ました。\n2) （ だれ ）と  日本へ  来ましたか。\n……家族と  来ました。\n3)  あした （ どこ ）へ  行きますか。\n……どこも  行きません。\n4)  すみません。  京都まで （ いくら ）ですか。\n……390円です。\n5) （ 何 ）で  京都へ  行きますか。\n……電車で  行きます。\n6) （ 何時 ）に  うちへ  帰りますか。\n……7時に  帰ります。\n7)誕生日は（ 何月 ）（ 何日 ）ですか。\n……9月1日です。",
+   "no": 4,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 51,
+     "base": "日本",
+     "kana": "にほん"
+    },
+    {
+     "at": 56,
+     "base": "来",
+     "kana": "き"
+    },
+    {
+     "at": 66,
+     "base": "月",
+     "kana": "がつ"
+    },
+    {
+     "at": 69,
+     "base": "日",
+     "kana": "にち"
+    },
+    {
+     "at": 73,
+     "base": "来",
+     "kana": "き"
+    },
+    {
+     "at": 91,
+     "base": "日本",
+     "kana": "にほん"
+    },
+    {
+     "at": 96,
+     "base": "来",
+     "kana": "き"
+    },
+    {
+     "at": 105,
+     "base": "家族",
+     "kana": "かぞく"
+    },
+    {
+     "at": 110,
+     "base": "来",
+     "kana": "き"
+    },
+    {
+     "at": 133,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 147,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 166,
+     "base": "京都",
+     "kana": "きょうと"
+    },
+    {
+     "at": 188,
+     "base": "円",
+     "kana": "えん"
+    },
+    {
+     "at": 198,
+     "base": "何",
+     "kana": "なん"
+    },
+    {
+     "at": 204,
+     "base": "京都",
+     "kana": "きょうと"
+    },
+    {
+     "at": 209,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 218,
+     "base": "電車",
+     "kana": "でんしゃ"
+    },
+    {
+     "at": 223,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 234,
+     "base": "何時",
+     "kana": "なんじ"
+    },
+    {
+     "at": 246,
+     "base": "帰",
+     "kana": "かえ"
+    },
+    {
+     "at": 256,
+     "base": "時",
+     "kana": "じ"
+    },
+    {
+     "at": 260,
+     "base": "帰",
+     "kana": "かえ"
+    },
+    {
+     "at": 268,
+     "base": "誕生日",
+     "kana": "たんじょうび"
+    },
+    {
+     "at": 274,
+     "base": "何月",
+     "kana": "なんがつ"
+    },
+    {
+     "at": 280,
+     "base": "何日",
+     "kana": "なんにち"
+    },
+    {
+     "at": 292,
+     "base": "月1日",
+     "kana": "がつついたち"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-問題-5",
+   "jp": "例：  これ（ は ） 本です。\n1) わたしは  ミラーです。\nことし（ の ） 4月（ に ）  アメリカ（ から ） 来ました。\n2) 毎日  電車（ で ） 会社 （ へ ） 行きます。\n3) きのう  9時半（ に ） うち （ へ ） 帰りました。\n4) けさ  わたしは  松本さん（ と ） ここ（ へ ） 来ました。\n5) おととい  どこ（ も ） 行きませんでした。\n6) あさって  一人 （ で ） デパート （ へ ） 行きます。",
+   "no": 5,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 12,
+     "base": "本",
+     "kana": "ほん"
+    },
+    {
+     "at": 43,
+     "base": "月",
+     "kana": "がつ"
+    },
+    {
+     "at": 62,
+     "base": "来",
+     "kana": "き"
+    },
+    {
+     "at": 71,
+     "base": "毎日",
+     "kana": "まいにち"
+    },
+    {
+     "at": 75,
+     "base": "電車",
+     "kana": "でんしゃ"
+    },
+    {
+     "at": 83,
+     "base": "会社",
+     "kana": "かいしゃ"
+    },
+    {
+     "at": 92,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 107,
+     "base": "時半",
+     "kana": "じはん"
+    },
+    {
+     "at": 124,
+     "base": "帰",
+     "kana": "かえ"
+    },
+    {
+     "at": 144,
+     "base": "松本",
+     "kana": "まつもと"
+    },
+    {
+     "at": 162,
+     "base": "来",
+     "kana": "き"
+    },
+    {
+     "at": 185,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 204,
+     "base": "一人",
+     "kana": "ひとり"
+    },
+    {
+     "at": 224,
+     "base": "行",
+     "kana": "い"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L05-問題-6",
+   "jp": "―サントスさんの  手帳―\n例：  サントスさんは  おととい （ 新幹線で  東京へ  行きました ）。\n1)サントスさんは  きのう （  9時にうちへ帰りました ） 。\n2)サントスさんは  きょう （ どこも行きません ）。\n3)サントスさんは  あしたの  午後  （ 友達と美術館へ行きます ） 。\n4)サントスさんは  あさって （ ［ 一人で ］松本さんのうちへ行きます ）。\n5)サントスさんは  日曜日に （ 家族と自動車で神戸へ行きました ）。",
+   "no": 6,
+   "ruby": [
+    {
+     "at": 10,
+     "base": "手帳",
+     "kana": "てちょう"
+    },
+    {
+     "at": 14,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 34,
+     "base": "新幹線",
+     "kana": "しんかんせん"
+    },
+    {
+     "at": 40,
+     "base": "東京",
+     "kana": "とうきょう"
+    },
+    {
+     "at": 45,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 73,
+     "base": "時",
+     "kana": "じ"
+    },
+    {
+     "at": 78,
+     "base": "帰",
+     "kana": "かえ"
+    },
+    {
+     "at": 108,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 134,
+     "base": "午後",
+     "kana": "ごご"
+    },
+    {
+     "at": 140,
+     "base": "友達",
+     "kana": "ともだち"
+    },
+    {
+     "at": 143,
+     "base": "美術館",
+     "kana": "びじゅつかん"
+    },
+    {
+     "at": 147,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 176,
+     "base": "一人",
+     "kana": "ひとり"
+    },
+    {
+     "at": 181,
+     "base": "松本",
+     "kana": "まつもと"
+    },
+    {
+     "at": 189,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 208,
+     "base": "日曜日",
+     "kana": "にちようび"
+    },
+    {
+     "at": 215,
+     "base": "家族",
+     "kana": "かぞく"
+    },
+    {
+     "at": 218,
+     "base": "自動車",
+     "kana": "じどうしゃ"
+    },
+    {
+     "at": 222,
+     "base": "神戸",
+     "kana": "こうべ"
+    },
+    {
+     "at": 225,
+     "base": "行",
+     "kana": "い"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  }
+ ],
+ "vocab": [
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "いきます",
+   "kanji": "行きます",
+   "no": 1,
+   "usage": null,
+   "zh": "去"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "きます",
+   "kanji": "来ます",
+   "no": 2,
+   "usage": null,
+   "zh": "來"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "かえります",
+   "kanji": "帰ります",
+   "no": 3,
+   "usage": null,
+   "zh": "回家，回去"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "がっこう",
+   "kanji": "学校",
+   "no": 4,
+   "usage": null,
+   "zh": "學校"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "スーパー",
+   "kanji": null,
+   "no": 5,
+   "usage": null,
+   "zh": "超級市場"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "えき",
+   "kanji": "駅",
+   "no": 6,
+   "usage": null,
+   "zh": "火車站"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ひこうき",
+   "kanji": "飛行機",
+   "no": 7,
+   "usage": null,
+   "zh": "飛機"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ふね",
+   "kanji": "船",
+   "no": 8,
+   "usage": null,
+   "zh": "船"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "でんしゃ",
+   "kanji": "電車",
+   "no": 9,
+   "usage": null,
+   "zh": "電車"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ちかてつ",
+   "kanji": "地下鉄",
+   "no": 10,
+   "usage": null,
+   "zh": "地下鐵"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "しんかんせん",
+   "kanji": "新幹線",
+   "no": 11,
+   "usage": null,
+   "zh": "新幹線"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "バス",
+   "kanji": null,
+   "no": 12,
+   "usage": null,
+   "zh": "公車，巴士"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "タクシー",
+   "kanji": null,
+   "no": 13,
+   "usage": null,
+   "zh": "計程車"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "じてんしゃ",
+   "kanji": "自転車",
+   "no": 14,
+   "usage": null,
+   "zh": "自行車，腳踏車"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "あるいて",
+   "kanji": "歩いて",
+   "no": 15,
+   "usage": null,
+   "zh": "步行"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ひと",
+   "kanji": "人",
+   "no": 16,
+   "usage": null,
+   "zh": "人"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ともだち",
+   "kanji": "友達",
+   "no": 17,
+   "usage": null,
+   "zh": "朋友"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "かれ",
+   "kanji": "彼",
+   "no": 18,
+   "usage": null,
+   "zh": "他，男朋友，情人"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "かのじょ",
+   "kanji": "彼女",
+   "no": 19,
+   "usage": null,
+   "zh": "她，女朋友，情人"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "かぞく",
+   "kanji": "家族",
+   "no": 20,
+   "usage": null,
+   "zh": "家人，家屬"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ひとりで",
+   "kanji": "一人で",
+   "no": 21,
+   "usage": null,
+   "zh": "一個人，獨自"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "せんしゅう",
+   "kanji": "先週",
+   "no": 22,
+   "usage": null,
+   "zh": "上週，上星期"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "こんしゅう",
+   "kanji": "今週",
+   "no": 23,
+   "usage": null,
+   "zh": "本週，這星期"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "らいしゅう",
+   "kanji": "来週",
+   "no": 24,
+   "usage": null,
+   "zh": "下週，下星期"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "せんげつ",
+   "kanji": "先月",
+   "no": 25,
+   "usage": null,
+   "zh": "上個月"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "こんげつ",
+   "kanji": "今月",
+   "no": 26,
+   "usage": null,
+   "zh": "這個月"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "らいげつ",
+   "kanji": "来月",
+   "no": 27,
+   "usage": null,
+   "zh": "下個月"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "きょねん",
+   "kanji": "去年",
+   "no": 28,
+   "usage": null,
+   "zh": "去年"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ことし",
+   "kanji": null,
+   "no": 29,
+   "usage": null,
+   "zh": "今年"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "らいねん",
+   "kanji": "来年",
+   "no": 30,
+   "usage": null,
+   "zh": "明年"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "…がつ",
+   "kanji": "…月",
+   "no": 31,
+   "usage": null,
+   "zh": "…月"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "なんがつ",
+   "kanji": "何月",
+   "no": 32,
+   "usage": null,
+   "zh": "幾月"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ついたち",
+   "kanji": "1日",
+   "no": 33,
+   "usage": null,
+   "zh": "1日， 1號"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ふつか",
+   "kanji": "2日",
+   "no": 34,
+   "usage": null,
+   "zh": "2日， 2號"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "みっか",
+   "kanji": "3日",
+   "no": 35,
+   "usage": null,
+   "zh": "3日， 3號"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "よっか",
+   "kanji": "4日",
+   "no": 36,
+   "usage": null,
+   "zh": "4日， 4號"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "いつか",
+   "kanji": "5日",
+   "no": 37,
+   "usage": null,
+   "zh": "5日， 5號"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "むいか",
+   "kanji": "6日",
+   "no": 38,
+   "usage": null,
+   "zh": "6日， 6號"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "なのか",
+   "kanji": "7日",
+   "no": 39,
+   "usage": null,
+   "zh": "7日， 7號"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ようか",
+   "kanji": "8日",
+   "no": 40,
+   "usage": null,
+   "zh": "8日， 8號"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ここのか",
+   "kanji": "9日",
+   "no": 41,
+   "usage": null,
+   "zh": "9日， 9號"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "とおか",
+   "kanji": "10日",
+   "no": 42,
+   "usage": null,
+   "zh": "10日，10號"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "じゅうよっか",
+   "kanji": "14日",
+   "no": 43,
+   "usage": null,
+   "zh": "14日，14號"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "はつか",
+   "kanji": "20日",
+   "no": 44,
+   "usage": null,
+   "zh": "20日，20號"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "にじゅうよっか",
+   "kanji": "24日",
+   "no": 45,
+   "usage": null,
+   "zh": "24日，24號"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "…にち",
+   "kanji": "…日",
+   "no": 46,
+   "usage": null,
+   "zh": "…日，…號"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "なんにち",
+   "kanji": "何日",
+   "no": 47,
+   "usage": null,
+   "zh": "幾日，幾號"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "いつ",
+   "kanji": null,
+   "no": 48,
+   "usage": null,
+   "zh": "什麼時候"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "たんじょうび",
+   "kanji": "誕生日",
+   "no": 49,
+   "usage": null,
+   "zh": "生日"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ふつう",
+   "kanji": "普通",
+   "no": 50,
+   "usage": null,
+   "zh": "普通車"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "きゅうこう",
+   "kanji": "急行",
+   "no": 51,
+   "usage": null,
+   "zh": "快車"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "とっきゅう",
+   "kanji": "特急",
+   "no": 52,
+   "usage": null,
+   "zh": "特快車"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "つぎの",
+   "kanji": "次の",
+   "no": 53,
+   "usage": null,
+   "zh": "下一個，下一次"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "どう  いたしまして。",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "不客氣。/哪裡哪裡。"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "…ばんせん",
+   "kanji": "…番線",
+   "no": null,
+   "usage": null,
+   "zh": "第…月台"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "はかた",
+   "kanji": "博多",
+   "no": null,
+   "usage": null,
+   "zh": "九州的地名"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "ふしみ",
+   "kanji": "伏見",
+   "no": null,
+   "usage": null,
+   "zh": "京都的地名"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "こうしえん",
+   "kanji": "甲子園",
+   "no": null,
+   "usage": null,
+   "zh": "大阪附近的一個地名"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "おおさかじょう",
+   "kanji": "大阪城",
+   "no": null,
+   "usage": null,
+   "zh": "大阪城，大阪的著名城堡"
+  }
+ ]
+}

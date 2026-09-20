@@ -13,13 +13,22 @@ GOLDEN = "data/lessons/07.json"
 
 class TestGolden(unittest.TestCase):
     def test_cli_reproduces_golden_file(self):
-        """重跑管線必須產出與 golden file 完全相同的結果（決定性）。"""
+        """重跑管線必須產出與 golden file 完全相同的結果（決定性）。
+
+        golden file 是用 `--images data/images` 產生的（Task 14：最終
+        資料含影像清單），所以這裡也帶 `--images` 呼叫，但刻意指向一個
+        跟 `data/images` 不同的暫存目錄——`images[].file` 存的是規範化
+        識別碼（固定 `data/images/<檔名>`，見 cli.py `extract_lesson`
+        說明），不受實際寫檔目錄影響，這樣才能同時驗證「內容決定性」與
+        「識別碼與呼叫參數無關」兩件事。"""
         self.assertTrue(os.path.exists(GOLDEN), "golden file 不存在，請先執行 CLI 產生")
         with open(GOLDEN, encoding="utf-8") as fh:
             expected = json.load(fh)
-        with tempfile.TemporaryDirectory() as tmp:
+        with tempfile.TemporaryDirectory() as tmp, \
+             tempfile.TemporaryDirectory() as img_tmp:
             subprocess.run(
-                ["python3", "-m", "tools.extract.cli", "7", "--out", tmp],
+                ["python3", "-m", "tools.extract.cli", "7", "--out", tmp,
+                 "--images", img_tmp],
                 check=True)
             with open(os.path.join(tmp, "07.json"), encoding="utf-8") as fh:
                 actual = json.load(fh)
@@ -29,12 +38,15 @@ class TestGolden(unittest.TestCase):
         """`assertEqual` 比對的是 parse 後的物件，容忍鍵序／空白等差
         異；但 golden file 比對真正要保證的是位元組層級的決定性（同一
         道題的 SRS 歷史不會因為重跑就失效），所以另外直接比對檔案內
-        容本身，不透過 json.load 正規化掉任何差異。"""
+        容本身，不透過 json.load 正規化掉任何差異。同樣帶 `--images`
+        指向另一個暫存目錄（理由同上）。"""
         with open(GOLDEN, "rb") as fh:
             expected_bytes = fh.read()
-        with tempfile.TemporaryDirectory() as tmp:
+        with tempfile.TemporaryDirectory() as tmp, \
+             tempfile.TemporaryDirectory() as img_tmp:
             subprocess.run(
-                ["python3", "-m", "tools.extract.cli", "7", "--out", tmp],
+                ["python3", "-m", "tools.extract.cli", "7", "--out", tmp,
+                 "--images", img_tmp],
                 check=True)
             with open(os.path.join(tmp, "07.json"), "rb") as fh:
                 actual_bytes = fh.read()

@@ -821,10 +821,14 @@ test('首次作答依 grade 給初始狀態', () => {
 
 test('答對時 S 增加；在快遺忘時答對增益最大（規格 §7.3）', () => {
   const s = { S: 3, D: 5 };
-  const freshWin = updateState(s, 3, 0).S;    // R≈1，剛複習完就答對
-  const lateWin = updateState(s, 3, 20).S;    // R≈0.31，快忘掉才答對
-  assert.ok(lateWin > freshWin, `晚答對應增益更大: ${lateWin} vs ${freshWin}`);
-  assert.ok(freshWin > 3, '答對後 S 必須增加');
+  // R=1 時 (e^(1-R) - 1) 精確為 0，增益必為 0——同日重複複習不給穩定度增益。
+  // 這是長期記憶模型的正確行為：兩分鐘後再答對一次，不代表記得更久。
+  assert.equal(updateState(s, 3, 0).S, 3, 'elapsed=0 時 S 不變（增益精確為 0）');
+
+  const lateWin = updateState(s, 3, 20).S;   // R≈0.31，快忘掉才答對
+  const earlyWin = updateState(s, 3, 1).S;   // R≈0.96
+  assert.ok(lateWin > earlyWin, `晚答對應增益更大: ${lateWin} vs ${earlyWin}`);
+  assert.ok(earlyWin > 3, '有經過時間就該有增益');
 });
 
 test('S 越大增幅越小（邊際遞減）', () => {
@@ -905,6 +909,11 @@ export function updateState(state, grade, elapsedDays) {
   }
   // 規格 §7.3：(e^(1-R) - 1) 使「快遺忘時答對」增益最大；
   // S^-0.5 造成邊際遞減；(11 - D) 使難題的間隔不被衝高。
+  //
+  // 【設計後果，不要「修好」它】elapsedDays=0 時 R 精確為 1，本式增益精確為 0。
+  // 這代表規格 §8 的 lapse re-drill（答錯後 3~5 題重新插入）即使答對，S 也不會增加。
+  // 那是正確的：兩分鐘後記得不代表兩天後記得。同日重複複習需要另一套短期模型，
+  // 不在這個 lite 版的範圍。
   const gain = Math.exp(W) * (11 - D) * Math.pow(S, -0.5) * (Math.exp(1 - R) - 1);
   return {
     S: Math.max(S_MIN, S * (1 + gain)),

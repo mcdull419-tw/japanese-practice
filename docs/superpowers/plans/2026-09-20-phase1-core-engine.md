@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - **無 build step、無 npm 相依。** 不得 `npm install`、不得引入任何第三方函式庫。瀏覽器直接以 `<script type="module">` 載入原始碼。
-- **測試用 Node 內建 `node --test`**（Node v24.20.0 已安裝）。從專案根目錄執行：`node --test tests/app/`
+- **測試用 Node 內建 `node --test`**（Node v24.20.0 已安裝）。從專案根目錄執行：`node --test "tests/app/*.js"`（**必須加引號**——Node 的 `--test` 不接受目錄路徑，且我們的檔名 `test_*.js` 不符合它預設的測試檔樣式）
 - **`app/core/` 與 `app/lang/` 下的程式碼不得碰 DOM**（不得出現 `document`、`window`、`localStorage`、`indexedDB` 的直接呼叫）。那些只能出現在 `app/ui/` 與 `app/core/store.js` 的 IndexedDB 實作區段。
 - **`data/lessons/*.json` 與 `data/images/` 為唯讀**，Phase 1 不得修改。修改它們等於改動 Phase 0 的驗收產物。
 - **item id 必須決定性**：同樣的資料重新生成必須得到同樣的 id。規格 §5.3：「否則 SRS 歷史全部失效」。id 不得含亂數、時間戳、或陣列位置。
@@ -1955,7 +1955,7 @@ EOF
 
 全部達成才算完成：
 
-- [ ] `node --test tests/app/` 全數通過
+- [ ] `node --test "tests/app/*.js"` 全數通過
 - [ ] 能在**電腦與手機**瀏覽器完成一次含單字題與動詞變化題的練習
 - [ ] 儀表板顯示規格 §7.6 的**六類技能**熟悉度
 - [ ] 關閉瀏覽器後進度保留（IndexedDB）

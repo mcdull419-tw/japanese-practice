@@ -26,6 +26,20 @@ export function updateState(state, grade, elapsedDays) {
   if (grade === 1) {
     return { S: Math.max(S_MIN, S * LAPSE_S_FACTOR), D: clamp(D + LAPSE_D_DELTA, D_MIN, D_MAX) };
   }
+  // 規格 §7.3：(e^(1-R) - 1) 使「快遺忘時答對」增益最大；
+  // S^-0.5 造成邊際遞減；(11 - D) 使難題的間隔不被衝高。
+  //
+  // 重要：elapsedDays=0 時 R=retrievability(S,0)=1（精確值，見 retrievability 的
+  // 定義），此時 (e^(1-R)-1) = (e^0 - 1) = 0，增益精確為 0，S 完全不變。這不是
+  // bug，是這個「長期穩定度」公式的必然結果：同一天／同一 session 內再次答對，
+  // 尚未提供任何跨越時間的遺忘曲線證據，兩分鐘後記得不代表兩天後也記得，因此
+  // 不該給穩定度增益（真實 FSRS 對同日重複複習另有一套「短期穩定度」模型，
+  // 不在這個 lite 版的範圍內）。
+  //
+  // 這會直接影響規格 §8 的 lapse re-drill：答錯的題目在 3~5 題後於同一 session
+  // 重新插入，此時 elapsedDays≈0，即使那次重答也答對，S 也不會增加——這是正確
+  // 行為，請勿「修好」它（例如強加一個非零的最低增益）。真正的鞏固要等到下一次
+  // 跨天複習、R 已顯著低於 1 時才會反映在 S 的成長上。
   const gain = Math.exp(W) * (11 - D) * Math.pow(S, -0.5) * (Math.exp(1 - R) - 1);
   return {
     S: Math.max(S_MIN, S * (1 + gain)),

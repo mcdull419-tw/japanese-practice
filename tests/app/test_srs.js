@@ -23,15 +23,16 @@ test('首次作答依 grade 給初始狀態', () => {
   assert.ok(initialState(1).D > initialState(4).D);  // 答錯者難度較高
 });
 
-test('答對時 S 不減少；在快遺忘時答對增益最大（規格 §7.3）', () => {
+test('答對時 S 增加；在快遺忘時答對增益最大（規格 §7.3）', () => {
   const s = { S: 3, D: 5 };
-  // R(t)=(1+t/(9S))^-1 在 elapsedDays=0 時精確等於 1，(e^(1-R)-1) 因而精確為 0，
-  // 故剛複習完（尚未流逝任何時間、尚未提供任何遺忘曲線的證據）答對時 S 理論上持平，
-  // 不會嚴格增加——嚴格要求 freshWin > 3 與規格 §7.2 的公式互斥，故改為 >=。
-  const freshWin = updateState(s, 3, 0).S;    // R=1，剛複習完就答對
-  const lateWin = updateState(s, 3, 20).S;    // R≈0.31，快忘掉才答對
-  assert.ok(lateWin > freshWin, `晚答對應增益更大: ${lateWin} vs ${freshWin}`);
-  assert.ok(freshWin >= 3, '答對後 S 不應減少');
+  // R=1 時 (e^(1-R) - 1) 精確為 0，增益必為 0——同日重複複習不給穩定度增益。
+  // 這是長期記憶模型的正確行為：兩分鐘後再答對一次，不代表記得更久。
+  assert.equal(updateState(s, 3, 0).S, 3, 'elapsed=0 時 S 不變（增益精確為 0）');
+
+  const lateWin = updateState(s, 3, 20).S;   // R≈0.31，快忘掉才答對
+  const earlyWin = updateState(s, 3, 1).S;   // R≈0.96
+  assert.ok(lateWin > earlyWin, `晚答對應增益更大: ${lateWin} vs ${earlyWin}`);
+  assert.ok(earlyWin > 3, '有經過時間就該有增益');
 });
 
 test('S 越大增幅越小（邊際遞減）', () => {

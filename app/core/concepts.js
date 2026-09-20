@@ -24,9 +24,21 @@ export function skillOf(conceptId) {
   return null;
 }
 
+/**
+ * 概念 id 一律以引用形（v.kanji || v.kana）為 lemma，與 verbs.json 的鍵、
+ * Task 9 變換題生成器的 conceptsForConjugation 呼叫方式一致——
+ * 否則同一個詞在 recall／transform 兩個引擎下會用不同名字命名概念，
+ * 熟悉度分散在兩套命名下，儀表板與排程都會失準（比「兩個詞共用一個概念」更嚴重）。
+ *
+ * 這個粒度同時也修正了「同假名不同動詞」的問題（規格 §5.2 的 <kana> 若照字面
+ * 理解為單純假名會讓 起きます／置きます 共用同一熟悉度）：
+ *   起きます／置きます  → 引用形不同 → 分開的概念（正確：不同動詞）
+ *   休みます（第4課/第11課，同詞不同語義）→ 引用形相同 → 共用概念（正確：同一個詞）
+ */
 export function conceptsForVocab(v) {
-  const ids = [`w:${v.kana}`];
-  if (v.kanji) ids.push(`w:${v.kana}:reading`);
+  const cite = v.kanji || v.kana;
+  const ids = [`w:${cite}`];
+  if (v.kanji) ids.push(`w:${cite}:reading`);
   return ids;
 }
 

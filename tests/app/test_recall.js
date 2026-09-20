@@ -25,11 +25,13 @@ test('zh2jp：題幹為中文，答案為假名，漢字列入 alternatives', ()
   assert.equal(it.engine, ENGINE);
 });
 
-test('kanji2kana：考讀音，covers 含 reading 概念', () => {
+test('kanji2kana：考讀音，covers 含 reading 概念（概念以引用形為 lemma）', () => {
   const it = [...generate(V)].find((i) => i.id === 'recall:きります:kanji2kana');
   assert.equal(it.prompt.text, '切ります');
   assert.equal(it.answer, 'きります');
-  assert.ok(it.covers.includes('w:きります:reading'));
+  // 概念層以引用形（漢字優先）為 lemma，故 covers 是 w:切ります:reading，
+  // 不是 w:きります:reading——item id 與 concept id 是不同命名空間。
+  assert.ok(it.covers.includes('w:切ります:reading'));
   assert.ok(it.skills.includes('讀音'));
   assert.deepEqual(it.alternatives, [], '考讀音時不接受漢字作答');
 });

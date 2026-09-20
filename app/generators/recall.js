@@ -39,20 +39,23 @@ export function* generate(vocabList) {
   for (const v of usable) {
     const collides = byKana.get(v.kana).length > 1;
     const key = collides ? `${v.kana}:${disambiguator(v)}` : v.kana;
+    // covers 一律取自 conceptsForVocab，才能與引用形 lemma 命名保持一致
+    // （item id 仍以假名為鍵，兩個命名空間互不相依，見 disambiguator 注解）。
+    const [meaningConcept, readingConcept] = conceptsForVocab(v);
 
     yield makeItem({
       id: `recall:${key}:zh2jp`, v,
       promptText: v.zh, hint: '寫出日文',
       answer: v.kana,
       alternatives: v.kanji ? [v.kanji] : [],
-      covers: [`w:${v.kana}`],
+      covers: [meaningConcept],
     });
     if (v.kanji) {
       yield makeItem({
         id: `recall:${key}:kanji2kana`, v,
         promptText: v.kanji, hint: '寫出讀音（平假名）',
         answer: v.kana, alternatives: [],
-        covers: [`w:${v.kana}:reading`],
+        covers: [readingConcept],
       });
     }
   }

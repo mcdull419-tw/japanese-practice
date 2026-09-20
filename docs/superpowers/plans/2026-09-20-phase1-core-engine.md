@@ -1276,15 +1276,15 @@ const VERBS = {
 
 test('每個動詞產生四種變化題', () => {
   const items = [...generate(V, VERBS)];
-  const ids = items.filter((i) => i.id.startsWith('conj:おくります')).map((i) => i.id);
+  const ids = items.filter((i) => i.id.startsWith('conj:送ります')).map((i) => i.id);
   assert.deepEqual(ids.sort(), [
-    'conj:おくります:masu2masen', 'conj:おくります:masu2masendeshita',
-    'conj:おくります:masu2mashita', 'conj:おくります:masu2te',
+    'conj:送ります:masu2masen', 'conj:送ります:masu2masendeshita',
+    'conj:送ります:masu2mashita', 'conj:送ります:masu2te',
   ]);
 });
 
 test('て形題的答案正確，且 requires_lesson 取形態的解鎖課次', () => {
-  const it = [...generate(V, VERBS)].find((i) => i.id === 'conj:おくります:masu2te');
+  const it = [...generate(V, VERBS)].find((i) => i.id === 'conj:送ります:masu2te');
   assert.equal(it.prompt.text, 'おくります');
   assert.equal(it.prompt.hint, 'て形');
   assert.equal(it.answer, 'おくって');
@@ -1293,13 +1293,13 @@ test('て形題的答案正確，且 requires_lesson 取形態的解鎖課次', 
 });
 
 test('時態題的 requires_lesson 為單字課次（ます形第 4 課已教）', () => {
-  const it = [...generate(V, VERBS)].find((i) => i.id === 'conj:たべます:masu2mashita');
+  const it = [...generate(V, VERBS)].find((i) => i.id === 'conj:食べます:masu2mashita');
   assert.equal(it.answer, 'たべました');
   assert.equal(it.requires_lesson, 6);
 });
 
 test('covers 含變化規則與該動詞的分類，skills 為「變化」', () => {
-  const it = [...generate(V, VERBS)].find((i) => i.id === 'conj:きります:masu2te');
+  const it = [...generate(V, VERBS)].find((i) => i.id === 'conj:切ります:masu2te');
   assert.equal(it.answer, 'きって');
   assert.ok(it.covers.includes('r:te:groupI'));
   assert.ok(it.covers.includes('w:きります:group'));
@@ -1330,7 +1330,15 @@ const TARGETS = [
 ];
 
 export function* generate(vocabList, verbsTable) {
+  // 同一個動詞會在多課重複出現（休みます L4「休息」／L11「請假」等），
+  // 逐筆生成會產生重複 id。以引用形去重，並**取最早出現的課次**——
+  // 使用者在第 4 課就學過這個詞，ます形題不該等到第 11 課才解鎖。
+  const seen = new Map();
   for (const v of vocabList) {
+    const cite = v.kanji || v.kana;
+    if (!seen.has(cite) || v.lesson < seen.get(cite).lesson) seen.set(cite, v);
+  }
+  for (const v of seen.values()) {
     const cite = v.kanji || v.kana;            // 引用形：與 verbs.json 的鍵一致
     const info = verbsTable[cite];
     if (!info) continue;                       // 未收錄的動詞不猜分類

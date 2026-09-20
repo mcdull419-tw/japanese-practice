@@ -1,0 +1,347 @@
+{
+  "おきます": {
+    "group": "I",
+    "dict": "置く",
+    "lesson": 15
+  },
+  "ねます": {
+    "group": "II",
+    "dict": "寝る",
+    "lesson": 4
+  },
+  "はたらきます": {
+    "group": "I",
+    "dict": "働く",
+    "lesson": 4
+  },
+  "やすみます": {
+    "group": "I",
+    "dict": "休む",
+    "lesson": 4
+  },
+  "べんきょうします": {
+    "group": "III",
+    "dict": "勉強する",
+    "lesson": 4
+  },
+  "おわります": {
+    "group": "I",
+    "dict": "終わる",
+    "lesson": 4
+  },
+  "いきます": {
+    "group": "I",
+    "dict": "行く",
+    "lesson": 5
+  },
+  "きます": {
+    "group": "III",
+    "dict": "来る",
+    "lesson": 5
+  },
+  "かえります": {
+    "group": "I",
+    "dict": "帰る",
+    "lesson": 5
+  },
+  "たべます": {
+    "group": "II",
+    "dict": "食べる",
+    "lesson": 6
+  },
+  "のみます": {
+    "group": "I",
+    "dict": "飲む",
+    "lesson": 6
+  },
+  "すいます": {
+    "group": "I",
+    "dict": "吸う",
+    "lesson": 6
+  },
+  "みます": {
+    "group": "II",
+    "dict": "見る",
+    "lesson": 6
+  },
+  "ききます": {
+    "group": "I",
+    "dict": "聞く",
+    "lesson": 6
+  },
+  "よみます": {
+    "group": "I",
+    "dict": "読む",
+    "lesson": 6
+  },
+  "かきます": {
+    "group": "I",
+    "dict": "書く",
+    "lesson": 6
+  },
+  "かいます": {
+    "group": "I",
+    "dict": "買う",
+    "lesson": 6
+  },
+  "とります": {
+    "group": "I",
+    "dict": "撮る",
+    "lesson": 6
+  },
+  "します": {
+    "group": "III",
+    "dict": "する",
+    "lesson": 6
+  },
+  "あいます": {
+    "group": "I",
+    "dict": "会う",
+    "lesson": 6
+  },
+  "きります": {
+    "group": "I",
+    "dict": "切る",
+    "lesson": 7
+  },
+  "おくります": {
+    "group": "I",
+    "dict": "送る",
+    "lesson": 7
+  },
+  "あげます": {
+    "group": "II",
+    "dict": "あげる",
+    "lesson": 7
+  },
+  "もらいます": {
+    "group": "I",
+    "dict": "もらう",
+    "lesson": 7
+  },
+  "かします": {
+    "group": "I",
+    "dict": "貸す",
+    "lesson": 7
+  },
+  "かります": {
+    "group": "II",
+    "dict": "借りる",
+    "lesson": 7
+  },
+  "おしえます": {
+    "group": "II",
+    "dict": "教える",
+    "lesson": 7
+  },
+  "ならいます": {
+    "group": "I",
+    "dict": "習う",
+    "lesson": 7
+  },
+  "かけます": {
+    "group": "II",
+    "dict": "かける",
+    "lesson": 7
+  },
+  "わかります": {
+    "group": "I",
+    "dict": "わかる",
+    "lesson": 9
+  },
+  "あります": {
+    "group": "I",
+    "dict": "ある",
+    "lesson": 9
+  },
+  "います": {
+    "group": "II",
+    "dict": "いる",
+    "lesson": 10
+  },
+  "かかります": {
+    "group": "I",
+    "dict": "かかる",
+    "lesson": 11
+  },
+  "あそびます": {
+    "group": "I",
+    "dict": "遊ぶ",
+    "lesson": 13
+  },
+  "およぎます": {
+    "group": "I",
+    "dict": "泳ぐ",
+    "lesson": 13
+  },
+  "むかえます": {
+    "group": "II",
+    "dict": "迎える",
+    "lesson": 13
+  },
+  "つかれます": {
+    "group": "II",
+    "dict": "疲れる",
+    "lesson": 13
+  },
+  "だします": {
+    "group": "I",
+    "dict": "出す",
+    "lesson": 13
+  },
+  "はいります": {
+    "group": "I",
+    "dict": "入る",
+    "lesson": 13
+  },
+  "でます": {
+    "group": "II",
+    "dict": "出る",
+    "lesson": 13
+  },
+  "けっこんします": {
+    "group": "III",
+    "dict": "結婚する",
+    "lesson": 13
+  },
+  "かいものします": {
+    "group": "III",
+    "dict": "買い物する",
+    "lesson": 13
+  },
+  "しょくじします": {
+    "group": "III",
+    "dict": "食事する",
+    "lesson": 13
+  },
+  "さんぽします": {
+    "group": "III",
+    "dict": "散歩する",
+    "lesson": 13
+  },
+  "つけます": {
+    "group": "II",
+    "dict": "つける",
+    "lesson": 14
+  },
+  "けします": {
+    "group": "I",
+    "dict": "消す",
+    "lesson": 14
+  },
+  "あけます": {
+    "group": "II",
+    "dict": "開ける",
+    "lesson": 14
+  },
+  "しめます": {
+    "group": "II",
+    "dict": "閉める",
+    "lesson": 14
+  },
+  "いそぎます": {
+    "group": "I",
+    "dict": "急ぐ",
+    "lesson": 14
+  },
+  "まちます": {
+    "group": "I",
+    "dict": "待つ",
+    "lesson": 14
+  },
+  "とめます": {
+    "group": "II",
+    "dict": "止める",
+    "lesson": 14
+  },
+  "まがります": {
+    "group": "I",
+    "dict": "曲がる",
+    "lesson": 14
+  },
+  "もちます": {
+    "group": "I",
+    "dict": "持つ",
+    "lesson": 14
+  },
+  "てつだいます": {
+    "group": "I",
+    "dict": "手伝う",
+    "lesson": 14
+  },
+  "よびます": {
+    "group": "I",
+    "dict": "呼ぶ",
+    "lesson": 14
+  },
+  "はなします": {
+    "group": "I",
+    "dict": "話す",
+    "lesson": 14
+  },
+  "みせます": {
+    "group": "II",
+    "dict": "見せる",
+    "lesson": 14
+  },
+  "はじめます": {
+    "group": "II",
+    "dict": "始める",
+    "lesson": 14
+  },
+  "ふります": {
+    "group": "I",
+    "dict": "降る",
+    "lesson": 14
+  },
+  "コピーします": {
+    "group": "III",
+    "dict": "コピーする",
+    "lesson": 14
+  },
+  "たちます": {
+    "group": "I",
+    "dict": "立つ",
+    "lesson": 15
+  },
+  "すわります": {
+    "group": "I",
+    "dict": "座る",
+    "lesson": 15
+  },
+  "つかいます": {
+    "group": "I",
+    "dict": "使う",
+    "lesson": 15
+  },
+  "つくります": {
+    "group": "I",
+    "dict": "作る",
+    "lesson": 15
+  },
+  "うります": {
+    "group": "I",
+    "dict": "売る",
+    "lesson": 15
+  },
+  "しります": {
+    "group": "I",
+    "dict": "知る",
+    "lesson": 15
+  },
+  "すみます": {
+    "group": "I",
+    "dict": "住む",
+    "lesson": 15
+  },
+  "けんきゅうします": {
+    "group": "III",
+    "dict": "研究する",
+    "lesson": 15
+  },
+  "おもいだします": {
+    "group": "I",
+    "dict": "思い出す",
+    "lesson": 15
+  }
+}

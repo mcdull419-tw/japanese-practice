@@ -192,8 +192,25 @@ def _split_example_line(frags: List[Fragment], strip_marker: bool) -> Tuple[str,
         return "", ""
 
     texts = [f.text for f in frags]
-    if strip_marker and texts[0] and texts[0][0] in _CIRCLED:
-        texts[0] = texts[0][1:]
+    if strip_marker:
+        # 圈號數字的版面位置不固定：07.pdf 印成單一 fragment '① '（標
+        # 記在前、緊接空白），14.pdf／15.pdf 印成 ' ①'（前面多一個空
+        # 白字元），甚至會被拆成獨立的純空白 fragment 加上單獨一個圈
+        # 號字元 fragment（例如 14.pdf 第14則例句⑥⑦⑧的 [' ', '⑥',
+        # 'Ａ', '：']）。因此先跳過純空白的前導 fragment，找到第一個
+        # 含非空白字元的 fragment，確認其開頭（去除前導空白後）是圈
+        # 號才視為找到標記；去除圈號後一併清空前面的純空白 fragment、
+        # 並吃掉圈號後殘留的前導空白，避免例句開頭多出不屬於版面間距
+        # 的空格。
+        i = 0
+        while i < len(texts) and texts[i].strip() == "":
+            i += 1
+        if i < len(texts):
+            lstripped = texts[i].lstrip()
+            if lstripped and lstripped[0] in _CIRCLED:
+                for j in range(i):
+                    texts[j] = ""
+                texts[i] = lstripped[1:].lstrip()
 
     whole = "".join(texts)
     if not _KANA_RE.search(whole):

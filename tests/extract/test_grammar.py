@@ -4,7 +4,9 @@ from tools.extract.pdfobj import PDFDoc
 from tools.extract.fragments import extract_fragments
 from tools.extract.layout import group_lines
 from tools.extract.sections import split_sections
-from tools.extract.grammar import parse_grammar, _naive_concat, _TITLE_RE, _KANA_RE
+from tools.extract.grammar import (
+    parse_grammar, _naive_concat, _TITLE_RE, _KANA_RE, _CIRCLED,
+)
 
 
 def _grammar_items(lesson):
@@ -178,6 +180,41 @@ class TestGrammarCrossLessonSpotChecks(unittest.TestCase):
         self.assertIn("不，是舒密特先生的。", ex["zh"])
         self.assertIn("哦，這樣呀。", ex["zh"])
 
+    def test_l14_leading_space_before_circled_marker_stripped(self):
+        """14.pdf 的圈號 fragment 印成 ' ①'（前面多一個空白字元），跟
+        07.pdf 的 '① ' 不同排版；若判定只看 fragment 開頭第一個字
+        元，會漏判成沒有圈號、圈號殘留在解析結果裡（見 grammar.py
+        `_split_example_line` 的說明）。這裡斷言第 1 則例句①的具體
+        內容，且 jp 不含任何圈號字元。"""
+        _section, _frags, items = _grammar_items(14)
+        it = [i for i in items if i["no"] == 4][0]
+        ex = it["examples"][0]
+        self.assertEqual(
+            ex["jp"], "すみませんが、この  漢字の  読み方を  教えて  ください。"
+        )
+        self.assertEqual(ex["zh"], "對不起，請你告訴我這個漢字的念法。")
+        for c in "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳":
+            self.assertNotIn(c, ex["jp"])
+
+    def test_l14_circled_marker_as_separate_fragment_stripped(self):
+        """14.pdf 第 7 則例句⑨的圈號被拆成與內文完全獨立的 fragment
+        （' ⑨' 一個 fragment、內文另成 fragment），是比 ' ①' 更極端
+        的排版變體，同樣不能殘留圈號。"""
+        _section, _frags, items = _grammar_items(14)
+        it = [i for i in items if i["no"] == 7][0]
+        ex = [e for e in it["examples"] if "失礼ですが" in e["jp"]][0]
+        self.assertEqual(ex["jp"], "失礼ですが、お名前は？")
+        self.assertEqual(ex["zh"], "對不起，您貴姓？（第１課）")
+
+    def test_l15_leading_space_before_circled_marker_stripped(self):
+        """15.pdf 同樣是 ' ①' 排版，跨課別交叉驗證第 3 則例句⑥
+        （工作簡報中列出的具體案例）不再殘留圈號。"""
+        _section, _frags, items = _grammar_items(15)
+        it = [i for i in items if i["no"] == 3][0]
+        ex = [e for e in it["examples"] if "結婚して" in e["jp"]][0]
+        self.assertEqual(ex["jp"], "わたしは  結婚して  います。")
+        self.assertEqual(ex["zh"], "我結婚了。")
+
     def test_l06_bare_examples_without_circled_marker_land_in_body_not_lost(self):
         """06.pdf 第２則「名詞を します」底下的例句（「サッカーを
         します。踢足球」等）沒有印圈號數字，不符合本模組『例句』的判
@@ -244,6 +281,27 @@ class TestGrammarAllLessonsContentPreservation(unittest.TestCase):
                 "第 %d 課：原始假名數 %d，解析後假名數 %d，日文遺失或重複"
                 % (lesson, raw_kana_count, parsed_kana_count),
             )
+
+    def test_no_circled_marker_survives_in_any_example(self):
+        """角度三：全 15 課、全 213 句例句的 jp/zh 都不得殘留圈號數字
+        （①～⑳）——圈號只是印刷上的例句編號，不屬於例句內容本身。這
+        是 14.pdf／15.pdf 圈號 fragment 前導空白（' ①'）與圈號獨立成
+        一個 fragment（' ⑨' / '⑥' 各自成 fragment）兩種排版變體的直
+        接迴歸測試。"""
+        for lesson, (_section, _frags, items) in self.data.items():
+            for it in items:
+                for e in it["examples"]:
+                    for c in _CIRCLED:
+                        self.assertNotIn(
+                            c, e["jp"],
+                            "第 %d 課第 %d 則例句 jp 殘留圈號 %r：%r"
+                            % (lesson, it["no"], c, e),
+                        )
+                        self.assertNotIn(
+                            c, e["zh"],
+                            "第 %d 課第 %d 則例句 zh 殘留圈號 %r：%r"
+                            % (lesson, it["no"], c, e),
+                        )
 
     def test_every_example_has_non_empty_japanese(self):
         """所有解析出來的例句，日文欄位不得為空——空的日文欄位代表日

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>日語練習</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Hiragino Sans", "Noto Sans TC", sans-serif;
+    background: #f7f7f5;
+    color: #1a1a1a;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+  h2 { font-size: 1.05rem; margin: 0 0 12px; }
+  #app { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+  section { background: #fff; border-radius: 10px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .settings label { display: block; margin-bottom: 10px; font-size: .9rem; }
+  .settings input[type="number"] { width: 4em; margin-left: 6px; }
+  button { padding: 8px 14px; border: none; border-radius: 6px; background: #2d6cdf; color: #fff;
+    font-size: .95rem; margin: 4px 8px 4px 0; cursor: pointer; }
+  button:active { opacity: .8; }
+  #hint, #apply { background: #6b7280; }
+  #also-ok { background: #d97706; }
+  .prompt { font-size: 1.4rem; margin-bottom: 6px; }
+  .hint { color: #666; margin-bottom: 12px; min-height: 1.2em; }
+  input#ans { font-size: 1.2rem; padding: 8px; width: 100%; box-sizing: border-box; margin-bottom: 10px;
+    border: 1px solid #ccc; border-radius: 6px; }
+  .progress { color: #999; font-size: .85rem; margin-top: 8px; }
+  .verdict { font-size: 1.2rem; font-weight: bold; margin-bottom: 8px; }
+  .answer, .source { margin-bottom: 6px; }
+  .skill-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: .9rem; }
+  .skill-name { width: 3.5em; flex-shrink: 0; }
+  .skill-bar { flex: 1; background: #eee; border-radius: 6px; height: 20px; position: relative; overflow: hidden; }
+  .skill-bar.unseen { display: flex; align-items: center; justify-content: center; color: #999; font-size: .8rem; }
+  .skill-fill { background: #2d6cdf; height: 100%; }
+  .skill-pct { position: absolute; right: 6px; top: 0; line-height: 20px; font-size: .78rem; color: #333; }
+  .skill-count { width: 4em; text-align: right; color: #888; font-size: .8rem; flex-shrink: 0; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #14161a; color: #eee; }
+    section { background: #1f2229; box-shadow: none; }
+    input#ans { background: #14161a; color: #eee; border-color: #444; }
+    .skill-bar { background: #2a2d35; }
+  }
+</style>
+</head>
+<body>
+  <div id="app">
+    <section id="settings" aria-label="設定"></section>
+    <section id="session" aria-label="練習"></section>
+    <section id="dashboard" aria-label="儀表板"></section>
+  </div>
+  <script type="module" src="app/main.js"></script>
+</body>
+</html>

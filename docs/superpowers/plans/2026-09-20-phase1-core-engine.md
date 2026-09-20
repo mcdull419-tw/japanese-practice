@@ -333,11 +333,13 @@ EOF
 - Produces: `data/verbs.json` —
   ```jsonc
   {
-    "きります": {"group": "I",   "dict": "切る",   "lesson": 7},
-    "たべます": {"group": "II",  "dict": "食べる", "lesson": 6},
-    "べんきょうします": {"group": "III", "dict": "勉強する", "lesson": 4}
+    "切ります":   {"group": "I",   "dict": "切る",   "kana": "きります",  "lesson": 7},
+    "食べます":   {"group": "II",  "dict": "食べる", "kana": "たべます",  "lesson": 6},
+    "勉強します": {"group": "III", "dict": "勉強する", "kana": "べんきょうします", "lesson": 4},
+    "あげます":   {"group": "II",  "dict": "あげる", "kana": "あげます",  "lesson": 7}
   }
-  // 鍵為 vocab 的 kana 欄位原值；group ∈ "I"|"II"|"III"；dict 為辭書形
+  // 鍵為**引用形** = kanji || kana（有漢字用漢字，沒有的用假名）
+  // kana 欄位保留ます形的假名，變化引擎用它產生題目答案
   ```
 
 ### 為什麼需要這張表（實測證據，不要跳過這段）
@@ -1225,7 +1227,9 @@ Expected: 題數 > 1000，id 唯一為 true
 
 **`requires_lesson` = max(單字課次, `FORM_LESSON[目標形態]`)**——`送ります` 是第 7 課單字，但て形第 14 課才教，所以該題的 `requires_lesson` 為 14。這是規格 §5.3 的範圍過濾依據：使用者把範圍設 1~10 時這題不該出現。
 
-**id 格式**：`conj:<kana>:masu2<form>`（不使用 `→`，避免 URL 與檔名問題）。
+**id 格式**：`conj:<引用形>:masu2<form>`（不使用 `→`，避免 URL 與檔名問題）。
+
+**為什麼用引用形而非假名**：語料中 `おきます` 同時對應 `起きます`(II 類) 與 `置きます`(I 類)——以假名為鍵會讓其中一個覆蓋另一個，使第 4 課的基礎動詞 `起きます` 的て形算成 `おいて` 而非 `おきて`。**那是教錯。** 引用形（`kanji || kana`）在全語料庫 74 個鍵中分類衝突為 0。
 
 - [ ] **Step 1: 寫失敗的測試**
 
@@ -1240,9 +1244,9 @@ const V = [
   { kana: 'きります', kanji: '切ります', zh: '剪，切', lesson: 7, no: 1 },
 ];
 const VERBS = {
-  'おくります': { group: 'I', dict: '送る' },
-  'たべます': { group: 'II', dict: '食べる' },
-  'きります': { group: 'I', dict: '切る' },
+  '送ります': { group: 'I',  dict: '送る',  kana: 'おくります' },
+  '食べます': { group: 'II', dict: '食べる', kana: 'たべます' },
+  '切ります': { group: 'I',  dict: '切る',  kana: 'きります' },
 };
 
 test('每個動詞產生四種變化題', () => {
@@ -1302,22 +1306,23 @@ const TARGETS = [
 
 export function* generate(vocabList, verbsTable) {
   for (const v of vocabList) {
-    const info = verbsTable[v.kana];
+    const cite = v.kanji || v.kana;            // 引用形：與 verbs.json 的鍵一致
+    const info = verbsTable[cite];
     if (!info) continue;                       // 未收錄的動詞不猜分類
     for (const { form, hint } of TARGETS) {
       let answer;
       try {
-        answer = conjugate(v.kana, info.group, form);
+        answer = conjugate(info.kana, info.group, form);
       } catch {
         continue;                              // 無法變化者略過，不產生錯誤題目
       }
-      const covers = conceptsForConjugation(v.kana, info.group, form);
+      const covers = conceptsForConjugation(cite, info.group, form);
       yield {
-        id: `conj:${v.kana}:masu2${form}`, engine: ENGINE,
+        id: `conj:${cite}:masu2${form}`, engine: ENGINE,
         lesson: v.lesson,
         requires_lesson: Math.max(v.lesson, FORM_LESSON[form]),
         covers, skills: [...new Set(covers.map(skillOf).filter(Boolean))],
-        prompt: { type: 'text', text: v.kana, hint },
+        prompt: { type: 'text', text: info.kana, hint },
         answer, alternatives: [],
         source_ref: `第${v.lesson}課 ことば${v.no ? ` ${v.no}` : ''}`,
       };

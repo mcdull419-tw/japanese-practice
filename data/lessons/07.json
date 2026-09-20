@@ -1,0 +1,1703 @@
+{
+ "drills": [
+  {
+   "id": "L07-B1",
+   "items": [
+    "手紙を 書きます",
+    "レポートを 送ります",
+    "紙を 切ります",
+    "ごはんを 食べます"
+   ],
+   "model_answer": "はしで ごはんを 食べます。",
+   "model_cue": "ごはんを 食べます"
+  },
+  {
+   "id": "L07-B2",
+   "items": [
+    "",
+    "",
+    "",
+    ""
+   ],
+   "model_answer": "これは 日本語で 何ですか。 「パソコン」です。",
+   "model_cue": ""
+  },
+  {
+   "id": "L07-B3",
+   "items": [
+    "貸します",
+    "教えます",
+    "書きます",
+    "かけます"
+   ],
+   "model_answer": "テレサちゃんに ノートを あげます。",
+   "model_cue": "あげます"
+  },
+  {
+   "id": "L07-B4",
+   "items": [
+    "借ります",
+    "習います",
+    "もらいます",
+    "もらいます"
+   ],
+   "model_answer": "父に シャツを もらいました。",
+   "model_cue": "もらいます"
+  },
+  {
+   "id": "L07-B5",
+   "items": [
+    "書きます",
+    "かけます",
+    "もらいます",
+    "借ります"
+   ],
+   "model_answer": "だれに 英語を 習いましたか。 ワットさんに 習いました。",
+   "model_cue": "習います"
+  },
+  {
+   "id": "L07-B6",
+   "items": [
+    "去年の クリスマスに 何を もらいましたか。（ ネクタイと 本 ）",
+    "どこで 日本語を 習いましたか。（ アメリカ ）",
+    "いつ 家族に 電話を かけますか。（ あした ）",
+    "だれに この CDを 借りましたか。（ 友達 ）"
+   ],
+   "model_answer": "花を あげました。",
+   "model_cue": "お母さんの 誕生日に 何を あげましたか。（ 花 ）"
+  },
+  {
+   "id": "L07-B7",
+   "items": [
+    "レポートを 送ります（ いいえ ）",
+    "京都へ 行きます（ はい ）",
+    "ミラーさんは 帰ります（ いいえ ）",
+    "テレサちゃんは 寝ます（ はい ）"
+   ],
+   "model_answer": "もう 切符を 買いましたか。 はい、もう 買いました。｜もう 手紙を 書きましたか。 いいえ、まだです。",
+   "model_cue": "切符を 買います（ はい ）｜手紙を 書きます（ いいえ ）"
+  }
+ ],
+ "grammar": [
+  {
+   "body_zh": "助詞「で」表示手段、方法。",
+   "examples": [
+    {
+     "jp": "はしで  食べます。",
+     "zh": "用筷子吃。"
+    },
+    {
+     "jp": "日本語で  レポートを  書きます。",
+     "zh": "用日語寫報告。"
+    }
+   ],
+   "no": 1,
+   "title": "名詞（工具／手段）で  動詞"
+  },
+  {
+   "body_zh": "以這個疑問句，詢問某個詞或句子用別的語言怎麼說。",
+   "examples": [
+    {
+     "jp": "「ありがとう」は  英語で  何ですか。 …「Thank you」です。",
+     "zh": "謝謝用英語怎麼說？是 Thank you。"
+    },
+    {
+     "jp": "Thank 「you」は  日本語で  何ですか。謝謝用日語怎麼說？ …「ありがとう」です。是ありがとう。",
+     "zh": ""
+    }
+   ],
+   "no": 2,
+   "title": "詞／句は ～語で  何ですか"
+  },
+  {
+   "body_zh": "「あげます」「かします」「おしえます」等動詞，都有給、借、教的對象人物，這個對象用助詞「に」表示。〔註〕「おくります」「でんわを  かけます」之類的情況，對象除了人以外也可以是場所名詞。這時，除助詞「に」之外有時還會使用「へ」。(へ)",
+   "examples": [
+    {
+     "jp": "山田さんは  木村さんに  花を  あげました。",
+     "zh": "山田先生送花給木村小姐。"
+    },
+    {
+     "jp": "イーさんに  本を  貸しました。",
+     "zh": "借書給了李小姐。"
+    },
+    {
+     "jp": "太郎君に  英語を  教えます。",
+     "zh": "教太郎英語。"
+    },
+    {
+     "jp": "会社に  電話を  かけます。",
+     "zh": "打電話給公司。"
+    }
+   ],
+   "no": 3,
+   "title": "名詞（人）に  あげます，等"
+  },
+  {
+   "body_zh": "「もらいます」「かります」「ならいます」等動詞，是站在承受動作的人這方來說的。“得到”、“借”、“學習”的對象用助詞「に」表示。這個句型中，「に」可以用「から」代替。尤其當對象不是人，而是公司或學校等組織時，就要用「から」而不用「に」。",
+   "examples": [
+    {
+     "jp": "木村さんは  山田さんに  花を  もらいました。",
+     "zh": "木村小姐收到了山田先生送的花。"
+    },
+    {
+     "jp": "カリナさんに  ＣＤを  借りました。",
+     "zh": "我向卡莉娜小姐借了ＣＤ"
+    },
+    {
+     "jp": "ワンさんに  中国を  習います。",
+     "zh": "跟王先生學中文。"
+    },
+    {
+     "jp": "木村さんは  山田さんから  花を  もらいました。",
+     "zh": "木村小姐收到了山田先生送的花。"
+    },
+    {
+     "jp": "銀行から  お金を  借りました。",
+     "zh": "從銀行借了錢。"
+    }
+   ],
+   "no": 4,
+   "title": "名詞（人）に　もらいます，等"
+  },
+  {
+   "body_zh": "「もう」是“已經”的意思，與「動詞ました」一起使用。這時的「動詞ました」，是現在的行為或事物已經結束的意思。對「もう 動詞ました」的回答，肯定時用「はい、もう 動詞ました」，否定用「いいえ、まだです」。這個句型的問句，回答若是否定時，不能用「動詞ませんでした」。「動詞ませんでした」表示過去沒做過某件事，不表示還沒做某件事。",
+   "examples": [
+    {
+     "jp": "もう  荷物を  送りましたか。 …はい、〔もう〕送りました。 …いいえ、まだです。",
+     "zh": "行李已經送去了嗎？是，已經送去了。不，還沒有。"
+    }
+   ],
+   "no": 5,
+   "title": "もう ました動詞"
+  }
+ ],
+ "images": [],
+ "lesson": 7,
+ "patterns": [
+  {
+   "id": "L07-A1",
+   "question_variant": "日本人はなんで ごはんを 食べますか。",
+   "requires_lesson": 7,
+   "rows": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "日本人",
+     "インドネシア人",
+     "アメリカ人"
+    ],
+    "T": [
+     "はし",
+     "スプーンと フォーク",
+     "ナイフと フォーク"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "{S}は{T}で ごはんを 食べます。"
+  },
+  {
+   "id": "L07-A2",
+   "question_variant": null,
+   "requires_lesson": 7,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "にほんご",
+     "えいご",
+     "ちゅうごくご"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "わたしは{S}でレポートを書きます。"
+  },
+  {
+   "id": "L07-A3",
+   "question_variant": "「ありがとう」はタイごでなんですか。",
+   "requires_lesson": 7,
+   "rows": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "えいご",
+     "スペインご",
+     "ちゅうごくご"
+    ],
+    "T": [
+     "“Thank you”",
+     "“Gracias”",
+     "“謝謝”"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "「ありがとう」は{S}で{T}です。"
+  },
+  {
+   "id": "L07-A4",
+   "question_variant": "あなたはだれに電話をかけますか。",
+   "requires_lesson": 7,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "さとうさん",
+     "ともだち",
+     "ちち"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "わたしは{S}に電話をかけます。"
+  },
+  {
+   "id": "L07-A5",
+   "question_variant": "あなたはだれに 本を借りましたか。",
+   "requires_lesson": 7,
+   "rows": [
+    [
+     0
+    ],
+    [
+     1
+    ],
+    [
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "ワットさん",
+     "せんせい",
+     "かいしゃの ひと"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "わたしは{S}に 本を借りました。"
+  },
+  {
+   "id": "L07-A6",
+   "question_variant": null,
+   "requires_lesson": 7,
+   "rows": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     2
+    ]
+   ],
+   "slots": {
+    "S": [
+     "荷物を",
+     "大阪城へ",
+     "プレゼントを"
+    ],
+    "T": [
+     "おくり",
+     "いき",
+     "かい"
+    ]
+   },
+   "table_type": "substitution",
+   "template": "もう{S}{T}ました。"
+  }
+ ],
+ "sentences": [
+  {
+   "alt": [],
+   "id": "L07-文型-1",
+   "jp": "わたしは  ワープロで  手紙を  書きます。",
+   "no": 1,
+   "ruby": [
+    {
+     "at": 13,
+     "base": "手紙",
+     "kana": "てがみ"
+    },
+    {
+     "at": 18,
+     "base": "書",
+     "kana": "か"
+    }
+   ],
+   "section": "文型",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-文型-2",
+   "jp": "わたしは  木村さんに  花を  あげます。",
+   "no": 2,
+   "ruby": [
+    {
+     "at": 6,
+     "base": "木村",
+     "kana": "きむら"
+    },
+    {
+     "at": 13,
+     "base": "花",
+     "kana": "はな"
+    }
+   ],
+   "section": "文型",
+   "zh": null
+  },
+  {
+   "alt": [
+    "から"
+   ],
+   "id": "L07-文型-3",
+   "jp": "わたしは  カリナさんに  チョコレートを  もらいました。",
+   "no": 3,
+   "ruby": [],
+   "section": "文型",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-例文-1",
+   "jp": "テレビで  日本語を  勉強しましたか。\n…いいえ、ラジオで  勉強しました。",
+   "no": 1,
+   "ruby": [
+    {
+     "at": 6,
+     "base": "日本語",
+     "kana": "にほんご"
+    },
+    {
+     "at": 12,
+     "base": "勉強",
+     "kana": "べんきょう"
+    },
+    {
+     "at": 32,
+     "base": "勉強",
+     "kana": "べんきょう"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-例文-2",
+   "jp": "日本語で  レポートを  書きますか。\n…いいえ、英語で  書きます。",
+   "no": 2,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "日本語",
+     "kana": "にほんご"
+    },
+    {
+     "at": 13,
+     "base": "書",
+     "kana": "か"
+    },
+    {
+     "at": 25,
+     "base": "英語",
+     "kana": "えいご"
+    },
+    {
+     "at": 30,
+     "base": "書",
+     "kana": "か"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-例文-3",
+   "jp": "“Goodbye”は  日本語で  何ですか。\n…「さようなら」です。",
+   "no": 3,
+   "ruby": [
+    {
+     "at": 12,
+     "base": "日本語",
+     "kana": "にほんご"
+    },
+    {
+     "at": 18,
+     "base": "何",
+     "kana": "なん"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-例文-4",
+   "jp": "だれに  クリスマスカードを  書きますか。\n…家族と  友達に  書きます。",
+   "no": 4,
+   "ruby": [
+    {
+     "at": 16,
+     "base": "書",
+     "kana": "か"
+    },
+    {
+     "at": 24,
+     "base": "家族",
+     "kana": "かぞく"
+    },
+    {
+     "at": 29,
+     "base": "友達",
+     "kana": "ともだち"
+    },
+    {
+     "at": 34,
+     "base": "書",
+     "kana": "か"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-例文-5",
+   "jp": "それは  何ですか。\n…手帳です。  山田さんに  もらいました。",
+   "no": 5,
+   "ruby": [
+    {
+     "at": 5,
+     "base": "何",
+     "kana": "なん"
+    },
+    {
+     "at": 12,
+     "base": "手帳",
+     "kana": "てちょう"
+    },
+    {
+     "at": 19,
+     "base": "山田",
+     "kana": "やまだ"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-例文-6",
+   "jp": "もう  新幹線の  切符を  買いましたか。\n…はい、もう  買いました。",
+   "no": 6,
+   "ruby": [
+    {
+     "at": 4,
+     "base": "新幹線",
+     "kana": "しんかんせん"
+    },
+    {
+     "at": 10,
+     "base": "切符",
+     "kana": "きっぷ"
+    },
+    {
+     "at": 15,
+     "base": "買",
+     "kana": "か"
+    },
+    {
+     "at": 31,
+     "base": "買",
+     "kana": "か"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-例文-7",
+   "jp": "もう  昼ごはんを  食べましたか。\n…いいえ、まだです。  これから  食べます。",
+   "no": 7,
+   "ruby": [
+    {
+     "at": 4,
+     "base": "昼",
+     "kana": "ひる"
+    },
+    {
+     "at": 11,
+     "base": "食",
+     "kana": "た"
+    },
+    {
+     "at": 37,
+     "base": "食",
+     "kana": "た"
+    }
+   ],
+   "section": "例文",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-会話-1",
+   "jp": "ホセ・サントス  ：ごめんください。",
+   "no": 1,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-会話-2",
+   "jp": "山田一郎        ：いらっしゃい。",
+   "no": 2,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "山田一郎",
+     "kana": "やまだいちろう"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-会話-3",
+   "jp": "どうぞ  お上がり  ください。",
+   "no": 3,
+   "ruby": [
+    {
+     "at": 6,
+     "base": "上",
+     "kana": "あ"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-会話-4",
+   "jp": "ホセ・サントス  ：失礼します。",
+   "no": 4,
+   "ruby": [
+    {
+     "at": 10,
+     "base": "失礼",
+     "kana": "しつれい"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-会話-5",
+   "jp": "山田友子        ：コーヒーは  いかがですか。",
+   "no": 5,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "山田友子",
+     "kana": "やまだともこ"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-会話-6",
+   "jp": "マリア・サントス：ありがとう  ございます。",
+   "no": 6,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-会話-7",
+   "jp": "山田友子        ：どうぞ。",
+   "no": 7,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "山田友子",
+     "kana": "やまだともこ"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-会話-8",
+   "jp": "マリア・サントス： いただきます。",
+   "no": 8,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-会話-9",
+   "jp": "この  スプーン、すてきですね。",
+   "no": 9,
+   "ruby": [],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-会話-10",
+   "jp": "山田友子        ：ええ。",
+   "no": 10,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "山田友子",
+     "kana": "やまだともこ"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-会話-11",
+   "jp": "会社の  人に  もらいました。",
+   "no": 11,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "会社",
+     "kana": "かいしゃ"
+    },
+    {
+     "at": 5,
+     "base": "人",
+     "kana": "ひと"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-会話-12",
+   "jp": "ヨーロッパ旅行の  お土産です。",
+   "no": 12,
+   "ruby": [
+    {
+     "at": 5,
+     "base": "旅行",
+     "kana": "りょこう"
+    },
+    {
+     "at": 11,
+     "base": "土産",
+     "kana": "みやげ"
+    }
+   ],
+   "section": "会話",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-問題-1",
+   "jp": "1)…例：  はい、もう食べました。\n2)…例：  はしで食べます。\n3)…例：  はい、もらいました。\n4)…例：  時計をあげます。\n5)…例：  「ありがとう」です。",
+   "no": 1,
+   "ruby": [
+    {
+     "at": 3,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 12,
+     "base": "食",
+     "kana": "た"
+    },
+    {
+     "at": 22,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 29,
+     "base": "食",
+     "kana": "た"
+    },
+    {
+     "at": 38,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 56,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 60,
+     "base": "時計",
+     "kana": "とけい"
+    },
+    {
+     "at": 72,
+     "base": "例",
+     "kana": "れい"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-問題-4",
+   "jp": "例：  友達に  （ 本を  貸します ）。\n1)  学生に  （  英語を教えます ）。\n2)  先生に  （ 辞書を借ります（もらいます） ）。\n3)  家族に  （ 荷物を送ります ）。\n4)  父に    （ 時計をもらいます ）。\n5)  彼女に  （ 電話をかけます ）。",
+   "no": 4,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 4,
+     "base": "友達",
+     "kana": "ともだち"
+    },
+    {
+     "at": 11,
+     "base": "本",
+     "kana": "ほん"
+    },
+    {
+     "at": 15,
+     "base": "貸",
+     "kana": "か"
+    },
+    {
+     "at": 27,
+     "base": "学生",
+     "kana": "がくせい"
+    },
+    {
+     "at": 35,
+     "base": "英語",
+     "kana": "えいご"
+    },
+    {
+     "at": 38,
+     "base": "教",
+     "kana": "おし"
+    },
+    {
+     "at": 50,
+     "base": "先生",
+     "kana": "せんせい"
+    },
+    {
+     "at": 57,
+     "base": "辞書",
+     "kana": "じしょ"
+    },
+    {
+     "at": 60,
+     "base": "借",
+     "kana": "か"
+    },
+    {
+     "at": 79,
+     "base": "家族",
+     "kana": "かぞく"
+    },
+    {
+     "at": 86,
+     "base": "荷物",
+     "kana": "にもつ"
+    },
+    {
+     "at": 89,
+     "base": "送",
+     "kana": "おく"
+    },
+    {
+     "at": 101,
+     "base": "父",
+     "kana": "ちち"
+    },
+    {
+     "at": 109,
+     "base": "時計",
+     "kana": "とけい"
+    },
+    {
+     "at": 125,
+     "base": "彼女",
+     "kana": "かのじょ"
+    },
+    {
+     "at": 132,
+     "base": "電話",
+     "kana": "でんわ"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-問題-5",
+   "jp": "例：  これは  イタリア（ の ）  靴です。\n1)    わたしは  はし（ で ）  ごはんを  食べます。\n2)    ファクス（ で ）  レポートを  送りました。\n3)   「さようなら」は  英語（ で ）  何ですか。\n4)    わたしは  きのう  彼女（ に ）  手紙（ を ）  書きました。\n5)    わたしは  友達（ に（から） ）  お土産（ を ）  もらいました。",
+   "no": 5,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 20,
+     "base": "靴",
+     "kana": "くつ"
+    },
+    {
+     "at": 52,
+     "base": "食",
+     "kana": "た"
+    },
+    {
+     "at": 82,
+     "base": "送",
+     "kana": "おく"
+    },
+    {
+     "at": 104,
+     "base": "英語",
+     "kana": "えいご"
+    },
+    {
+     "at": 113,
+     "base": "何",
+     "kana": "なん"
+    },
+    {
+     "at": 136,
+     "base": "彼女",
+     "kana": "かのじょ"
+    },
+    {
+     "at": 145,
+     "base": "手紙",
+     "kana": "てがみ"
+    },
+    {
+     "at": 154,
+     "base": "書",
+     "kana": "か"
+    },
+    {
+     "at": 173,
+     "base": "友達",
+     "kana": "ともだち"
+    },
+    {
+     "at": 187,
+     "base": "土産",
+     "kana": "みやげ"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-問題-6",
+   "jp": "例：  もう  昼ごはんを  食べましたか。\n……いいえ、（ まだです ）。\nこれから（ 食べます ）。いっしょに（ 食べませんか ）。\n1)  もう  大阪城へ  行きましたか。\n……いいえ、（ まだです ）。\n日曜日  ミラーさんと（ 行きます ）。いっしょに（ 行きませんか ）。\n2)  もう  クリスマスカードを  書きましたか。\n……はい、（ ［もう］書きました ）。\n3)  もう  荷物を  送りましたか。\n……いいえ、（ まだです ）。\nきょうの  午後（ 送ります ）。\n4)  テレサちゃんは  もう  寝ましたか。\n……はい、（ ［もう］寝ました ）。",
+   "no": 6,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "例",
+     "kana": "れい"
+    },
+    {
+     "at": 8,
+     "base": "昼",
+     "kana": "ひる"
+    },
+    {
+     "at": 15,
+     "base": "食",
+     "kana": "た"
+    },
+    {
+     "at": 45,
+     "base": "食",
+     "kana": "た"
+    },
+    {
+     "at": 59,
+     "base": "食",
+     "kana": "た"
+    },
+    {
+     "at": 77,
+     "base": "大阪城",
+     "kana": "おおさかじょう"
+    },
+    {
+     "at": 83,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 107,
+     "base": "日曜日",
+     "kana": "にちようび"
+    },
+    {
+     "at": 120,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 134,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 163,
+     "base": "書",
+     "kana": "か"
+    },
+    {
+     "at": 182,
+     "base": "書",
+     "kana": "か"
+    },
+    {
+     "at": 199,
+     "base": "荷物",
+     "kana": "にもつ"
+    },
+    {
+     "at": 204,
+     "base": "送",
+     "kana": "おく"
+    },
+    {
+     "at": 234,
+     "base": "午後",
+     "kana": "ごご"
+    },
+    {
+     "at": 238,
+     "base": "送",
+     "kana": "おく"
+    },
+    {
+     "at": 263,
+     "base": "寝",
+     "kana": "ね"
+    },
+    {
+     "at": 281,
+     "base": "寝",
+     "kana": "ね"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  },
+  {
+   "alt": [],
+   "id": "L07-問題-7",
+   "jp": "土曜日と  日曜日\nけさ  図書館へ  行きました。  図書館で  太郎君に  会いました。\n太郎君と  いっしょに  ビデオを  見ました。  わたしは\n旅行の  本を  借りました。\nあしたは  日曜日です。  朝  旅行の  本を  読みます。\n午後  デパートヘ  行きます。  母の  誕生日の\nプレゼントを  買います。  去年は  母に  花を\nあげました。  ことしは  日本の  花の  本を  あげます。\n1)（ ○ ）きょうは  土曜日です。\n2)（ × ）ミラーさんは  けさ  太郎君と  図書館へ  行きました。\n3)（ × ）ミラーさんは  図書館で  旅行の  本を  読みました。\n4)（ × ）ミラーさんは  ことしも  お母さんに  花を  あげます。",
+   "no": 7,
+   "ruby": [
+    {
+     "at": 0,
+     "base": "土曜日",
+     "kana": "どようび"
+    },
+    {
+     "at": 6,
+     "base": "日曜日",
+     "kana": "にちようび"
+    },
+    {
+     "at": 14,
+     "base": "図書館",
+     "kana": "としょかん"
+    },
+    {
+     "at": 20,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 28,
+     "base": "図書館",
+     "kana": "としょかん"
+    },
+    {
+     "at": 34,
+     "base": "太郎君",
+     "kana": "たろうくん"
+    },
+    {
+     "at": 40,
+     "base": "会",
+     "kana": "あ"
+    },
+    {
+     "at": 47,
+     "base": "太郎君",
+     "kana": "たろうくん"
+    },
+    {
+     "at": 66,
+     "base": "見",
+     "kana": "み"
+    },
+    {
+     "at": 78,
+     "base": "旅行",
+     "kana": "りょこう"
+    },
+    {
+     "at": 83,
+     "base": "本",
+     "kana": "ほん"
+    },
+    {
+     "at": 87,
+     "base": "借",
+     "kana": "か"
+    },
+    {
+     "at": 100,
+     "base": "日曜日",
+     "kana": "にちようび"
+    },
+    {
+     "at": 108,
+     "base": "朝",
+     "kana": "あさ"
+    },
+    {
+     "at": 111,
+     "base": "旅行",
+     "kana": "りょこう"
+    },
+    {
+     "at": 116,
+     "base": "本",
+     "kana": "ほん"
+    },
+    {
+     "at": 120,
+     "base": "読",
+     "kana": "よ"
+    },
+    {
+     "at": 126,
+     "base": "午後",
+     "kana": "ごご"
+    },
+    {
+     "at": 137,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 144,
+     "base": "母",
+     "kana": "はは"
+    },
+    {
+     "at": 148,
+     "base": "誕生日",
+     "kana": "たんじょうび"
+    },
+    {
+     "at": 161,
+     "base": "買",
+     "kana": "か"
+    },
+    {
+     "at": 168,
+     "base": "去年",
+     "kana": "きょねん"
+    },
+    {
+     "at": 173,
+     "base": "母",
+     "kana": "はは"
+    },
+    {
+     "at": 177,
+     "base": "花",
+     "kana": "はな"
+    },
+    {
+     "at": 194,
+     "base": "日本",
+     "kana": "にほん"
+    },
+    {
+     "at": 199,
+     "base": "花",
+     "kana": "はな"
+    },
+    {
+     "at": 203,
+     "base": "本",
+     "kana": "ほん"
+    },
+    {
+     "at": 226,
+     "base": "土曜日",
+     "kana": "どようび"
+    },
+    {
+     "at": 252,
+     "base": "太郎君",
+     "kana": "たろうくん"
+    },
+    {
+     "at": 258,
+     "base": "図書館",
+     "kana": "としょかん"
+    },
+    {
+     "at": 264,
+     "base": "行",
+     "kana": "い"
+    },
+    {
+     "at": 286,
+     "base": "図書館",
+     "kana": "としょかん"
+    },
+    {
+     "at": 292,
+     "base": "旅行",
+     "kana": "りょこう"
+    },
+    {
+     "at": 297,
+     "base": "本",
+     "kana": "ほん"
+    },
+    {
+     "at": 301,
+     "base": "読",
+     "kana": "よ"
+    },
+    {
+     "at": 330,
+     "base": "母",
+     "kana": "かあ"
+    },
+    {
+     "at": 336,
+     "base": "花",
+     "kana": "はな"
+    }
+   ],
+   "section": "問題",
+   "zh": null
+  }
+ ],
+ "vocab": [
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "きります",
+   "kanji": "切ります",
+   "no": 1,
+   "usage": null,
+   "zh": "剪，切"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "おくります",
+   "kanji": "送ります",
+   "no": 2,
+   "usage": null,
+   "zh": "寄送"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "あげます",
+   "kanji": null,
+   "no": 3,
+   "usage": null,
+   "zh": "給，送"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "もらいます",
+   "kanji": null,
+   "no": 4,
+   "usage": null,
+   "zh": "接受，得到"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "かします",
+   "kanji": "貸します",
+   "no": 5,
+   "usage": null,
+   "zh": "借（出）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "かります",
+   "kanji": "借ります",
+   "no": 6,
+   "usage": null,
+   "zh": "借（入）"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "おしえます",
+   "kanji": "教えます",
+   "no": 7,
+   "usage": null,
+   "zh": "教"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ならいます",
+   "kanji": "習います",
+   "no": 8,
+   "usage": null,
+   "zh": "學習"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "かけます",
+   "kanji": null,
+   "no": 9,
+   "usage": {
+    "kana": "でんわを～",
+    "kanji": "電話を～"
+   },
+   "zh": "打〔電話〕"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "て",
+   "kanji": "手",
+   "no": 10,
+   "usage": null,
+   "zh": "手"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "はし",
+   "kanji": null,
+   "no": 11,
+   "usage": null,
+   "zh": "筷子"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "スプーン",
+   "kanji": null,
+   "no": 12,
+   "usage": null,
+   "zh": "湯匙"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ナイフ",
+   "kanji": null,
+   "no": 13,
+   "usage": null,
+   "zh": "小刀"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "フォーク",
+   "kanji": null,
+   "no": 14,
+   "usage": null,
+   "zh": "叉子"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "はさみ",
+   "kanji": null,
+   "no": 15,
+   "usage": null,
+   "zh": "剪刀"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ファクス",
+   "kanji": null,
+   "no": 16,
+   "usage": null,
+   "zh": "傳真"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ワープロ",
+   "kanji": null,
+   "no": 17,
+   "usage": null,
+   "zh": "文字處理機"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "パソコン",
+   "kanji": null,
+   "no": 18,
+   "usage": null,
+   "zh": "個人電腦"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "パンチ",
+   "kanji": null,
+   "no": 19,
+   "usage": null,
+   "zh": "打孔機"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ホッチキス",
+   "kanji": null,
+   "no": 20,
+   "usage": null,
+   "zh": "釘書機"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "セロテープ",
+   "kanji": null,
+   "no": 21,
+   "usage": null,
+   "zh": "透明膠帶"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "けしゴム",
+   "kanji": "消しゴム",
+   "no": 22,
+   "usage": null,
+   "zh": "橡皮擦"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "かみ",
+   "kanji": "紙",
+   "no": 23,
+   "usage": null,
+   "zh": "紙"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "はな",
+   "kanji": "花",
+   "no": 24,
+   "usage": null,
+   "zh": "花"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "シャツ",
+   "kanji": null,
+   "no": 25,
+   "usage": null,
+   "zh": "襯衫"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "プレゼント",
+   "kanji": null,
+   "no": 26,
+   "usage": null,
+   "zh": "禮物"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "にもつ",
+   "kanji": "荷物",
+   "no": 27,
+   "usage": null,
+   "zh": "行李"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "おかね",
+   "kanji": "お金",
+   "no": 28,
+   "usage": null,
+   "zh": "錢"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "きっぷ",
+   "kanji": "切符",
+   "no": 29,
+   "usage": null,
+   "zh": "票"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "クリスマス",
+   "kanji": null,
+   "no": 30,
+   "usage": null,
+   "zh": "聖誕節"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "ちち",
+   "kanji": "父",
+   "no": 31,
+   "usage": null,
+   "zh": "家父"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "はは",
+   "kanji": "母",
+   "no": 32,
+   "usage": null,
+   "zh": "家母"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "おとうさん",
+   "kanji": "お父さん",
+   "no": 33,
+   "usage": null,
+   "zh": "（他人的）父親"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "おかあさん",
+   "kanji": "お母さん",
+   "no": 34,
+   "usage": null,
+   "zh": "（他人的）母親"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "もう",
+   "kanji": null,
+   "no": 35,
+   "usage": null,
+   "zh": "已經"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "まだ",
+   "kanji": null,
+   "no": 36,
+   "usage": null,
+   "zh": "尚未，還沒有"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "これから",
+   "kanji": null,
+   "no": 37,
+   "usage": null,
+   "zh": "從現在起，這就"
+  },
+  {
+   "category": "numbered",
+   "group": null,
+   "kana": "「～、」すてきですね。",
+   "kanji": null,
+   "no": 38,
+   "usage": null,
+   "zh": "〔～〕，好棒喲！"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "ごめんください。",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "對不起。／有人在家嗎？／我能進來嗎？（去別人家時用）"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "いらっしゃい。",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "歡迎。（歡迎訪客的寒暄）"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "どうぞおあがりください。",
+   "kanji": "どうぞお上がりください。",
+   "no": null,
+   "usage": null,
+   "zh": "請進。"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "しつれいします。",
+   "kanji": "失礼します。",
+   "no": null,
+   "usage": null,
+   "zh": "對不起。／打擾了。"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "「～は」いかがですか。",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "你覺得〔～〕怎麼樣？（推薦某物給人時用）"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "いただきます。",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "謝謝。／ 我不客氣了。（用在吃、喝前）"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "りょこう",
+   "kanji": "旅行",
+   "no": null,
+   "usage": null,
+   "zh": "旅行（～を  します:去旅行）"
+  },
+  {
+   "category": "conversation",
+   "group": null,
+   "kana": "おみやげ",
+   "kanji": "お土産",
+   "no": null,
+   "usage": null,
+   "zh": "土產，記念品"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "ヨーロッパ",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "歐洲"
+  },
+  {
+   "category": "supplementary",
+   "group": null,
+   "kana": "スペイン",
+   "kanji": null,
+   "no": null,
+   "usage": null,
+   "zh": "西班牙"
+  }
+ ]
+}

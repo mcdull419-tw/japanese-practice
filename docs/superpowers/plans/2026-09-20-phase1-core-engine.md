@@ -996,9 +996,19 @@ test('技能歸屬：後綴優先於前綴', () => {
   assert.equal(skillOf('zzz:unknown'), null);
 });
 
-test('有漢字的單字產生字義與讀音兩個概念', () => {
+test('有漢字的單字產生字義與讀音兩個概念（以引用形為 lemma）', () => {
   const ids = conceptsForVocab({ kana: 'きります', kanji: '切ります', zh: '剪，切' });
-  assert.deepEqual(ids.sort(), ['w:きります', 'w:きります:reading'].sort());
+  assert.deepEqual(ids.sort(), ['w:切ります', 'w:切ります:reading'].sort());
+});
+
+test('概念用引用形：同假名不同詞分開，同詞跨課共用', () => {
+  const oki = conceptsForVocab({ kana: 'おきます', kanji: '起きます' });
+  const oku = conceptsForVocab({ kana: 'おきます', kanji: '置きます' });
+  assert.notDeepEqual(oki, oku, '起きる 與 置く 是不同概念');
+
+  const y4 = conceptsForVocab({ kana: 'やすみます', kanji: '休みます' });
+  const y11 = conceptsForVocab({ kana: 'やすみます', kanji: '休みます' });
+  assert.deepEqual(y4, y11, '同一個詞跨課次應共用概念');
 });
 
 test('無漢字的單字只產生字義概念', () => {
@@ -1049,8 +1059,12 @@ export function skillOf(conceptId) {
 }
 
 export function conceptsForVocab(v) {
-  const ids = [`w:${v.kana}`];
-  if (v.kanji) ids.push(`w:${v.kana}:reading`);
+  // 引用形（kanji || kana）作為 lemma，與 verbs.json 的鍵及 transform 的概念一致。
+  // 粒度剛好正確：起きます／置きます 分開（不同動詞），
+  // 休みます L4「休息」與 L11「請假」共用（同一個詞）。
+  const cite = v.kanji || v.kana;
+  const ids = [`w:${cite}`];
+  if (v.kanji) ids.push(`w:${cite}:reading`);
   return ids;
 }
 
@@ -1100,7 +1114,9 @@ export function aggregateSkills(conceptR) {
 
 **不做 `jp2zh`**（給日文答中文）：中文自由作答的評分需要選擇題 UI，排入 Phase 2。這是刻意縮小的範圍，不是遺漏。
 
-**id 格式**：`recall:<kana>:<variant>`，決定性、不含位置或亂數。
+**id 格式**：`recall:<kana>:<variant>`，決定性、不含亂數。**真實語料中有 11 組假名會撞鍵**（如 `おきます` = 起きます／置きます），碰撞時才附加課本既定的 `L<課次>-<編號>` 後綴消歧——那些值取自課本欄位，不是陣列位置。
+
+**概念 id 與 item id 是不同的命名空間**：概念用引用形（`w:起きます`），item id 用假名加消歧後綴。不需要統一，也不要為了對稱而改。
 
 - [ ] **Step 1: 寫失敗的測試**
 
@@ -1182,14 +1198,14 @@ export function* generate(vocabList) {
       promptText: v.zh, hint: '寫出日文',
       answer: v.kana,
       alternatives: v.kanji ? [v.kanji] : [],
-      covers: [`w:${v.kana}`],
+      covers: [`w:${v.kanji || v.kana}`],
     });
     if (v.kanji) {
       yield makeItem({
         id: `recall:${v.kana}:kanji2kana`, v,
         promptText: v.kanji, hint: '寫出讀音（平假名）',
         answer: v.kana, alternatives: [],
-        covers: [`w:${v.kana}:reading`],
+        covers: [`w:${v.kanji}:reading`],
       });
     }
   }

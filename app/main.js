@@ -9,8 +9,8 @@ import * as recall from './generators/recall.js';
 import * as transform from './generators/transform.js';
 import { openStore, makeEvent } from './core/store.js';
 import { replay } from './core/srs.js';
-import { buildConceptStates, pickItems } from './core/scheduler.js';
-import { aggregateSkills, SKILLS } from './core/concepts.js';
+import { pickItems } from './core/scheduler.js';
+import { aggregateSkills } from './core/concepts.js';
 
 const ALT_KEY = 'jp-practice-user-alternatives'; // 使用者「我這樣寫也對」，與 data/corrections.json 分開
 const DEVICE_KEY = 'jp-practice-device-id';
@@ -103,15 +103,19 @@ export async function boot(doc = document, win = window) {
 
     const events = await store.allEvents();
     const nowSec = Math.floor(Date.now() / 1000);
-    const itemStates = replay(events, nowSec);
-    const conceptStates = buildConceptStates(itemStates, items);
+    // §7 熟悉度模型：概念的 A（近十次答對率）需要知道每個事件對應題目的
+    // covers 是什麼，故 replay 多收 itemsById；itemStates 只留 lastSec／reps
+    // 供排程器算 ΔT（§8.1）。
+    const { itemStates, conceptStates } = replay(events, nowSec, itemsById);
 
-    const skillScores = aggregateSkills(conceptStates);
-    const counts = Object.fromEntries(SKILLS.map((s) => [s, 0]));
-    for (const it of items) for (const sk of it.skills || []) counts[sk] = (counts[sk] || 0) + 1;
-    renderDashboard(dashboardHost, skillScores, counts);
+    // 技能熟悉度的分母是「複習範圍內全部概念」，不是「練過的概念」（§7.6 核心
+    // bug 修復），因此從目前範圍內的候選題庫蒐集 covers，而不是只看 conceptStates。
+    const scopeConceptIds = new Set();
+    for (const it of items) for (const c of it.covers || []) scopeConceptIds.add(c);
+    const { scores: skillScores, counts: skillCounts } = aggregateSkills(conceptStates, scopeConceptIds);
+    renderDashboard(dashboardHost, skillScores, skillCounts);
 
-    const sessionItems = pickItems(items, itemStates, conceptStates, settings.sessionSize, Math.random);
+    const sessionItems = pickItems(items, itemStates, conceptStates, settings.sessionSize, nowSec, Math.random);
 
     let seqCounter = -1;
     for (const ev of events) if (ev.d === deviceId && ev.n > seqCounter) seqCounter = ev.n;

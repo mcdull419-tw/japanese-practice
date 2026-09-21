@@ -1,74 +1,78 @@
+// 規格 §7：熟悉度模型——近十次答對率 A。
+//
+// 設計沿革：舊版採 FSRS-lite（S/D 狀態 + retrievability R(t) = (1 + t/(9S))^-1）。
+// 已廢止：t≈0 時 R 恆為 1，導致「剛練完不管答對答錯，儀表板都顯示 100%」，使用者
+// 拿不到任何有用的訊號。現改為「近十次作答結果的答對率」，不做任何時間衰減。
+//
+// 事件日誌格式完全不變，舊事件可直接餵進 replay() 重新算出 A（見本檔 tests 的
+// 「舊事件可重放」回歸測試）。
+
 export const SRS_CONST = {
-  W: 1.0, S_MIN: 0.4, D_MIN: 1.0, D_MAX: 10.0,
-  S_INIT: { 1: 0.4, 2: 1.2, 3: 3.2, 4: 9.0 },
-  D_INIT: { 1: 7.0, 2: 6.0, 3: 5.0, 4: 4.0 },
-  LAPSE_S_FACTOR: 0.4, LAPSE_D_DELTA: 1.0, SUCCESS_D_DELTA: 0.1,
+  HISTORY_WINDOW: 10, // 規格 §7.1：只看最近幾次作答
 };
 
-const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
-
-/** 規格 §7.2：R(t) = (1 + t/(9S))^-1。純函式，每次讀取時即時計算，不需背景排程。 */
-export function retrievability(S, elapsedDays) {
-  const s = Math.max(S, SRS_CONST.S_MIN);
-  return 1 / (1 + Math.max(0, elapsedDays) / (9 * s));
+/** 規格 §7.4：A 只區分 grade >= 2（對）與 grade === 1（錯），四級刻度保留於事件中不動。 */
+function isCorrect(grade) {
+  return grade >= 2;
 }
 
-export function initialState(grade) {
-  return { S: SRS_CONST.S_INIT[grade], D: SRS_CONST.D_INIT[grade] };
+/**
+ * 從 replay() 回傳的 conceptStates 讀出某概念的 A，未考過（不在 map 中）一律為 0。
+ * 供 core/ 內外的呼叫端共用，避免「未考過記 0」這個規則分散成好幾份 `?? 0`。
+ */
+export function conceptA(conceptStates, conceptId) {
+  return conceptStates.get(conceptId)?.A ?? 0;
 }
 
-export function updateState(state, grade, elapsedDays) {
-  const { W, S_MIN, D_MIN, D_MAX, LAPSE_S_FACTOR, LAPSE_D_DELTA, SUCCESS_D_DELTA } = SRS_CONST;
-  const S = Math.max(state.S, S_MIN);
-  const D = clamp(state.D, D_MIN, D_MAX);
-  const R = retrievability(S, elapsedDays);
+/**
+ * 事件日誌 → { itemStates, conceptStates }。
+ *
+ * - itemStates:    Map<itemId, { lastSec, reps }>
+ *   供排程器（§8.1）計算 ΔT＝距該題目上次被出的天數。
+ * - conceptStates: Map<conceptId, { A, reps }>
+ *   A 為該概念最近 min(10, reps) 次作答的答對率；reps 為累計作答次數。
+ *   從未考過的概念不會出現在這個 map 裡——呼叫端一律以 conceptA() 取值，
+ *   缺席即代表 A=0（規格 §7.1）。
+ *
+ * 一次作答會更新該題 `covers` 列出的**所有**概念（§7.3、§7.5 的複合題全額歸因），
+ * 因此 replay 需要知道每個事件對應題目的 covers 是什麼，故多收一個 itemsById
+ * 參數；事件本身的欄位（d/n/i/t/g/r/m）完全不變。
+ *
+ * nowSec 保留在簽章中只是與呼叫端既有慣例一致，A 的計算完全不使用它——
+ * 這正是 §7.2 的重點：A 是「答對率」不是「記憶保留率」，不隨時間打折。
+ * 需求 #20（熟悉度隨時間打折）由 §8 排程器的時間項 f(ΔT) 承擔，不由 A 承擔。
+ * 不要在這裡把時間折扣加回來：那是本節明確廢止的行為，加回去儀表板又會退回
+ * 「剛練完永遠 100%／混淆答錯與太久沒碰」的老問題。
+ */
+export function replay(events, nowSec, itemsById = new Map()) {
+  void nowSec; // 刻意不用——見上方註解
 
-  if (grade === 1) {
-    return { S: Math.max(S_MIN, S * LAPSE_S_FACTOR), D: clamp(D + LAPSE_D_DELTA, D_MIN, D_MAX) };
-  }
-  // 規格 §7.3：(e^(1-R) - 1) 使「快遺忘時答對」增益最大；
-  // S^-0.5 造成邊際遞減；(11 - D) 使難題的間隔不被衝高。
-  //
-  // 重要：elapsedDays=0 時 R=retrievability(S,0)=1（精確值，見 retrievability 的
-  // 定義），此時 (e^(1-R)-1) = (e^0 - 1) = 0，增益精確為 0，S 完全不變。這不是
-  // bug，是這個「長期穩定度」公式的必然結果：同一天／同一 session 內再次答對，
-  // 尚未提供任何跨越時間的遺忘曲線證據，兩分鐘後記得不代表兩天後也記得，因此
-  // 不該給穩定度增益（真實 FSRS 對同日重複複習另有一套「短期穩定度」模型，
-  // 不在這個 lite 版的範圍內）。
-  //
-  // 這會直接影響規格 §8 的 lapse re-drill：答錯的題目在 3~5 題後於同一 session
-  // 重新插入，此時 elapsedDays≈0，即使那次重答也答對，S 也不會增加——這是正確
-  // 行為，請勿「修好」它（例如強加一個非零的最低增益）。真正的鞏固要等到下一次
-  // 跨天複習、R 已顯著低於 1 時才會反映在 S 的成長上。
-  const gain = Math.exp(W) * (11 - D) * Math.pow(S, -0.5) * (Math.exp(1 - R) - 1);
-  return {
-    S: Math.max(S_MIN, S * (1 + gain)),
-    D: clamp(D - SUCCESS_D_DELTA * (grade - 3), D_MIN, D_MAX),
-  };
-}
-
-const SEC_PER_DAY = 86400;
-
-/** 事件日誌 → 每題的目前狀態。事件不可變，重放即可，故演算法調整後可重算歷史。 */
-export function replay(events, nowSec) {
   const sorted = [...events].sort((a, b) => a.t - b.t || (a.n ?? 0) - (b.n ?? 0));
-  const out = new Map();
+
+  const itemStates = new Map();
+  const queues = new Map(); // conceptId -> { history: boolean[]（先進先出，最多 10 筆）, reps }
+
   for (const ev of sorted) {
-    const prev = out.get(ev.i);
-    if (!prev) {
-      const { S, D } = initialState(ev.g);
-      out.set(ev.i, { S, D, lastSec: ev.t, reps: 1, lapses: ev.g === 1 ? 1 : 0 });
-      continue;
+    const prevItem = itemStates.get(ev.i);
+    itemStates.set(ev.i, { lastSec: ev.t, reps: (prevItem?.reps ?? 0) + 1 });
+
+    const item = itemsById.get(ev.i);
+    const covers = item?.covers || [];
+    const correct = isCorrect(ev.g);
+    for (const c of covers) {
+      const q = queues.get(c) || { history: [], reps: 0 };
+      q.history.push(correct);
+      if (q.history.length > SRS_CONST.HISTORY_WINDOW) q.history.shift();
+      q.reps += 1;
+      queues.set(c, q);
     }
-    const elapsed = (ev.t - prev.lastSec) / SEC_PER_DAY;
-    const next = updateState(prev, ev.g, elapsed);
-    out.set(ev.i, {
-      ...next, lastSec: ev.t, reps: prev.reps + 1,
-      lapses: prev.lapses + (ev.g === 1 ? 1 : 0),
-    });
   }
-  for (const [id, st] of out) {
-    out.set(id, { ...st, R: retrievability(st.S, (nowSec - st.lastSec) / SEC_PER_DAY) });
+
+  const conceptStates = new Map();
+  for (const [c, q] of queues) {
+    const hits = q.history.filter(Boolean).length;
+    conceptStates.set(c, { A: hits / q.history.length, reps: q.reps });
   }
-  return out;
+
+  return { itemStates, conceptStates };
 }

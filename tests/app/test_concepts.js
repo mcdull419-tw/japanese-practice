@@ -41,17 +41,35 @@ test('變化題涵蓋規則與該動詞的分類', () => {
   assert.ok(ids.includes('w:かきます:group'));
 });
 
-test('技能聚合以 log(1+reps) 加權', () => {
-  const m = new Map([
-    ['w:a', { R: 1.0, reps: 1 }],    // 只練過一次
-    ['w:b', { R: 0.0, reps: 100 }],  // 練過很多次但很生疏
+test('技能熟悉度為算術平均，不加 log(1+reps) 權重', () => {
+  const conceptStates = new Map([
+    ['w:a', { A: 1.0, reps: 1 }],
+    ['w:b', { A: 0.0, reps: 100 }],
   ]);
-  const agg = aggregateSkills(m);
-  assert.ok(agg['單字'] < 0.3, `練得多的生疏概念應主導: ${agg['單字']}`);
+  const { scores } = aggregateSkills(conceptStates, ['w:a', 'w:b']);
+  assert.equal(scores['單字'], 0.5, '純算術平均，不因 reps 不同而偏向任一邊');
 });
 
-test('無資料的技能回傳 null 而非 0（尚未練過 ≠ 熟悉度 0）', () => {
-  const agg = aggregateSkills(new Map([['w:a', { R: 0.8, reps: 3 }]]));
-  assert.ok(agg['單字'] > 0);
-  assert.equal(agg['助詞'], null);
+test('回歸測試（核心 bug）：範圍內 10 個概念、只練過 2 個且都全對 → 0.2，不是 1.0', () => {
+  const conceptStates = new Map([
+    ['w:a', { A: 1.0, reps: 5 }],
+    ['w:b', { A: 1.0, reps: 3 }],
+  ]);
+  const scope = ['w:a', 'w:b', 'w:c', 'w:d', 'w:e', 'w:f', 'w:g', 'w:h', 'w:i', 'w:j'];
+  const { scores, counts } = aggregateSkills(conceptStates, scope);
+  assert.equal(scores['單字'], 0.2);
+  assert.deepEqual(counts['單字'], { practiced: 2, total: 10 });
+});
+
+test('未考過的概念以 A=0 計入分母，不是排除在外', () => {
+  const conceptStates = new Map(); // 完全沒練過
+  const { scores, counts } = aggregateSkills(conceptStates, ['w:a', 'w:b']);
+  assert.equal(scores['單字'], 0);
+  assert.deepEqual(counts['單字'], { practiced: 0, total: 2 });
+});
+
+test('範圍內完全沒有該技能的概念時，score 為 null（不同於「有概念但都是 0 分」）', () => {
+  const { scores } = aggregateSkills(new Map([['w:a', { A: 0.8, reps: 3 }]]), ['w:a']);
+  assert.ok(scores['單字'] > 0);
+  assert.equal(scores['助詞'], null);
 });

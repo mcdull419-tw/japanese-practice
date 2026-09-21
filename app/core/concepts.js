@@ -8,6 +8,8 @@
  *   r:<form>:group<I|II|III>  變化規則本身
  *   p:*  助詞　g:*  句型　c:*／n:*  量詞數字
  */
+import { conceptA } from './srs.js';
+
 export const SKILLS = ['單字', '讀音', '變化', '助詞', '句型', '數量'];
 
 export function skillOf(conceptId) {
@@ -46,17 +48,44 @@ export function conceptsForConjugation(kana, group, form) {
   return [`r:${form}:group${group}`, `w:${kana}:group`];
 }
 
-/** 規格 §7.6：權重取 log(1+複習次數)，避免只練過一次的概念左右大局。 */
-export function aggregateSkills(conceptR) {
-  const acc = Object.fromEntries(SKILLS.map((s) => [s, { sum: 0, w: 0 }]));
-  for (const [id, st] of conceptR) {
+/**
+ * 規格 §7.6：技能熟悉度 = 該技能底下「複習範圍內」所有概念的 A 之算術平均。
+ *
+ * scopeConceptIds 是「範圍內存在哪些概念」的完整清單（含從未考過的），由呼叫端
+ * 從目前候選題庫的 item.covers 蒐集而來——這是本函式與舊版最大的差異：舊版只
+ * 走訪 conceptStates（也就是「至少練過一次」的概念），練 20 題就只在這 20 個
+ * 概念上取平均，儀表板必然逼近滿分。現在改成走訪範圍內的全部概念，未考過的
+ * 以 A=0 計入分母，數字才會從 0% 開始長，才反映真實進度（規格 §7.6 第 1 點）。
+ *
+ * 刻意不加 log(1+reps) 權重（規格 §7.6 第 2 點，不要「修好」這件事）：舊版加權
+ * 是為了避免「只練過一次」的概念主導平均，但在「未考過也計入分母」的前提下，
+ * 權重會讓 reps=0 的概念權重變成 0、被靜靜排除於平均之外，直接抵銷第 1 點，
+ * 使用者又會看到剛練完就接近 100% 的老問題。純算術平均才是設計要求。
+ *
+ * 回傳 { scores, counts }：
+ *   scores[skill] — 0~1 的平均分數；該技能在範圍內完全沒有概念時為 null
+ *                   （這與「有概念但都是 0 分」不同，不能混為一談）。
+ *   counts[skill] — { practiced, total }，供儀表板顯示「已練 N / 共 M」。
+ */
+export function aggregateSkills(conceptStates, scopeConceptIds) {
+  const totals = Object.fromEntries(
+    SKILLS.map((s) => [s, { sum: 0, total: 0, practiced: 0 }]));
+
+  for (const id of new Set(scopeConceptIds)) {
     const skill = skillOf(id);
     if (!skill) continue;
-    const w = Math.log(1 + (st.reps ?? 0));
-    if (w <= 0) continue;
-    acc[skill].sum += st.R * w;
-    acc[skill].w += w;
+    const st = conceptStates.get(id);
+    totals[skill].sum += conceptA(conceptStates, id);
+    totals[skill].total += 1;
+    if (st && st.reps > 0) totals[skill].practiced += 1;
   }
-  return Object.fromEntries(
-    SKILLS.map((s) => [s, acc[s].w > 0 ? acc[s].sum / acc[s].w : null]));
+
+  const scores = {};
+  const counts = {};
+  for (const s of SKILLS) {
+    const t = totals[s];
+    scores[s] = t.total > 0 ? t.sum / t.total : null;
+    counts[s] = { practiced: t.practiced, total: t.total };
+  }
+  return { scores, counts };
 }

@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { generate, ENGINE } from '../../app/generators/recall.js';
+import { isCorrect } from '../../app/core/normalize.js';
 
 const V = [
   { kana: 'きります', kanji: '切ります', zh: '剪，切', lesson: 7, category: 'numbered', group: null },
@@ -40,6 +41,23 @@ test('requires_lesson 等於單字所在課次，source_ref 可讀', () => {
   const it = [...generate(V)][0];
   assert.equal(it.requires_lesson, 7);
   assert.ok(it.source_ref.includes('第7課'));
+});
+
+test('漢字欄用分隔符列出多個寫法時，各寫法各自成為 alternative，原始整串也保留（修正 B）', () => {
+  const multi = [{ kana: 'つくります', kanji: '作ります、造ります', zh: '做，製造', lesson: 15, no: 5 }];
+  const it = [...generate(multi)].find((i) => i.id === 'recall:つくります:zh2jp');
+  assert.ok(it.alternatives.includes('作ります'));
+  assert.ok(it.alternatives.includes('造ります'));
+  assert.ok(it.alternatives.includes('作ります、造ります'), '原始整串也保留');
+  assert.ok(isCorrect('作ります', it.answer, it.alternatives), '只打其中一個寫法應算對');
+  assert.ok(isCorrect('造ります', it.answer, it.alternatives), '打另一個寫法也應算對');
+});
+
+test('kanji2kana 題不受漢字分隔符拆分影響，alternatives 維持空陣列（考讀音時不接受漢字）', () => {
+  const multi = [{ kana: 'あつい', kanji: '暑い、熱い', zh: '熱', lesson: 8, no: 1 }];
+  const it = [...generate(multi)].find((i) => i.id === 'recall:あつい:kanji2kana');
+  assert.equal(it.prompt.text, '暑い、熱い');
+  assert.deepEqual(it.alternatives, []);
 });
 
 test('重新生成得到相同 id（決定性）', () => {

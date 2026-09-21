@@ -1,13 +1,16 @@
 import { conjugate, FORM_LESSON } from '../lang/conjugation.js';
 import { conceptsForConjugation, skillOf } from '../core/concepts.js';
+import { splitForms } from '../lang/altforms.js';
 
 export const ENGINE = 'transform';
 
+// 修正 E：hint 括號裡的語尾等於直接洩漏答案（考「過去形」卻標「（ました）」，
+// 使用者幾乎不用想）。只留形態名稱。
 const TARGETS = [
   { form: 'te', hint: 'て形' },
-  { form: 'masen', hint: '否定形（ません）' },
-  { form: 'mashita', hint: '過去形（ました）' },
-  { form: 'masendeshita', hint: '過去否定形（ませんでした）' },
+  { form: 'masen', hint: '否定形' },
+  { form: 'mashita', hint: '過去形' },
+  { form: 'masendeshita', hint: '過去否定形' },
 ];
 
 /**
@@ -29,18 +32,41 @@ const TARGETS = [
 export function* generate(vocabList, verbsTable) {
   const seen = new Set();
   for (const v of vocabList) {
-    const cite = v.kanji || v.kana;
+    // 修正 C：課本漢字欄偶爾用分隔符列出多個寫法（例：作ります、造ります），
+    // 那不是單一引用形。取第一個寫法查 verbsTable／當 id，其餘寫法留著
+    // 給下面算 alternatives（splitForms 對沒有分隔符的一般漢字形是不動點，
+    // 一般動詞的行為完全不變）。
+    const forms = v.kanji ? splitForms(v.kanji) : [];
+    const cite = forms[0] || v.kana;
     if (seen.has(cite)) continue;
     const info = verbsTable[cite];
     if (!info) continue; // 未收錄的動詞不猜分類，直接跳過
     seen.add(cite);
 
+    // 修正 D：動詞變化題以漢字出題（cite 就是引用形：漢字優先，沒有漢字才用假名，
+    // 與 verbs.json 的鍵一致）。答案也用漢字形算，假名形（以及課本另列的其他
+    // 漢字寫法）都收進 alternatives，使用者打漢字或打假名都要算對。
+    const altCites = forms.slice(1);
+
     for (const { form, hint } of TARGETS) {
-      let answer;
+      let kanaAnswer, answer;
       try {
-        answer = conjugate(info.kana, info.group, form);
+        kanaAnswer = conjugate(info.kana, info.group, form);
+        answer = cite === info.kana ? kanaAnswer : conjugate(cite, info.group, form);
       } catch {
         continue; // 無法變化者略過，不產生錯誤題目
+      }
+
+      const alternatives = new Set();
+      if (answer !== kanaAnswer) alternatives.add(kanaAnswer);
+      for (const alt of altCites) {
+        try {
+          const altAnswer = conjugate(alt, info.group, form);
+          if (altAnswer !== answer) alternatives.add(altAnswer);
+        } catch {
+          // 課本另一個寫法若剛好不合乎既有的て形規則（不應發生，但求穩健），
+          // 忽略即可，不影響主答案。
+        }
       }
 
       const covers = conceptsForConjugation(cite, info.group, form);
@@ -53,9 +79,9 @@ export function* generate(vocabList, verbsTable) {
         requires_lesson: Math.max(v.lesson, FORM_LESSON[form]),
         covers,
         skills: [...new Set(covers.map(skillOf).filter(Boolean))],
-        prompt: { type: 'text', text: info.kana, hint },
+        prompt: { type: 'text', text: cite, hint },
         answer,
-        alternatives: [],
+        alternatives: [...alternatives],
         source_ref: `第${v.lesson}課 ことば${v.no ? ` ${v.no}` : ''}`,
       };
     }

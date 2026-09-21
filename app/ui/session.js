@@ -60,25 +60,33 @@ export function renderSession(host, deps) {
     const nextBtn = host.querySelector('#next');
     nextBtn.onclick = goNext;
 
-    // 修正 H：送出答案（Enter，keydown）之後，再按一次 Enter 要能直接進下一題。
-    // 讓「下一題」按鈕拿到焦點，瀏覽器對已聚焦的 <button> 本來就會把 Enter
-    // 轉成 click，這是主要機制；下面另外補一個 keyup 監聽只是保底。
-    // 兩個關鍵防護，避免「送出時按下的那次 Enter」被這個剛畫出來的結果畫面
-    // 直接接住、讓使用者根本來不及看到答案就跳題：
-    //   1. 監聽 keyup（送出用的是 keydown）——同一次按鍵才不會被同一個
-    //      handler 處理兩次。
-    //   2. 監聽器延後到下一個事件迴圈（setTimeout 0）才掛上，且只掛在
-    //      host 這個容器上（不是 document）——就算那次按鍵殘留的 keyup
-    //      真的還沒發生，它的目標也是已經被換掉、離開 host 的舊輸入框，
-    //      事件不會冒泡到這裡。
+    // 修正 H（修正過的版本）：送出答案（Enter）之後，要再按一次 Enter 才能
+    // 進下一題；不能被送出那次按鍵的「放開」尾段接住。
+    //
+    // 舊版監聽 keyup 並用 setTimeout(0) 延後掛上，理由是「這樣才躲得掉
+    // 送出用的那次 Enter」——這個理由是錯的，已用 Playwright 模擬真人按鍵
+    // （down → 等 120ms → up）實測重現：真人按住 Enter 常常是 60～150ms
+    // 才放開，setTimeout(0) 的 macrotask 早就跑完、keyup 監聽器早就掛好，
+    // 放開時的 keyup 目標又是剛剛 focus() 的 #next（在 host 內部，不是
+    // 已離開 host 的舊輸入框），事件會冒泡到 host，導致結果畫面被同一次
+    // 按鍵直接跳過。
+    //
+    // 改監聽 keydown 才是真的安全：送出當下那個 keydown 在同步的事件派送
+    // 過程中就已經完整跑完（JS 單執行緒，不需要、也不能用 setTimeout 延後
+    // 才「躲開」），此刻才用 addEventListener 掛上的 keydown 監聽器不可能
+    // 收到那個已經處理完的事件；使用者必須真的再按一次鍵盤，才會有下一個
+    // keydown 送過來。
+    //
+    // 保留 advanced 旗標的理由不變：nextBtn.focus() 讓「下一題」按鈕拿到
+    // 焦點後，瀏覽器對已聚焦的 <button> 收到 Enter keydown 時，本來就會
+    // 原生地額外觸發一次 click——同一次按鍵因此會同時走 keydown 監聽與
+    // click 兩條路徑，advanced 保證 goNext() 只真正前進一次。
     nextBtn.focus();
-    setTimeout(() => {
-      host.addEventListener('keyup', function onKeyup(e) {
-        if (e.key !== 'Enter') return;
-        host.removeEventListener('keyup', onKeyup);
-        goNext();
-      });
-    }, 0);
+    host.addEventListener('keydown', function onKeydown(e) {
+      if (e.key !== 'Enter') return;
+      host.removeEventListener('keydown', onKeydown);
+      goNext();
+    });
 
     const alsoOk = host.querySelector('#also-ok');
     if (alsoOk) {

@@ -12,3 +12,4 @@
 
 # 開發暫存
 node_modules/
+.playwright-mcp/

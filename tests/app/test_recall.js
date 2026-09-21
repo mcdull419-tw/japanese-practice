@@ -60,6 +60,31 @@ test('kanji2kana 題不受漢字分隔符拆分影響，alternatives 維持空�
   assert.deepEqual(it.alternatives, []);
 });
 
+test('假名欄用分隔符列出多個說法時，各說法各自成為 alternative，只打其中一種也算對', () => {
+  const multi = [{ kana: 'おっと／しゅじん', kanji: '夫／主人', zh: '丈夫', lesson: 9, no: 1 }];
+  const it = [...generate(multi)].find((i) => i.id === 'recall:おっと／しゅじん:zh2jp');
+  assert.ok(it.alternatives.includes('おっと'));
+  assert.ok(it.alternatives.includes('しゅじん'));
+  assert.ok(isCorrect('おっと', it.answer, it.alternatives), '只打其中一種假名說法應算對');
+  assert.ok(isCorrect('しゅじん', it.answer, it.alternatives), '打另一種假名說法也應算對');
+});
+
+test('假名欄用分隔符列出三個以上說法時同樣全部算對（公司名例）', () => {
+  const multi = [{ kana: 'IMC／パワーでんき／ブラジルエアー', kanji: 'IMC／パワー電気／ブラジルエアー', zh: '公司名', lesson: 1, no: null }];
+  const it = [...generate(multi)].find((i) => i.id === 'recall:IMC／パワーでんき／ブラジルエアー:zh2jp');
+  assert.ok(isCorrect('IMC', it.answer, it.alternatives));
+  assert.ok(isCorrect('パワーでんき', it.answer, it.alternatives));
+  assert.ok(isCorrect('ブラジルエアー', it.answer, it.alternatives));
+});
+
+test('假名欄含句子標點「、」時不得被拆開（那是標點，不是多種說法）', () => {
+  const sentence = [{ kana: 'いいえ、けっこうです。', kanji: null, zh: '不用了，夠了。', lesson: 8, no: null }];
+  const it = [...generate(sentence)].find((i) => i.id === 'recall:いいえ、けっこうです。:zh2jp');
+  assert.deepEqual(it.alternatives, ['いいえ、けっこうです。'], '不含「、」切開後的片段');
+  assert.equal(isCorrect('いいえ', it.answer, it.alternatives), false, '句子標點拆出的片段不該算對');
+  assert.ok(isCorrect('いいえ、けっこうです。', it.answer, it.alternatives), '完整句子仍算對');
+});
+
 test('重新生成得到相同 id（決定性）', () => {
   const a = [...generate(V)].map((i) => i.id);
   const b = [...generate(V)].map((i) => i.id);

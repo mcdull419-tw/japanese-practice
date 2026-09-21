@@ -1,5 +1,5 @@
 import { conceptsForVocab, skillOf } from '../core/concepts.js';
-import { splitForms } from '../lang/altforms.js';
+import { splitForms, splitKanaForms } from '../lang/altforms.js';
 
 export const ENGINE = 'recall';
 
@@ -47,7 +47,15 @@ export function* generate(vocabList) {
     // 修正 B：課本有些詞的漢字欄用分隔符列出多個寫法（例：作ります、造ります）。
     // 若整串當成唯一一個 alternative，使用者只打其中一個寫法會被判錯。
     // 這裡把每個寫法都拆成獨立的 alternative，原始整串也保留（不影響原本行為）。
-    const zh2jpAlts = v.kanji ? [...new Set([v.kanji, ...splitForms(v.kanji)])] : [];
+    //
+    // 修正（假名欄多種寫法）：假名欄也有同樣的情形（おっと／しゅじん），
+    // 用 splitKanaForms 拆（只切「／」「/」，見 altforms.js 註解，
+    // 不會誤傷句子標點「、」）。沒有分隔符時回傳單一元素，即原字串本身，
+    // 併入 Set 後不產生多餘項目。
+    const zh2jpAlts = [...new Set([
+      ...(v.kanji ? [v.kanji, ...splitForms(v.kanji)] : []),
+      ...splitKanaForms(v.kana),
+    ])];
     yield makeItem({
       id: `recall:${key}:zh2jp`, v,
       promptText: v.zh, hint: '寫出日文',

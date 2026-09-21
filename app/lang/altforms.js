@@ -11,3 +11,22 @@ export function splitForms(s) {
   if (typeof s !== 'string' || s.length === 0) return [];
   return s.split(DELIMS).map((x) => x.trim()).filter(Boolean);
 }
+
+/**
+ * 修正（假名欄多種寫法）：假名欄也會用分隔符列出多個說法（例：
+ * おっと／しゅじん、IMC／パワーでんき／ブラジルエアー），比照漢字欄，
+ * 每個寫法都該各自算對。
+ *
+ * 但假名欄的「、」不能比照漢字欄一併當分隔符：漢字欄的「、」只出現在
+ * 「作ります、造ります」這類並列寫法裡；假名欄的「、」還會出現在句子
+ * 本身的標點裡（例：「いいえ、けっこうです。」「じゃ、また。」），拆開
+ * 會產生斷句垃圾，不是多種說法。全語料查證：假名欄從未用「，」「,」
+ * 當並列分隔符，只用全形／半形斜線；因此這裡只切「／」「/」，
+ * 刻意不含 DELIMS 裡的「、，,」，把句子標點排除在外。
+ */
+const KANA_DELIMS = /[／/]/;
+
+export function splitKanaForms(s) {
+  if (typeof s !== 'string' || s.length === 0) return [];
+  return s.split(KANA_DELIMS).map((x) => x.trim()).filter(Boolean);
+}

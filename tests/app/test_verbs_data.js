@@ -10,8 +10,13 @@ const lessons = await Promise.all(
 
 // 鍵 = 引用形（kanji || kana）。這樣「起きます」(II) 與「置きます」(I)
 // 這種同假名不同動詞才不會互相覆蓋——見下方「引用形為鍵」測試。
+//
+// 課本「作ります、造ります」用頓號列出兩個漢字寫法，本來就不是單一引用形
+// （修正 C：verbs.json 的鍵已改成第一個寫法「作ります」，見 app/generators/transform.js
+// 對多重寫法的處理）。這裡取第一個寫法，讓涵蓋率測試仍能對得上修正後的鍵。
 function keyOf(v) {
-  return v.kanji || v.kana;
+  const cite = v.kanji || v.kana;
+  return cite ? cite.split(/[、，,／/]/)[0].trim() : cite;
 }
 
 test('涵蓋語料中所有 ます 結尾的單字（排除非單一動詞者）', () => {
@@ -64,6 +69,13 @@ test('鍵不含空白（否則 conjugate 會切錯語幹並靜默產生錯誤答
   for (const k of Object.keys(verbs)) {
     assert.equal(/[\s　]/.test(k), false, `鍵含空白: ${JSON.stringify(k)}`);
   }
+});
+
+test('作ります、造ります 的壞鍵已修正為單一動詞形（修正 C）', () => {
+  assert.equal(verbs['作ります、造ります'], undefined, '不應再保留含分隔符的壞鍵');
+  assert.ok(verbs['作ります'], '鍵應為課本列出的第一個寫法');
+  assert.equal(verbs['作ります'].group, 'I');
+  assert.equal(verbs['作ります'].kana, 'つくります');
 });
 
 test('每筆都有 group／dict／kana，group 值合法', () => {

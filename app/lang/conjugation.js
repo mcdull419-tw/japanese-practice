@@ -14,8 +14,14 @@ const I_TE = new Map([
   ['き', 'いて'], ['ぎ', 'いで'], ['し', 'して'],
 ]);
 
-/** 唯一的 I 類て形不規則（規格 §6.4）。 */
-const I_TE_IRREGULAR = new Map([['いきます', 'いって']]);
+/**
+ * 唯一的 I 類て形不規則（規格 §6.4）：行きます。
+ * 同時收錄假名鍵與引用形（漢字）鍵——動詞變化題現在以漢字出題（修正 D），
+ * conjugate() 會直接收到「行きます」而非「いきます」，若只收假名鍵，
+ * 漢字形會落到一般規則（き→いて），算出「行いて」這種錯誤變化。
+ * 不存成固定字串而是在下方比對後用 stem 現算，兩種鍵才都能保留各自的字面（漢字／假名）。
+ */
+const I_TE_IRREGULAR = new Set(['いきます', '行きます']);
 
 export function conjugate(masuForm, group, form) {
   if (typeof masuForm !== 'string' || !masuForm.endsWith('ます')) {
@@ -31,7 +37,7 @@ export function conjugate(masuForm, group, form) {
   const stem = masuForm.slice(0, -2);
   if (form !== 'te') return stem + TENSE_SUFFIX[form];
 
-  if (I_TE_IRREGULAR.has(masuForm)) return I_TE_IRREGULAR.get(masuForm);
+  if (I_TE_IRREGULAR.has(masuForm)) return stem.slice(0, -1) + 'って';
   if (group === 'II') return stem + 'て';
   if (group === 'III') {
     // III 類 stem 一律以「し」或「き」結尾（します／きます），直接加て即可。

@@ -26,6 +26,11 @@ test('いきます 是唯一的 I 類て形不規則', () => {
   assert.notEqual(conjugate('いきます', 'I', 'te'), 'いいて');
 });
 
+test('行きます 的漢字形也套用同一組不規則（修正 A：先前落到一般規則算出「行いて」）', () => {
+  assert.equal(conjugate('行きます', 'I', 'te'), '行って');
+  assert.notEqual(conjugate('行きます', 'I', 'te'), '行いて');
+});
+
 test('II 類與 III 類て形', () => {
   assert.equal(conjugate('たべます', 'II', 'te'), 'たべて');
   assert.equal(conjugate('おきます', 'II', 'te'), 'おきて');

@@ -98,3 +98,15 @@ export function aggregateSkills(conceptStates, scopeConceptIds) {
   }
   return { scores, counts };
 }
+
+/**
+ * 數量概念：`n:<type>:<sub>` 為數字規則、`c:<counter>` 為量詞（規格 §5.2）。
+ * 兩者都由 skillOf 歸入「數量」技能。
+ */
+export function conceptsForNumber(type, sub) {
+  return [`n:${type}:${sub}`];
+}
+
+export function conceptsForCounter(key) {
+  return [`c:${key}`];
+}

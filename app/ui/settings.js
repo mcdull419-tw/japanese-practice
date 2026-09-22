@@ -1,6 +1,20 @@
-// 設定畫面：課次範圍、題型開關、每次題數。純 DOM／localStorage 存取，不含判斷邏輯。
+// 設定畫面：課次範圍、題型開關、技能過濾、每次題數。純 DOM／localStorage 存取，不含判斷邏輯。
+import { SKILLS } from '../core/concepts.js';
 
-export const DEFAULT_SETTINGS = { minLesson: 1, maxLesson: 15, engines: ['recall', 'transform'], sessionSize: 20 };
+const ENGINE_LABELS = {
+  recall: '單字題',
+  transform: '變化題',
+  substitute: '代入題',
+  cloze: '挖空題',
+};
+
+export const DEFAULT_SETTINGS = {
+  minLesson: 1,
+  maxLesson: 15,
+  engines: Object.keys(ENGINE_LABELS),
+  skills: [...SKILLS],
+  sessionSize: 20,
+};
 
 const STORAGE_KEY = 'jp-practice-settings';
 
@@ -31,6 +45,13 @@ function clampLesson(v, fallback) {
 }
 
 export function renderSettings(host, settings, onChange) {
+  const engineBoxes = Object.entries(ENGINE_LABELS).map(([id, label]) =>
+    `<label><input id="eng-${id}" type="checkbox" ${settings.engines.includes(id) ? 'checked' : ''}> ${label}</label>`
+  ).join('');
+  const skillBoxes = SKILLS.map((s, i) =>
+    `<label><input id="skill-${i}" type="checkbox" data-skill="${s}" ${settings.skills.includes(s) ? 'checked' : ''}> ${s}</label>`
+  ).join('');
+
   host.innerHTML = `
     <div class="settings">
       <h2>設定</h2>
@@ -40,8 +61,10 @@ export function renderSettings(host, settings, onChange) {
       <label>結束課次
         <input id="maxLesson" type="number" min="1" max="15" value="${settings.maxLesson}">
       </label>
-      <label><input id="eng-recall" type="checkbox" ${settings.engines.includes('recall') ? 'checked' : ''}> 單字題</label>
-      <label><input id="eng-transform" type="checkbox" ${settings.engines.includes('transform') ? 'checked' : ''}> 動詞變化題</label>
+      <div class="group-title">題型</div>
+      ${engineBoxes}
+      <div class="group-title">練習技能</div>
+      ${skillBoxes}
       <label>每次題數
         <input id="sessionSize" type="number" min="1" max="100" value="${settings.sessionSize}">
       </label>
@@ -51,15 +74,16 @@ export function renderSettings(host, settings, onChange) {
   host.querySelector('#apply').onclick = () => {
     const min = clampLesson(host.querySelector('#minLesson').value, DEFAULT_SETTINGS.minLesson);
     const max = clampLesson(host.querySelector('#maxLesson').value, DEFAULT_SETTINGS.maxLesson);
-    const engines = [];
-    if (host.querySelector('#eng-recall').checked) engines.push('recall');
-    if (host.querySelector('#eng-transform').checked) engines.push('transform');
+    const engines = Object.keys(ENGINE_LABELS).filter((id) => host.querySelector(`#eng-${id}`).checked);
+    const skills = SKILLS.filter((_, i) => host.querySelector(`#skill-${i}`).checked);
     const sizeRaw = parseInt(host.querySelector('#sessionSize').value, 10);
     const sessionSize = Number.isFinite(sizeRaw) && sizeRaw > 0 ? sizeRaw : DEFAULT_SETTINGS.sessionSize;
     onChange({
       minLesson: Math.min(min, max),
       maxLesson: Math.max(min, max),
+      // 全部取消勾選等於一題都不出，那是使用者操作失誤而非意圖，退回預設值。
       engines: engines.length ? engines : DEFAULT_SETTINGS.engines,
+      skills: skills.length ? skills : DEFAULT_SETTINGS.skills,
       sessionSize,
     });
   };

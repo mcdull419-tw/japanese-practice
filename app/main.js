@@ -7,6 +7,10 @@ import { renderDashboard } from './ui/dashboard.js';
 import { loadLessons, buildIndex } from './core/data.js';
 import * as recall from './generators/recall.js';
 import * as transform from './generators/transform.js';
+import * as substitute from './generators/substitute.js';
+import * as cloze from './generators/cloze.js';
+import * as quantity from './generators/quantity.js';
+import { conceptsByPattern } from './core/conceptdefs.js';
 import { openStore, makeEvent, userAlternativesFrom } from './core/store.js';
 import { replay } from './core/srs.js';
 import { pickItems } from './core/scheduler.js';
@@ -85,6 +89,12 @@ async function fetchVerbs() {
   return res.json();
 }
 
+async function fetchJson(path) {
+  const res = await fetch(path);
+  if (!res.ok) throw new Error(`${path} 載入失敗：${res.status}`);
+  return res.json();
+}
+
 export async function boot(doc = document, win = window) {
   const settingsHost = doc.querySelector('#settings');
   const sessionHost = doc.querySelector('#session');
@@ -105,16 +115,32 @@ export async function boot(doc = document, win = window) {
     // 課次範圍只需載入到 maxLesson（動詞表本身是全量的 71 筆，不受課次範圍影響，
     // 而 requires_lesson 的過濾才是決定哪些題目可用的關鍵，見下方 filter）。
     const lessonNumbers = [...Array(settings.maxLesson)].map((_, i) => i + 1);
-    const [lessonsMap, verbsTable] = await Promise.all([
+    const [lessonsMap, verbsTable, adjTable, conceptDefs, particleMarks] = await Promise.all([
       loadLessons(lessonNumbers, fetchLesson),
       fetchVerbs(),
+      fetchJson('data/adjectives.json'),
+      fetchJson('data/concepts.json'),
+      fetchJson('data/particles.json'),
     ]);
     const idx = buildIndex(lessonsMap);
 
     // 懶生成：每次啟動／換設定即時展開題目，不預先寫成檔案（規格 §5.4）。
     const allItems = [];
-    if (settings.engines.includes('recall')) allItems.push(...recall.generate(idx.vocab));
-    if (settings.engines.includes('transform')) allItems.push(...transform.generate(idx.vocab, verbsTable));
+    if (settings.engines.includes('recall')) {
+      allItems.push(...recall.generate(idx.vocab));
+      // 數量題的機制就是對照題，跟著 recall 開關走；要單獨關掉請用技能過濾
+      // （規格 §13 決定 3）。
+      allItems.push(...quantity.generate());
+    }
+    if (settings.engines.includes('transform')) {
+      allItems.push(...transform.generate(idx.vocab, verbsTable, adjTable));
+    }
+    if (settings.engines.includes('substitute')) {
+      allItems.push(...substitute.generate(idx.patterns, conceptsByPattern(conceptDefs)));
+    }
+    if (settings.engines.includes('cloze')) {
+      allItems.push(...cloze.generate(idx.sentences, particleMarks, idx.vocab));
+    }
 
     const itemsById = new Map(allItems.map((it) => [it.id, it]));
 
@@ -124,7 +150,9 @@ export async function boot(doc = document, win = window) {
     // 規格 §9.2.1：自訂答案由事件日誌重建，不讀 localStorage。
     const userAlts = userAlternativesFrom(events);
     const items = allItems
-      .filter((it) => it.lesson >= settings.minLesson && it.requires_lesson <= settings.maxLesson)
+      .filter((it) => it.lesson >= settings.minLesson
+        && it.requires_lesson <= settings.maxLesson
+        && (it.skills || []).some((s) => settings.skills.includes(s)))
       .map((it) => {
         const extra = userAlts.get(it.id);
         if (!extra || !extra.length) return it;

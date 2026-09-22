@@ -1,0 +1,272 @@
+{
+  "いい": {
+    "type": "i",
+    "kana": "いい",
+    "lesson": 8
+  },
+  "おいしい": {
+    "type": "i",
+    "kana": "おいしい",
+    "lesson": 8
+  },
+  "おもしろい": {
+    "type": "i",
+    "kana": "おもしろい",
+    "lesson": 8
+  },
+  "きれい": {
+    "type": "na",
+    "kana": "きれい",
+    "lesson": 8
+  },
+  "すてき": {
+    "type": "na",
+    "kana": "すてき",
+    "lesson": 8
+  },
+  "にぎやか": {
+    "type": "na",
+    "kana": "にぎやか",
+    "lesson": 8
+  },
+  "ハンサム": {
+    "type": "na",
+    "kana": "ハンサム",
+    "lesson": 8
+  },
+  "低い": {
+    "type": "i",
+    "kana": "ひくい",
+    "lesson": 8
+  },
+  "便利": {
+    "type": "na",
+    "kana": "べんり",
+    "lesson": 8
+  },
+  "元気": {
+    "type": "na",
+    "kana": "げんき",
+    "lesson": 8
+  },
+  "冷たい": {
+    "type": "i",
+    "kana": "つめたい",
+    "lesson": 8
+  },
+  "古い": {
+    "type": "i",
+    "kana": "ふるい",
+    "lesson": 8
+  },
+  "大きい": {
+    "type": "i",
+    "kana": "おおきい",
+    "lesson": 8
+  },
+  "安い": {
+    "type": "i",
+    "kana": "やすい",
+    "lesson": 8
+  },
+  "寒い": {
+    "type": "i",
+    "kana": "さむい",
+    "lesson": 8
+  },
+  "小さい": {
+    "type": "i",
+    "kana": "ちいさい",
+    "lesson": 8
+  },
+  "忙しい": {
+    "type": "i",
+    "kana": "いそがしい",
+    "lesson": 8
+  },
+  "悪い": {
+    "type": "i",
+    "kana": "わるい",
+    "lesson": 8
+  },
+  "新しい": {
+    "type": "i",
+    "kana": "あたらしい",
+    "lesson": 8
+  },
+  "易しい": {
+    "type": "i",
+    "kana": "やさしい",
+    "lesson": 8
+  },
+  "暇": {
+    "type": "na",
+    "kana": "ひま",
+    "lesson": 8
+  },
+  "暑い": {
+    "type": "i",
+    "kana": "あつい",
+    "lesson": 8
+  },
+  "有名": {
+    "type": "na",
+    "kana": "ゆうめい",
+    "lesson": 8
+  },
+  "楽しい": {
+    "type": "i",
+    "kana": "たのしい",
+    "lesson": 8
+  },
+  "白い": {
+    "type": "i",
+    "kana": "しろい",
+    "lesson": 8
+  },
+  "親切": {
+    "type": "na",
+    "kana": "しんせつ",
+    "lesson": 8
+  },
+  "赤い": {
+    "type": "i",
+    "kana": "あかい",
+    "lesson": 8
+  },
+  "難しい": {
+    "type": "i",
+    "kana": "むずかしい",
+    "lesson": 8
+  },
+  "青い": {
+    "type": "i",
+    "kana": "あおい",
+    "lesson": 8
+  },
+  "静か": {
+    "type": "na",
+    "kana": "しずか",
+    "lesson": 8
+  },
+  "高い": {
+    "type": "i",
+    "kana": "たかい",
+    "lesson": 8
+  },
+  "黒い": {
+    "type": "i",
+    "kana": "くろい",
+    "lesson": 8
+  },
+  "上手": {
+    "type": "na",
+    "kana": "じょうず",
+    "lesson": 9
+  },
+  "下手": {
+    "type": "na",
+    "kana": "へた",
+    "lesson": 9
+  },
+  "好き": {
+    "type": "na",
+    "kana": "すき",
+    "lesson": 9
+  },
+  "嫌い": {
+    "type": "na",
+    "kana": "きらい",
+    "lesson": 9
+  },
+  "多い": {
+    "type": "i",
+    "kana": "おおい",
+    "lesson": 12
+  },
+  "少ない": {
+    "type": "i",
+    "kana": "すくない",
+    "lesson": 12
+  },
+  "暖かい": {
+    "type": "i",
+    "kana": "あたたかい",
+    "lesson": 12
+  },
+  "涼しい": {
+    "type": "i",
+    "kana": "すずしい",
+    "lesson": 12
+  },
+  "甘い": {
+    "type": "i",
+    "kana": "あまい",
+    "lesson": 12
+  },
+  "簡単": {
+    "type": "na",
+    "kana": "かんたん",
+    "lesson": 12
+  },
+  "軽い": {
+    "type": "i",
+    "kana": "かるい",
+    "lesson": 12
+  },
+  "辛い": {
+    "type": "i",
+    "kana": "からい",
+    "lesson": 12
+  },
+  "近い": {
+    "type": "i",
+    "kana": "ちかい",
+    "lesson": 12
+  },
+  "速い": {
+    "type": "i",
+    "kana": "はやい",
+    "lesson": 12
+  },
+  "遅い": {
+    "type": "i",
+    "kana": "おそい",
+    "lesson": 12
+  },
+  "遠い": {
+    "type": "i",
+    "kana": "とおい",
+    "lesson": 12
+  },
+  "重い": {
+    "type": "i",
+    "kana": "おもい",
+    "lesson": 12
+  },
+  "大変": {
+    "type": "na",
+    "kana": "たいへん",
+    "lesson": 13
+  },
+  "寂しい": {
+    "type": "i",
+    "kana": "さびしい",
+    "lesson": 13
+  },
+  "広い": {
+    "type": "i",
+    "kana": "ひろい",
+    "lesson": 13
+  },
+  "欲しい": {
+    "type": "i",
+    "kana": "ほしい",
+    "lesson": 13
+  },
+  "狭い": {
+    "type": "i",
+    "kana": "せまい",
+    "lesson": 13
+  }
+}

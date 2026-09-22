@@ -13,9 +13,13 @@ export async function loadLessons(lessonNumbers, loader) {
 export function buildIndex(lessonsMap) {
   const vocab = [];
   const sentences = [];
+  const patterns = [];
+  const drills = [];
   for (const [n, data] of [...lessonsMap.entries()].sort((a, b) => a[0] - b[0])) {
     for (const v of data.vocab || []) vocab.push({ ...v, lesson: n });
     for (const s of data.sentences || []) sentences.push({ ...s, lesson: n });
+    for (const p of data.patterns || []) patterns.push({ ...p, lesson: n });
+    for (const d of data.drills || []) drills.push({ ...d, lesson: n });
   }
-  return { vocab, sentences };
+  return { vocab, sentences, patterns, drills };
 }

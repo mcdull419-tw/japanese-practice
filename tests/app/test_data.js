@@ -30,3 +30,27 @@ test('buildIndex 涵蓋全 15 課的實際總數', async () => {
   assert.equal(idx.vocab.length, 749);
   assert.equal(idx.sentences.length, 430);
 });
+
+test('buildIndex 攤平 patterns 與 drills 並帶上課次', () => {
+  const lessons = new Map([
+    [7, {
+      vocab: [], sentences: [],
+      patterns: [{ id: 'L07-A1', template: '{S}は{T}で ごはんを 食べます。', slots: { S: ['日本人'], T: ['はし'] }, rows: [[0, 0]], requires_lesson: 7 }],
+      drills: [{ id: 'L07-B1', items: ['手紙を 書きます'], model_answer: 'はしで ごはんを 食べます。', model_cue: 'ごはんを 食べます' }],
+    }],
+  ]);
+  const idx = buildIndex(lessons);
+  assert.equal(idx.patterns.length, 1);
+  assert.equal(idx.patterns[0].id, 'L07-A1');
+  assert.equal(idx.patterns[0].lesson, 7);
+  assert.equal(idx.patterns[0].template, '{S}は{T}で ごはんを 食べます。');
+  assert.equal(idx.drills.length, 1);
+  assert.equal(idx.drills[0].lesson, 7);
+  assert.equal(idx.drills[0].model_answer, 'はしで ごはんを 食べます。');
+});
+
+test('buildIndex 對缺少 patterns／drills 的課次不炸', () => {
+  const idx = buildIndex(new Map([[1, { vocab: [], sentences: [] }]]));
+  assert.deepEqual(idx.patterns, []);
+  assert.deepEqual(idx.drills, []);
+});

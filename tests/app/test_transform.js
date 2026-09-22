@@ -90,3 +90,75 @@ test('不在 verbsTable 中的單字直接跳過，不得猜分類', () => {
   const items = [...generate([{ kana: 'ぜんぜんない', zh: 'x', lesson: 1 }], VERBS)];
   assert.equal(items.length, 0);
 });
+
+test('形容詞變化題：い形', () => {
+  const vocab = [{ kana: 'おおきい', kanji: '大きい', zh: '大', lesson: 8, no: 11 }];
+  const adjTable = { '大きい': { type: 'i', kana: 'おおきい', lesson: 8 } };
+  const items = [...generate(vocab, {}, adjTable)];
+  const past = items.find((it) => it.id === 'adj:大きい:past');
+  assert.ok(past, '應產生過去形題目');
+  assert.equal(past.engine, 'transform');
+  assert.equal(past.prompt.text, '大きい');
+  assert.equal(past.prompt.hint, '過去形');
+  assert.equal(past.answer, '大きかったです');
+  assert.ok(past.alternatives.includes('おおきかったです'), '假名形應算對');
+  assert.deepEqual(past.covers, ['r:past:iadj', 'w:大きい:group']);
+  // 素材第8課、過去式第12課解鎖 → 取較大者
+  assert.equal(past.requires_lesson, 12);
+  assert.equal(past.lesson, 8);
+});
+
+test('形容詞變化題：な形的 では 寫法也算對', () => {
+  const vocab = [{ kana: 'きれい［な］', kanji: null, zh: '美麗', lesson: 8, no: 2 }];
+  const adjTable = { 'きれい': { type: 'na', kana: 'きれい', lesson: 8 } };
+  const items = [...generate(vocab, {}, adjTable)];
+  const neg = items.find((it) => it.id === 'adj:きれい:neg');
+  assert.ok(neg, '應產生否定形題目');
+  assert.equal(neg.answer, 'きれいじゃありません');
+  assert.ok(neg.alternatives.includes('きれいではありません'));
+});
+
+test('て形與副詞形的 requires_lesson 為 16（1~15 範圍內不會出現）', () => {
+  const vocab = [{ kana: 'おおきい', kanji: '大きい', zh: '大', lesson: 8, no: 11 }];
+  const adjTable = { '大きい': { type: 'i', kana: 'おおきい', lesson: 8 } };
+  const items = [...generate(vocab, {}, adjTable)];
+  const te = items.find((it) => it.id === 'adj:大きい:te');
+  assert.ok(te);
+  assert.equal(te.requires_lesson, 16);
+});
+
+test('未提供 adjTable 時行為不變（只產動詞題）', () => {
+  const vocab = [{ kana: 'おおきい', kanji: '大きい', zh: '大', lesson: 8, no: 11 }];
+  const items = [...generate(vocab, {})];
+  assert.equal(items.length, 0);
+});
+
+test('同一引用形只產生一組形容詞題，不重複', () => {
+  const vocab = [
+    { kana: 'おおきい', kanji: '大きい', zh: '大', lesson: 8, no: 11 },
+    { kana: 'おおきい', kanji: '大きい', zh: '大的', lesson: 12, no: 3 },
+  ];
+  const adjTable = { '大きい': { type: 'i', kana: 'おおきい', lesson: 8 } };
+  const ids = [...generate(vocab, {}, adjTable)].map((it) => it.id);
+  assert.equal(new Set(ids).size, ids.length, '不得有重複 id');
+});
+
+test('形容詞：並列寫法取第一個為引用形、括號異寫只取括號前', () => {
+  const vocab = [
+    { kana: 'あつい', kanji: '暑い、熱い', zh: '熱', lesson: 8, no: 20 },
+    { kana: 'いい  （よい）', kanji: null, zh: '好', lesson: 8, no: 15 },
+  ];
+  const adjTable = {
+    '暑い': { type: 'i', kana: 'あつい', lesson: 8 },
+    'いい': { type: 'i', kana: 'いい', lesson: 8 },
+  };
+  const items = [...generate(vocab, {}, adjTable)];
+  const hot = items.find((it) => it.id === 'adj:暑い:past');
+  assert.ok(hot, '應以 暑い 為引用形');
+  assert.equal(hot.answer, '暑かったです');
+  assert.ok(hot.alternatives.includes('熱かったです'), '另一個漢字寫法應算對');
+  const good = items.find((it) => it.id === 'adj:いい:past');
+  assert.ok(good, 'いい （よい） 應以 いい 為引用形');
+  assert.equal(good.answer, 'よかったです');
+  assert.equal(good.lesson, 8);
+});

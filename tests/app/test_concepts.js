@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { SKILLS, skillOf, conceptsForVocab, conceptsForConjugation, aggregateSkills }
+import { SKILLS, skillOf, conceptsForVocab, conceptsForConjugation, conceptsForAdjective, aggregateSkills }
   from '../../app/core/concepts.js';
 
 test('技能歸屬：後綴優先於前綴', () => {
@@ -72,4 +72,14 @@ test('範圍內完全沒有該技能的概念時，score 為 null（不同於「
   const { scores } = aggregateSkills(new Map([['w:a', { A: 0.8, reps: 3 }]]), ['w:a']);
   assert.ok(scores['單字'] > 0);
   assert.equal(scores['助詞'], null);
+});
+
+test('形容詞概念：變化規則 ＋ 該詞的類別歸屬', () => {
+  assert.deepEqual(conceptsForAdjective('大きい', 'i', 'past'), ['r:past:iadj', 'w:大きい:group']);
+  assert.deepEqual(conceptsForAdjective('静か', 'na', 'neg'), ['r:neg:naadj', 'w:静か:group']);
+});
+
+test('形容詞概念歸入「變化」技能', () => {
+  assert.equal(skillOf('r:past:iadj'), '變化');
+  assert.equal(skillOf('w:大きい:group'), '變化');
 });

@@ -1,5 +1,6 @@
 import { conjugate, FORM_LESSON } from '../lang/conjugation.js';
-import { conceptsForConjugation, skillOf } from '../core/concepts.js';
+import { conjugateAdj, conjugateAdjAlts, FORM_LESSON as ADJ_FORM_LESSON } from '../lang/adjective.js';
+import { conceptsForConjugation, conceptsForAdjective, skillOf } from '../core/concepts.js';
 import { splitForms } from '../lang/altforms.js';
 
 export const ENGINE = 'transform';
@@ -12,6 +13,80 @@ const TARGETS = [
   { form: 'mashita', hint: '過去形' },
   { form: 'masendeshita', hint: '過去否定形' },
 ];
+
+// 形容詞只操練四個時態。て形與副詞形第16課才教，本專案範圍外；
+// 產出來也會被 requires_lesson=16 擋掉，但仍然生成，讓日後擴充課次不必改這裡。
+const ADJ_TARGETS = [
+  { form: 'neg', hint: '否定形' },
+  { form: 'past', hint: '過去形' },
+  { form: 'pastneg', hint: '過去否定形' },
+  { form: 'te', hint: 'て形' },
+  { form: 'adverb', hint: '副詞形' },
+];
+
+const NA_MARK = '［な］';
+
+/**
+ * 課本欄位 → 形容詞寫法清單，第一個即引用形（與 adjectives.json 的鍵一致）。
+ * 要處理三種課本寫法：［な］ 標記（静か［な］）、括號異寫（いい  （よい），
+ * 只取括號前）、並列寫法（暑い、熱い，由 splitForms 拆開）。
+ */
+function adjForms(raw) {
+  const t = (raw || '').replace(NA_MARK, '').split('（')[0].trim();
+  return t ? splitForms(t) : [];
+}
+
+/**
+ * 形容詞題與動詞題共用 transform 引擎（機制相同：給一形態求另一形態），
+ * 但 id 前綴用 adj: 而非 conj:，因為兩者的素材表不同、變化規則也不同，
+ * 混在同一個前綴下日後難以分辨來源。
+ */
+function* generateAdjectives(vocabList, adjTable) {
+  const seen = new Set();
+  for (const v of vocabList) {
+    const forms = v.kanji ? adjForms(v.kanji) : adjForms(v.kana);
+    const cite = forms[0];
+    if (!cite || seen.has(cite)) continue;
+    const info = adjTable[cite];
+    if (!info) continue; // 未收錄者不猜類別，直接跳過
+    seen.add(cite);
+
+    for (const { form, hint } of ADJ_TARGETS) {
+      let answer, kanaAnswer;
+      try {
+        answer = conjugateAdj(cite, info.type, form);
+        kanaAnswer = conjugateAdj(info.kana, info.type, form);
+      } catch {
+        continue;
+      }
+      const alternatives = new Set(conjugateAdjAlts(cite, info.type, form));
+      // 假名形與課本另列的漢字寫法（熱い）都要算對。
+      for (const alt of [info.kana, ...forms.slice(1)]) {
+        try {
+          alternatives.add(conjugateAdj(alt, info.type, form));
+          for (const a of conjugateAdjAlts(alt, info.type, form)) alternatives.add(a);
+        } catch {
+          // 另一個寫法不合變化規則（不應發生）時忽略，不影響主答案。
+        }
+      }
+      alternatives.delete(answer);
+
+      const covers = conceptsForAdjective(cite, info.type, form);
+      yield {
+        id: `adj:${cite}:${form}`,
+        engine: ENGINE,
+        lesson: v.lesson,
+        requires_lesson: Math.max(v.lesson, ADJ_FORM_LESSON[form]),
+        covers,
+        skills: [...new Set(covers.map(skillOf).filter(Boolean))],
+        prompt: { type: 'text', text: cite, hint },
+        answer,
+        alternatives: [...alternatives],
+        source_ref: `第${v.lesson}課 ことば${v.no ? ` ${v.no}` : ''}`,
+      };
+    }
+  }
+}
 
 /**
  * 查表與 item id 一律用引用形（v.kanji || v.kana），不是假名。
@@ -29,7 +104,7 @@ const TARGETS = [
  * 若不去重，同一引用形會產生重複的 id，在以 id 為鍵的題庫中悄悄互相覆蓋
  * ——這是全語料驗證才會暴露的問題，三筆假資料測不出來。
  */
-export function* generate(vocabList, verbsTable) {
+export function* generate(vocabList, verbsTable, adjTable) {
   const seen = new Set();
   for (const v of vocabList) {
     // 修正 C：課本漢字欄偶爾用分隔符列出多個寫法（例：作ります、造ります），
@@ -86,4 +161,5 @@ export function* generate(vocabList, verbsTable) {
       };
     }
   }
+  if (adjTable) yield* generateAdjectives(vocabList, adjTable);
 }

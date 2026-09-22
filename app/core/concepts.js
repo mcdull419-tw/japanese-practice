@@ -49,6 +49,15 @@ export function conceptsForConjugation(kana, group, form) {
 }
 
 /**
+ * 形容詞的概念與動詞同構：變化規則本身，加上「這個詞屬於哪一類」。
+ * 類別用 iadj／naadj 而非 I／II／III，才不會與動詞的 r:te:groupI 撞名——
+ * 兩者都是「變化」技能底下的概念，命名空間必須分得開。
+ */
+export function conceptsForAdjective(citation, type, form) {
+  return [`r:${form}:${type}adj`, `w:${citation}:group`];
+}
+
+/**
  * 規格 §7.6：技能熟悉度 = 該技能底下「複習範圍內」所有概念的 A 之算術平均。
  *
  * scopeConceptIds 是「範圍內存在哪些概念」的完整清單（含從未考過的），由呼叫端

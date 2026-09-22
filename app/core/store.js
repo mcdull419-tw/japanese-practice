@@ -10,8 +10,34 @@
  * 時戳只到秒會碰撞，且無法區分「同一題連續作答兩次」與「重複匯入同一筆事件」。
  */
 
-export function makeEvent(deviceId, seq, itemId, grade, rtMs, mode, nowSec) {
-  return { d: deviceId, n: seq, i: itemId, t: nowSec, g: grade, r: rtMs, m: mode };
+/**
+ * 規格 §10.1。`alt` 為選用參數——只有「我這樣寫也對」補記的那一筆會帶，
+ * 帶了才會多出 `a` 欄位；一般作答事件的形狀與舊版完全相同。
+ */
+export function makeEvent(deviceId, seq, itemId, grade, rtMs, mode, nowSec, alt) {
+  const ev = { d: deviceId, n: seq, i: itemId, t: nowSec, g: grade, r: rtMs, m: mode };
+  if (alt) ev.a = alt;
+  return ev;
+}
+
+/**
+ * 規格 §9.2.1／§10.1：從事件日誌重建每題的自訂 alternatives。
+ *
+ * 使用者認可的寫法是事件的一部分（欄位 `a`），不存 localStorage——localStorage
+ * 不在 allEvents() 的輸出裡，會讓 exportJSON() 漏掉這些寫法，Phase 3 的同步也
+ * 完全帶不過去（在 Mac 上認可的寫法，手機不會知道）。
+ *
+ * 舊事件沒有 `a` 欄位，直接略過即可。
+ */
+export function userAlternativesFrom(events) {
+  const out = new Map();
+  for (const e of events) {
+    if (!e.a) continue;
+    const list = out.get(e.i) || [];
+    if (!list.includes(e.a)) list.push(e.a);
+    out.set(e.i, list);
+  }
+  return out;
 }
 
 /** 以 (d,n) 去重、依時間排序（同秒以 n 為次序 tie-break，維持穩定順序）。 */

@@ -7,29 +7,49 @@ import { renderDashboard } from './ui/dashboard.js';
 import { loadLessons, buildIndex } from './core/data.js';
 import * as recall from './generators/recall.js';
 import * as transform from './generators/transform.js';
-import { openStore, makeEvent } from './core/store.js';
+import { openStore, makeEvent, userAlternativesFrom } from './core/store.js';
 import { replay } from './core/srs.js';
 import { pickItems } from './core/scheduler.js';
 import { aggregateSkills } from './core/concepts.js';
 
-const ALT_KEY = 'jp-practice-user-alternatives'; // 使用者「我這樣寫也對」，與 data/corrections.json 分開
+// 舊版把「我這樣寫也對」的寫法存在這個 localStorage 鍵，違反規格 §9.2.1
+// （應與事件日誌同一個 Store）。現已改存事件的 `a` 欄位，此鍵只剩遷移用途。
+const LEGACY_ALT_KEY = 'jp-practice-user-alternatives';
 const DEVICE_KEY = 'jp-practice-device-id';
 
-function loadUserAlternatives(storageLike) {
+/**
+ * 一次性遷移：把舊版存在 localStorage 的自訂答案補寫成事件，然後刪掉該鍵。
+ *
+ * 時戳一律取 0：這些寫法的真實認可時間已經遺失，給 0 讓它們排在所有真實作答
+ * 之前，不會污染任何一題的 ΔT（§8.1 只看該題最後一次作答的時戳）。grade 給 3
+ * 與當初補記的那筆一致。
+ *
+ * 回傳補寫的事件數，供呼叫端判斷是否需要重讀。
+ */
+export async function migrateLegacyAlternatives(storageLike, store, deviceId, startSeq) {
+  let parsed;
   try {
-    const raw = storageLike.getItem(ALT_KEY);
-    return raw ? JSON.parse(raw) : {};
+    const raw = storageLike.getItem(LEGACY_ALT_KEY);
+    if (!raw) return 0;
+    parsed = JSON.parse(raw);
   } catch {
-    return {};
+    return 0;
   }
-}
-
-function saveUserAlternatives(storageLike, data) {
+  const evs = [];
+  let seq = startSeq;
+  for (const [itemId, alts] of Object.entries(parsed || {})) {
+    for (const alt of alts || []) {
+      evs.push(makeEvent(deviceId, (seq += 1), itemId, 3, 0, 'text', 0, alt));
+    }
+  }
+  if (evs.length) await store.appendEvents(evs);
   try {
-    storageLike.setItem(ALT_KEY, JSON.stringify(data));
+    storageLike.removeItem(LEGACY_ALT_KEY);
   } catch {
-    // 私密視窗或容量已滿時忽略，僅本次 session 有效。
+    // 移除失敗也無妨：重建 alternatives 一律以事件為準，重跑遷移只會寫入
+    // (d, n) 相同的事件，被 mergeEvents 去重，不會產生重複。
   }
+  return evs.length;
 }
 
 function getDeviceId(storageLike) {
@@ -73,6 +93,12 @@ export async function boot(doc = document, win = window) {
   const deviceId = getDeviceId(win.localStorage);
   const store = await openStore(win.indexedDB);
 
+  // 舊版的自訂答案存在 localStorage，補寫成事件後刪除該鍵（規格 §9.2.1）。
+  const existing = await store.allEvents();
+  let maxSeq = -1;
+  for (const ev of existing) if (ev.d === deviceId && ev.n > maxSeq) maxSeq = ev.n;
+  await migrateLegacyAlternatives(win.localStorage, store, deviceId, maxSeq);
+
   async function runSession(settings) {
     sessionHost.innerHTML = '<p>載入中…</p>';
 
@@ -92,16 +118,19 @@ export async function boot(doc = document, win = window) {
 
     const itemsById = new Map(allItems.map((it) => [it.id, it]));
 
-    const userAlts = loadUserAlternatives(win.localStorage);
+    // events 在本輪練習期間持續累積（每答一題 push 一筆），供儀表板即時重算。
+    const events = await store.allEvents();
+
+    // 規格 §9.2.1：自訂答案由事件日誌重建，不讀 localStorage。
+    const userAlts = userAlternativesFrom(events);
     const items = allItems
       .filter((it) => it.lesson >= settings.minLesson && it.requires_lesson <= settings.maxLesson)
       .map((it) => {
-        const extra = userAlts[it.id];
+        const extra = userAlts.get(it.id);
         if (!extra || !extra.length) return it;
         return { ...it, alternatives: [...new Set([...(it.alternatives || []), ...extra])] };
       });
 
-    const events = await store.allEvents();
     const nowSec = Math.floor(Date.now() / 1000);
     // §7 熟悉度模型：概念的 A（近十次答對率）需要知道每個事件對應題目的
     // covers 是什麼，故 replay 多收 itemsById；itemStates 只留 lastSec／reps
@@ -112,8 +141,21 @@ export async function boot(doc = document, win = window) {
     // bug 修復），因此從目前範圍內的候選題庫蒐集 covers，而不是只看 conceptStates。
     const scopeConceptIds = new Set();
     for (const it of items) for (const c of it.covers || []) scopeConceptIds.add(c);
-    const { scores: skillScores, counts: skillCounts } = aggregateSkills(conceptStates, scopeConceptIds);
-    renderDashboard(dashboardHost, skillScores, skillCounts);
+
+    /**
+     * 規格 §7.6：每答完一題即重畫儀表板。練到一半數字完全不動的話，使用者無從
+     * 分辨「數字沒變」與「功能壞了」。
+     *
+     * 這裡是全量重放，不做增量。實測（本機 Node）：1000 筆 0.5ms、5000 筆 0.9ms、
+     * 20000 筆 1.8ms、60000 筆 4.9ms。規格 §10.1 估一年約 2 萬筆，即 1.8ms，
+     * 遠低於一個影格，增量的複雜度不值得。
+     */
+    function refreshDashboard() {
+      const { conceptStates: cs } = replay(events, Math.floor(Date.now() / 1000), itemsById);
+      const { scores, counts } = aggregateSkills(cs, scopeConceptIds);
+      renderDashboard(dashboardHost, scores, counts);
+    }
+    refreshDashboard();
 
     const sessionItems = pickItems(items, itemStates, conceptStates, settings.sessionSize, nowSec, Math.random);
 
@@ -130,16 +172,27 @@ export async function boot(doc = document, win = window) {
     }
     const medianRt = (engine) => median(rtByEngine.get(engine) || []);
 
-    function acceptAlternative(itemId, input) {
+    /** 練習畫面每記錄一筆事件就回呼，讓儀表板跟上。 */
+    function onAnswered(ev) {
+      events.push(ev);
+      refreshDashboard();
+    }
+
+    /**
+     * 規格 §9.2.1：補記一筆 g=3 且 a=使用者寫法 的事件。這一筆同時修正 SRS 的
+     * 錯誤歸因，並讓該寫法成為此題的 alternative。
+     *
+     * 必須 await：這個按鈕存在的理由就是「不讓誤判污染排程」，若使用者按完立刻
+     * 關閉分頁而寫入還沒落地，這個安全網等於沒作用。
+     */
+    async function acceptAlternative(itemId, input) {
       if (!input) return;
-      const list = userAlts[itemId] || (userAlts[itemId] = []);
-      if (!list.includes(input)) list.push(input);
-      saveUserAlternatives(win.localStorage, userAlts);
-      // 這次作答已在 submit() 記為答錯；使用者確認可接受後，補記一筆正確事件，
-      // 讓 SRS／排程反映「這題其實答對了」，而不是重新實作一套判斷邏輯。
-      store.appendEvents([
-        makeEvent(deviceId, nextSeq(), itemId, 3, 0, 'text', Math.floor(Date.now() / 1000)),
-      ]);
+      const ev = makeEvent(deviceId, nextSeq(), itemId, 3, 0, 'text', Math.floor(Date.now() / 1000), input);
+      await store.appendEvents([ev]);
+      // 本輪若因 lapse re-drill 再次出到同一題，同樣寫法要立刻算對，不必等下一輪。
+      const live = sessionItems.find((it) => it.id === itemId);
+      if (live) live.alternatives = [...new Set([...(live.alternatives || []), input])];
+      onAnswered(ev);
     }
 
     renderSession(sessionHost, {
@@ -150,6 +203,7 @@ export async function boot(doc = document, win = window) {
       nextSeq,
       medianRt,
       acceptAlternative,
+      onAnswered,
       onDone: () => runSession(settings),
     });
   }

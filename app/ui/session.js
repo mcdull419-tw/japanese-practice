@@ -6,7 +6,7 @@ import { makeEvent } from '../core/store.js';
 const INPUT_ATTRS = 'lang="ja" autocorrect="off" autocapitalize="off" spellcheck="false" autocomplete="off"';
 
 export function renderSession(host, deps) {
-  const { items, store, deviceId, nextSeq, medianRt, onDone } = deps;
+  const { items, store, deviceId, nextSeq, medianRt, onAnswered, onDone } = deps;
   let idx = 0, shownAt = 0, usedHint = false;
 
   function showItem() {
@@ -33,9 +33,11 @@ export function renderSession(host, deps) {
     const rt = Date.now() - shownAt;
     // 判定一律交給 core，ui 不得自行比對字串
     const { correct, grade } = gradeAnswer(input, it, rt, medianRt(it.engine), usedHint);
-    await store.appendEvents([
-      makeEvent(deviceId, nextSeq(), it.id, grade, rt, 'text', Math.floor(Date.now() / 1000)),
-    ]);
+    const ev = makeEvent(deviceId, nextSeq(), it.id, grade, rt, 'text', Math.floor(Date.now() / 1000));
+    await store.appendEvents([ev]);
+    // 規格 §7.6：每答完一題即重畫儀表板。這裡只是回報「已記錄一筆事件」，
+    // 熟悉度怎麼算仍在 core，ui 不碰。
+    onAnswered?.(ev);
     showResult(it, input, correct);
   }
 
@@ -90,9 +92,13 @@ export function renderSession(host, deps) {
 
     const alsoOk = host.querySelector('#also-ok');
     if (alsoOk) {
-      alsoOk.onclick = () => {
-        deps.acceptAlternative(it.id, input);
-        host.querySelector('.verdict').textContent = '正確（已記錄你的寫法）';
+      alsoOk.onclick = async () => {
+        // 寫入完成前先停用按鈕，避免連點產生重複事件；文案也等落地後才改，
+        // 否則使用者會在資料還沒寫進去時就看到「已記錄」（規格 §9.2.1）。
+        alsoOk.disabled = true;
+        await deps.acceptAlternative(it.id, input);
+        const verdict = host.querySelector('.verdict');
+        if (verdict) verdict.textContent = '正確（已記錄你的寫法）';
         alsoOk.remove();
       };
     }

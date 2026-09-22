@@ -712,14 +712,48 @@ tests/                     node --test
 - **驗收**：能在手機與電腦上完成一次含單字與動詞變化的練習；儀表板顯示 §7.6 六類技能的熟悉度；關閉瀏覽器後進度保留；答錯的題目在後續 session 出現機率明顯提高
 
 ### Phase 2 — 完整題型
-- `data/concepts.json`（約 70 個文法／助詞概念，人工定義）
-- 引擎：substitute、cloze
+
+範圍過大，切為三份計畫依序執行。2a 是 2b 的前提——要先有題目才談得上呈現。
+
+#### Phase 2a — 題型核心
+
+- `data/concepts.json`（文法／助詞概念，人工定義；91 則 `grammar[]` 為草稿來源）
+- `data/particles.json`（助詞用法標註，規則產草稿＋人工校對）
+- `data/adjectives.json`（い／な 分類，`［な］` 標記自動判定＋人工校對）
+- 生成器：`substitute`（練習Ａ代入表＋練習Ｂ）、`cloze`（助詞與詞組挖空）、`quantity`
 - `lang/adjective.js`、`numbers.js`、`counters.js`
-- 補充講義人工轉寫（數字／時間／量詞表）
-- 聽力呈現修飾、單字循環播放器
-- 振假名顯示與切換
+- **驗收**：需求 #3 #4 #5 #7 #11 #12 #13 可用（#6 #8 #9 #10 為代入表的內容差異，隨素材自動涵蓋）；`node --test` 全綠；儀表板六類技能皆有非零分母
+
+#### Phase 2b — 呈現與平台
+
+- 振假名顯示（`core/ruby.js`）
+- 聽力呈現修飾（`core/tts.js`）、單字循環播放器（`ui/player.js`）
+- `jp2zh` 對照題與其選擇題 UI（Phase 1 延後至此）
+- `app/engines/` 分層（見下方決定 1）
 - PWA（Service Worker、加入主畫面、離線）
-- **驗收**：需求 #1 ~ #18 全數可用；離線可完成一次完整練習
+
+#### Phase 2c — 補充講義
+
+- 21 張 `IMAG*.jpeg` 人工轉寫為 `data/supplements/*.json`（數字／時間／量詞表）
+- 以轉寫結果核對並擴充 `numbers.js`／`counters.js`
+
+#### Phase 2 整體驗收
+
+需求 #1 ~ #18 全數可用；離線可完成一次完整練習。
+
+#### 實作決定（2026-09-23 定案，偏離本文件前述段落之處）
+
+1. **`app/engines/` 延到 2b 才建。** §11 列了 `generators/` 與 `engines/` 兩層，但 Phase 1 只做了前者——所有題目共用 `ui/session.js` 的單一文字輸入畫面，評分統一走 `core/grading.js`。2a 的 substitute 與 cloze 仍然都是打字作答，塞得進現有的 `prompt`／`answer`／`alternatives` 形狀，此時建 engines/ 只是多一層沒有行為差異的轉接。真正需要獨立 render 的是 2b 的 `jp2zh` 選擇題，屆時這層才有分歧可承載。
+
+2. **`concepts.json` 不收 `skills` 欄位。** §5.2 的範例寫了 `"skills": ["文法", "助詞"]`，但 §7.6 規定技能由概念 ID 前綴決定，且 `core/concepts.js` 的 `skillOf()` 已如此實作。兩者並存會造成兩個真相來源而無仲裁規則，且範例中的「文法」不屬於 §7.6 的六類技能，照抄會讓該概念落不進任何一條長條圖。`concepts.json` 只收 `label`／`requires_lesson`／`source_ref`；技能一律由前綴推導。
+
+3. **數量題不新增第五個引擎。** §6.1 明定四個引擎，數字與量詞歸在 recall。使用者仍需單獨開關數量題，此需求由排程器既有的 `skills ∩ scope.skills ≠ ∅`（§8）承擔：`generators/quantity.js` 產出 `engine: 'recall'` 但 `skills: ['數量']` 的題目，分檔清楚而引擎數不變。
+
+4. **`concepts.json` 增設 `patterns` 反查表。** substitute 的 `covers` 需要知道每張練習Ａ代入表考的是哪個文法概念，而 78 張表與 91 則文法非 1:1，資料中亦無此對應，只能人工建立。存於概念定義內（`"patterns": ["L07-A1"]`）而非另立第四個資料檔。
+
+5. **練習Ｂ（`drills[]`）納入 substitute 素材。** 實測 107 則中 72% 完整可用（`items`、`model_answer`、`model_cue` 齊備），27% 不可用者集中於第 1 ~ 3 課且 `items` 為空——屬 Phase 0 抽取缺口，不在 2a 修補，該等條目自然不產題。
+
+6. **手維護資料檔須有漂移偵測測試。** `particles.json` 的每筆 `at` 位置必須在對應句子中確實是所標的助詞；`particles.json`／`concepts.json` 的概念引用不得懸空；`concepts.json` 的 `patterns` 條目須對得上實際 pattern id；`adjectives.json` 的鍵須在 vocab 中存在。課本語料若重新抽取而位移，測試必須紅燈而非靜默錯位——與 Phase 0 的不變式檢查同一套思路。
 
 ### Phase 3 — 同步
 - `GiteaStore`，含 sha 樂觀鎖與合併重試

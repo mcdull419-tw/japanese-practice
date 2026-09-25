@@ -5,6 +5,21 @@ import { makeEvent } from '../core/store.js';
 
 const INPUT_ATTRS = 'lang="ja" autocorrect="off" autocapitalize="off" spellcheck="false" autocomplete="off"';
 
+/**
+ * 日文輸入法（IME）組字期間按下的 Enter 是「確定候補字」，不是「送出答案」——
+ * 兩者是同一顆實體按鍵，只能靠事件狀態分辨：組字中的 keydown 帶
+ * isComposing=true（舊版瀏覽器則是 keyCode 229）。
+ *
+ * 不分辨的後果不只是提前送出：submit() 會同時把那筆「答錯」寫進事件日誌，
+ * 使用者選個字就被記一次答錯，SRS 的熟悉度會被自己的輸入法污染。
+ *
+ * 只有這兩個欄位都不成立時才視為真的要送出——判斷寫成「有值才擋」而非
+ * 「沒值就擋」，否則不帶這些欄位的環境會永遠送不出答案。
+ */
+export function isImeComposing(e) {
+  return e.isComposing === true || e.keyCode === 229;
+}
+
 export function renderSession(host, deps) {
   const { items, store, deviceId, nextSeq, medianRt, onAnswered, onDone } = deps;
   let idx = 0, shownAt = 0, usedHint = false;
@@ -24,7 +39,9 @@ export function renderSession(host, deps) {
     host.querySelector('#ans').focus();
     host.querySelector('#submit').onclick = submit;
     host.querySelector('#hint').onclick = () => { usedHint = true; revealHint(it); };
-    host.querySelector('#ans').onkeydown = (e) => { if (e.key === 'Enter') submit(); };
+    host.querySelector('#ans').onkeydown = (e) => {
+      if (e.key === 'Enter' && !isImeComposing(e)) submit();
+    };
   }
 
   async function submit() {

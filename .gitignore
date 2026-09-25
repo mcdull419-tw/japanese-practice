@@ -9,6 +9,8 @@
 
 # macOS
 .DS_Store
+# iCloud／Finder 同步衝突產生的副本（「檔名 2.副檔名」），內容與原檔相同
+* 2.*
 
 # 開發暫存
 node_modules/

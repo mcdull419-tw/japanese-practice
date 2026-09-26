@@ -729,6 +729,7 @@ tests/                     node --test
 - 振假名顯示（`core/ruby.js`）
 - 聽力呈現修飾（`core/tts.js`）、單字循環播放器（`ui/player.js`）
 - `jp2zh` 對照題與其選擇題 UI（Phase 1 延後至此）
+- 練習Ｂ（`drills[]`）納入 substitute 素材（2a 未完成，見下方決定 7）
 - `app/engines/` 分層（見下方決定 1）
 - PWA（Service Worker、加入主畫面、離線）
 
@@ -753,7 +754,33 @@ tests/                     node --test
 
 5. **練習Ｂ（`drills[]`）納入 substitute 素材。** 實測 107 則中 72% 完整可用（`items`、`model_answer`、`model_cue` 齊備），27% 不可用者集中於第 1 ~ 3 課且 `items` 為空——屬 Phase 0 抽取缺口，不在 2a 修補，該等條目自然不產題。
 
+   **⚠️ 此決定的前提已被 2a 實作推翻，由下方決定 7 取代。** 「欄位齊備」不等於「可用」：欄位在，但 `model_cue` → `model_answer` 之間並非單純字串替換。
+
 6. **手維護資料檔須有漂移偵測測試。** `particles.json` 的每筆 `at` 位置必須在對應句子中確實是所標的助詞；`particles.json`／`concepts.json` 的概念引用不得懸空；`concepts.json` 的 `patterns` 條目須對得上實際 pattern id；`adjectives.json` 的鍵須在 vocab 中存在。課本語料若重新抽取而位移，測試必須紅燈而非靜默錯位——與 Phase 0 的不變式檢查同一套思路。
+
+#### 實作決定續（2026-09-26 定案）
+
+7. **練習Ｂ 改於 2b 以「標註成練習Ａ 的形狀」實作，取代決定 5。** 2a 照決定 5 實作後實測：107 則中僅 **16 則**能產題，且產出的句子有錯（問答對只被替換了問句那半）。原因是決定 5 誤把「欄位齊備」當成「可用」——`model_cue` 與 `model_answer` 是「第 0 列被渲染後的字串」，替換規則的資訊在渲染時已經遺失，無法可靠反推。實測形狀分佈（全 107 則）：
+
+   | 則數 | 形狀 |
+   |---|---|
+   | 29 | `items` 為空（第 1 ~ 3 課，Phase 0 抽取缺口） |
+   | 20 | 多組範例，以 `｜` 分隔 |
+   | 20 | cue 含括號提示（`銀行 （ 9:00～3:00 ）`） |
+   | 15 | 複合 cue，以 `・` 分多槽位 |
+   | 14 | 問答對，一則含兩句 |
+   | 8 | 單句、可直接替換 |
+   | 1 | 無 cue／answer |
+
+   **2b 的作法**：不寫更聰明的解析器，而是承認練習Ｂ 的真實結構與練習Ａ 相同（template ＋ slots ＋ rows），把它補標成那個形狀後**直接重用 `generators/substitute.js`**：
+
+   1. `tools/draft/drills.py` 產草稿，只做機械拆分（`｜` 拆成多則、`・` 拆成多槽位、`（）` 抽成獨立欄位），不猜 template。
+   2. 人工標註 77 則的 template 與 slots（同 `concepts.json`／`particles.json` 的草稿＋校對流程）。
+   3. **漂移測試以往返驗證把關**：用第 0 列的槽位值填入 template，結果必須逐字等於 `model_answer`。標錯即紅燈，不需人工複查——比 `particles.json` 的 `at` 位置驗證更強（該項只驗單一位置，此項驗整句）。
+   4. 14 則問答對另立 prompt 組法：題幹給問句、只要求答句。機制仍為 substitute，不新增引擎（與決定 3 同一原則）。
+   5. 29 則 `items` 為空者，視 Phase 0 是否補抽；不補則自然不產題。
+
+   預估產出 200 ~ 300 題，與練習Ａ（209 題）同量級。
 
 ### Phase 3 — 同步
 - `GiteaStore`，含 sha 樂觀鎖與合併重試

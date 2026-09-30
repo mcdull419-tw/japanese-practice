@@ -29,6 +29,24 @@ test('題目對應得到課本句子時，優先用課本的精確標註', () =>
   assert.equal(opts.rubyTokens[0].kana, 'おてがみ');
 });
 
+/**
+ * 中文和日文共用 CJK 統一漢字區，詞典的最長匹配分不出來：中文的「起」會被配上
+ * 日文讀音 お（來自 起きます）。題幹語言只有產生器知道，因此由題目自己宣告，
+ * 呈現端據此跳過——不能在 ruby.js 裡猜，那支是純切詞函式。
+ */
+test('題幹標為中文時不加振假名（中文字會被配上日文讀音）', () => {
+  const item = { id: 'recall:てがみ:zh2jp', covers: [], prompt: { text: '手紙', lang: 'zh' } };
+  const opts = presentOptsFor(item, { lex, sentenceMarks: new Map() });
+  assert.deepEqual(opts.rubyTokens, [{ t: 'text', s: '手紙' }],
+    '中文題幹必須原樣輸出，不得出現 ruby token');
+});
+
+test('沒有標語言的題幹照舊加振假名（既有題型不受影響）', () => {
+  const item = { id: 'x', covers: [], prompt: { text: '手紙' } };
+  const opts = presentOptsFor(item, { lex, sentenceMarks: new Map() });
+  assert.deepEqual(opts.rubyTokens, [{ t: 'ruby', base: '手紙', kana: 'てがみ' }]);
+});
+
 test('題幹無漢字時回傳單一 text token', () => {
   const item = { id: 'x', covers: [], prompt: { text: 'これは なんですか。' } };
   const opts = presentOptsFor(item, { lex, sentenceMarks: new Map() });

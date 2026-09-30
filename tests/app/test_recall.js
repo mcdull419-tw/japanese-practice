@@ -167,3 +167,17 @@ test('整筆都是用法說明時退回原字串，不產生空選項', () => {
   assert.equal(it.answer, '（用於小孩的名字後）');
   for (const c of it.choices) assert.ok(c.length > 0, '選項不得為空');
 });
+
+// zh2jp 的題幹取自 v.zh，是中文。振假名詞典分不出中日文（兩者共用 CJK 漢字區），
+// 少了這個標記，「對不起」的「起」會被標成 お。見 tests/app/test_present.js。
+test('zh2jp 的題幹標記為中文，呈現端才知道不要加振假名', () => {
+  for (const it of [...generate(V)].filter((i) => i.id.endsWith(':zh2jp'))) {
+    assert.equal(it.prompt.lang, 'zh', `${it.id} 的題幹是中文卻沒有標記`);
+  }
+});
+
+test('日文題幹不標成中文（否則會失去振假名）', () => {
+  for (const it of [...generate(V)].filter((i) => !i.id.endsWith(':zh2jp'))) {
+    assert.notEqual(it.prompt.lang, 'zh', `${it.id} 的題幹是日文，不該標成中文`);
+  }
+});

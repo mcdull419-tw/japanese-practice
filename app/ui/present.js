@@ -20,6 +20,14 @@ function marksApplyCleanly(text, marks) {
 export function presentOptsFor(item, { lex, sentenceMarks }) {
   const hideRt = (item.covers || []).some((c) => c.endsWith(':reading'));
   const text = item.prompt?.text || '';
+
+  // 中文題幹不加振假名。中日文共用 CJK 統一漢字區，詞典的最長匹配分不出來，
+  // 「對不起」的「起」會被配上 起きます 的 お。題幹語言只有產生器知道，所以
+  // 由題目自己宣告——不能在 ruby.js 裡猜，那支是不碰語境的純切詞函式。
+  if (item.prompt?.lang === 'zh') {
+    return { rubyTokens: text ? [{ t: 'text', s: text }] : [], hideRt };
+  }
+
   const marks = item.source_id && sentenceMarks ? sentenceMarks.get(item.source_id) : null;
   const rubyTokens = marks && marks.length && marksApplyCleanly(text, marks)
     ? annotateWithMarks(text, marks)

@@ -1,53 +1,41 @@
-// 練習畫面。所有判斷邏輯（對錯、grade）一律交給 core/grading.js，
-// 這裡只負責 DOM 渲染與事件綁定，不得自行比對字串或評分。
+// 練習畫面的驅動器。題幹與作答控制項由 engines/ 渲染，這裡只管進度、按鈕、
+// 結果畫面與事件寫入。所有判斷邏輯（對錯、grade）一律交給 core/grading.js，
+// 不得自行比對字串或評分。
 import { gradeAnswer } from '../core/grading.js';
 import { makeEvent } from '../core/store.js';
 import { escapeHtml } from './html.js';
+import { engineFor } from '../engines/index.js';
 
-const INPUT_ATTRS = 'lang="ja" autocorrect="off" autocapitalize="off" spellcheck="false" autocomplete="off"';
-
-/**
- * 日文輸入法（IME）組字期間按下的 Enter 是「確定候補字」，不是「送出答案」——
- * 兩者是同一顆實體按鍵，只能靠事件狀態分辨：組字中的 keydown 帶
- * isComposing=true（舊版瀏覽器則是 keyCode 229）。
- *
- * 不分辨的後果不只是提前送出：submit() 會同時把那筆「答錯」寫進事件日誌，
- * 使用者選個字就被記一次答錯，SRS 的熟悉度會被自己的輸入法污染。
- *
- * 只有這兩個欄位都不成立時才視為真的要送出——判斷寫成「有值才擋」而非
- * 「沒值就擋」，否則不帶這些欄位的環境會永遠送不出答案。
- */
-export function isImeComposing(e) {
-  return e.isComposing === true || e.keyCode === 229;
-}
+// IME 判斷已隨打字作答的渲染移到 engines/text.js；此處 re-export 以維持既有
+// 呼叫端與測試的 import 路徑。
+export { isImeComposing } from '../engines/text.js';
 
 export function renderSession(host, deps) {
   const { items, store, deviceId, nextSeq, medianRt, onAnswered, onDone } = deps;
   let idx = 0, shownAt = 0, usedHint = false;
+  let handle = null;
 
   function showItem() {
     if (idx >= items.length) return onDone();
     const it = items[idx];
     usedHint = false;
     host.innerHTML = `
-      <div class="prompt">${escapeHtml(it.prompt.text)}</div>
-      <div class="hint">${escapeHtml(it.prompt.hint || '')}</div>
-      <input id="ans" type="text" ${INPUT_ATTRS}>
+      <div id="question"></div>
       <button id="submit">送出</button>
       <button id="hint">看提示</button>
       <div class="progress">${idx + 1} / ${items.length}</div>`;
+    handle = engineFor(it).render(it, host.querySelector('#question'), {
+      ...(deps.presentOpts ? deps.presentOpts(it) : {}),
+      onSubmit: submit,
+    });
     shownAt = Date.now();
-    host.querySelector('#ans').focus();
     host.querySelector('#submit').onclick = submit;
     host.querySelector('#hint').onclick = () => { usedHint = true; revealHint(it); };
-    host.querySelector('#ans').onkeydown = (e) => {
-      if (e.key === 'Enter' && !isImeComposing(e)) submit();
-    };
   }
 
   async function submit() {
     const it = items[idx];
-    const input = host.querySelector('#ans').value;
+    const input = handle.readValue();
     const rt = Date.now() - shownAt;
     // 判定一律交給 core，ui 不得自行比對字串
     const { correct, grade } = gradeAnswer(input, it, rt, medianRt(it.engine), usedHint);
@@ -67,7 +55,7 @@ export function renderSession(host, deps) {
       <div class="verdict">${correct ? '正確' : '再看一次'}</div>
       <div class="answer">正解：${escapeHtml(it.answer)}</div>
       <div class="source">出處：${escapeHtml(it.source_ref)}</div>
-      ${correct ? '' : '<button id="also-ok">我這樣寫也對</button>'}
+      ${correct || it.choices ? '' : '<button id="also-ok">我這樣寫也對</button>'}
       <button id="next">下一題</button>`;
 
     let advanced = false;

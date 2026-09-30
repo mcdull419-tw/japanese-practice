@@ -1,0 +1,14 @@
+{
+ "name": "日語練習",
+ "short_name": "日語",
+ "start_url": ".",
+ "scope": ".",
+ "display": "standalone",
+ "background_color": "#f7f7f5",
+ "theme_color": "#2d6cdf",
+ "lang": "zh-Hant",
+ "icons": [
+  { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+  { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+ ]
+}

@@ -298,6 +298,13 @@ export async function boot(doc = document, win = window) {
   });
 
   await runSession(settings);
+
+  // PWA：註冊失敗只代表沒有離線能力，不該讓整個 app 起不來，故不 await、不拋錯。
+  if (win.navigator && 'serviceWorker' in win.navigator) {
+    win.navigator.serviceWorker.register('sw.js').catch((err) => {
+      console.warn('Service Worker 註冊失敗，離線功能不可用：', err && err.message);
+    });
+  }
 }
 
 if (typeof document !== 'undefined' && typeof window !== 'undefined') {

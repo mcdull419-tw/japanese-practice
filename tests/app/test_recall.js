@@ -90,3 +90,80 @@ test('重新生成得到相同 id（決定性）', () => {
   const b = [...generate(V)].map((i) => i.id);
   assert.deepEqual(a, b);
 });
+
+// ── 日→中選擇題（需求 #1 的另一個方向，Phase 1 延後至 2b）────────────
+const jpVocab = [
+  { kana: 'きります', kanji: '切ります', zh: '剪，切', lesson: 7, no: 1 },
+  { kana: 'おくります', kanji: '送ります', zh: '寄送', lesson: 7, no: 2 },
+  { kana: 'あげます', kanji: null, zh: '給，送', lesson: 7, no: 3 },
+  { kana: 'もらいます', kanji: null, zh: '接受，得到', lesson: 7, no: 4 },
+  { kana: 'かします', kanji: '貸します', zh: '借出', lesson: 7, no: 5 },
+];
+
+test('jp2zh 產出四選一，含正解', () => {
+  const it = [...generate(jpVocab)].find((x) => x.id === 'recall:きります:jp2zh');
+  assert.ok(it, '應產生 recall:きります:jp2zh');
+  assert.equal(it.engine, 'recall');
+  assert.equal(it.prompt.text, '切ります');
+  assert.equal(it.answer, '剪，切');
+  assert.equal(it.choices.length, 4);
+  assert.ok(it.choices.includes('剪，切'));
+  assert.equal(new Set(it.choices).size, 4, '選項不得重複');
+  assert.deepEqual(it.covers, ['w:切ります']);
+  assert.deepEqual(it.skills, ['單字']);
+});
+
+test('選項是決定性的：重跑兩次完全一致', () => {
+  const a = [...generate(jpVocab)].find((x) => x.id === 'recall:きります:jp2zh');
+  const b = [...generate(jpVocab)].find((x) => x.id === 'recall:きります:jp2zh');
+  assert.deepEqual(a.choices, b.choices);
+});
+
+test('同課可用詞不足四個時不產生選擇題（寧可不出，也不出兩選一）', () => {
+  const few = [
+    { kana: 'あ', kanji: null, zh: '甲', lesson: 1, no: 1 },
+    { kana: 'い', kanji: null, zh: '乙', lesson: 1, no: 2 },
+  ];
+  assert.equal([...generate(few)].filter((x) => x.id.endsWith(':jp2zh')).length, 0);
+});
+
+test('誘答取自同一課，才不會靠課次差異猜答案', () => {
+  const mixed = [...jpVocab, { kana: 'ほん', kanji: '本', zh: '書', lesson: 1, no: 9 }];
+  const it = [...generate(mixed)].find((x) => x.id === 'recall:きります:jp2zh');
+  assert.ok(!it.choices.includes('書'), '第1課的詞不該成為第7課題目的誘答');
+});
+
+test('全語料的 jp2zh 選項都不含正解以外的重複，且正解必在其中', () => {
+  const items = [...generate(jpVocab)].filter((x) => x.id.endsWith(':jp2zh'));
+  assert.ok(items.length > 0);
+  for (const it of items) {
+    assert.ok(it.choices.includes(it.answer), `${it.id} 的選項不含正解`);
+    assert.equal(new Set(it.choices).size, it.choices.length, `${it.id} 的選項有重複`);
+  }
+});
+
+test('選項截掉課本的用法說明（長度本身不得成為線索）', () => {
+  const withNote = [
+    { kana: 'あのひと', kanji: null, zh: '他，她，那個人 （ あの かた ）（“あのかた”是禮貌形）', lesson: 1, no: 1 },
+    { kana: 'わたし', kanji: null, zh: '我', lesson: 1, no: 2 },
+    { kana: 'せんせい', kanji: '先生', zh: '老師', lesson: 1, no: 3 },
+    { kana: 'がくせい', kanji: '学生', zh: '學生', lesson: 1, no: 4 },
+    { kana: 'いしゃ', kanji: '医者', zh: '醫生', lesson: 1, no: 5 },
+  ];
+  const it = [...generate(withNote)].find((x) => x.id === 'recall:あのひと:jp2zh');
+  assert.equal(it.answer, '他，她，那個人');
+  for (const c of it.choices) assert.ok(!c.includes('（'), `選項夾了用法說明：${c}`);
+});
+
+test('整筆都是用法說明時退回原字串，不產生空選項', () => {
+  const noteOnly = [
+    { kana: 'ちゃん', kanji: null, zh: '（用於小孩的名字後）', lesson: 1, no: 1 },
+    { kana: 'わたし', kanji: null, zh: '我', lesson: 1, no: 2 },
+    { kana: 'せんせい', kanji: '先生', zh: '老師', lesson: 1, no: 3 },
+    { kana: 'がくせい', kanji: '学生', zh: '學生', lesson: 1, no: 4 },
+    { kana: 'いしゃ', kanji: '医者', zh: '醫生', lesson: 1, no: 5 },
+  ];
+  const it = [...generate(noteOnly)].find((x) => x.id === 'recall:ちゃん:jp2zh');
+  assert.equal(it.answer, '（用於小孩的名字後）');
+  for (const c of it.choices) assert.ok(c.length > 0, '選項不得為空');
+});

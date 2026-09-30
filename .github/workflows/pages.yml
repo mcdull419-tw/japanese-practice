@@ -1,0 +1,59 @@
+# 部署到 GitHub Pages（規格 §11：tools/ 不部署到網站）。
+#
+# 打包清單夾在 STAGE-BEGIN／STAGE-END 之間，由 tests/app/test_pages.js 比對
+# sw.js 的 PRECACHE——兩邊不一致就紅燈，測試不過就不部署。
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同時只跑一個部署，但不取消進行中的（免得站台停在半完成的版本）。
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      # 紅燈的版本不該上線：離線壞掉只有沒網路時才重現，線上不能賭。
+      - name: 執行測試
+        run: node --test "tests/app/*.js"
+      - name: 打包上線檔案
+        run: |
+          mkdir -p _site
+          # STAGE-BEGIN
+          cp index.html _site/
+          cp manifest.json _site/
+          cp sw.js _site/
+          cp icon-192.png _site/
+          cp icon-512.png _site/
+          cp robots.txt _site/
+          cp .nojekyll _site/
+          cp -R app _site/
+          cp -R data _site/
+          # STAGE-END
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

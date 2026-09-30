@@ -2,6 +2,7 @@
 // 這裡只負責 DOM 渲染與事件綁定，不得自行比對字串或評分。
 import { gradeAnswer } from '../core/grading.js';
 import { makeEvent } from '../core/store.js';
+import { escapeHtml } from './html.js';
 
 const INPUT_ATTRS = 'lang="ja" autocorrect="off" autocapitalize="off" spellcheck="false" autocomplete="off"';
 
@@ -126,9 +127,4 @@ export function renderSession(host, deps) {
   }
 
   showItem();
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) =>
-    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }

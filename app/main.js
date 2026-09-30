@@ -4,6 +4,7 @@
 import { loadSettings, saveSettings, renderSettings } from './ui/settings.js';
 import { renderSession } from './ui/session.js';
 import { renderDashboard } from './ui/dashboard.js';
+import { renderPlayer } from './ui/player.js';
 import { loadLessons, buildIndex } from './core/data.js';
 import * as recall from './generators/recall.js';
 import * as transform from './generators/transform.js';
@@ -105,6 +106,7 @@ export async function boot(doc = document, win = window) {
   const settingsHost = doc.querySelector('#settings');
   const sessionHost = doc.querySelector('#session');
   const dashboardHost = doc.querySelector('#dashboard');
+  const playerHost = doc.querySelector('#player');
 
   const deviceId = getDeviceId(win.localStorage);
   const store = await openStore(win.indexedDB);
@@ -208,6 +210,13 @@ export async function boot(doc = document, win = window) {
       renderDashboard(dashboardHost, scores, counts);
     }
     refreshDashboard();
+
+    // 播放器只用單字題（中→日），答案是日文假名，唸得出來；
+    // 代入題那種整句題目不適合循環播放。
+    if (playerHost) {
+      const wordItems = items.filter((it) => it.id.endsWith(':zh2jp'));
+      renderPlayer(playerHost, { items: wordItems, itemStates, conceptStates, speaker });
+    }
 
     const sessionItems = pickItems(items, itemStates, conceptStates, settings.sessionSize, nowSec, Math.random);
 

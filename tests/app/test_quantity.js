@@ -62,3 +62,12 @@ test('題數在預期範圍', () => {
   // 時12 ＋ 分14 ＋ 日31 ＋ 月12 ＝ 69，量詞 12 種 × 10 ＝ 120
   assert.ok(items.length >= 150 && items.length <= 220, `題數 ${items.length} 不如預期`);
 });
+
+// 這些題目問的就是唸法，答案是讀音。振假名若照常顯示，等於把答案印在題幹上
+// （「4時」標著「時→じ」）。covers 用的是 c:<量詞>／數字概念而非 :reading 後綴——
+// 那個歸類是對的（屬「數量」技能），所以改由題目宣告，不動 covers。
+test('所有量詞與數字題都藏住振假名（否則答案寫在題目上）', () => {
+  for (const it of items) {
+    assert.equal(it.prompt.hideRuby, true, `${it.id}（${it.prompt.hint}）沒有宣告藏振假名`);
+  }
+});

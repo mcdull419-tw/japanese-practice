@@ -38,7 +38,9 @@ function makeItem({ id, lesson, covers, promptText, hint, answer, sourceRef }) {
     requires_lesson: lesson,
     covers,
     skills: [...new Set(covers.map(skillOf).filter(Boolean))],
-    prompt: { type: 'text', text: promptText, hint },
+    // 這裡每一題問的都是唸法，答案就是讀音：振假名照常顯示等於把答案印在題幹上
+    // （「4時」標著「時→じ」）。見 ui/present.js 的 hideRt。
+    prompt: { type: 'text', text: promptText, hint, hideRuby: true },
     answer,
     alternatives: [],
     source_ref: sourceRef,

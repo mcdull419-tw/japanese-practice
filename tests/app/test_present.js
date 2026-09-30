@@ -64,3 +64,28 @@ test('挖空題的題幹與原句不同時（已挖掉助詞），標註位置�
   const bases = opts.rubyTokens.filter((t) => t.t === 'ruby').map((t) => t.base);
   assert.deepEqual(bases, ['手紙', '書'], '對不上的標註不該讓整句失去振假名');
 });
+
+test('題目宣告 hideRuby 時藏住讀音，即使 covers 沒有 :reading 後綴', () => {
+  const item = { id: 'qty:c:本:1', covers: ['c:本'], prompt: { text: '1本', hideRuby: true } };
+  const opts = presentOptsFor(item, { lex, sentenceMarks: new Map() });
+  assert.equal(opts.hideRt, true, '問唸法的題目不得顯示讀音');
+});
+
+/**
+ * 混排題幹（練習Ａ／Ｂ）：中文標籤與日文例句同在一個字串裡。以字串而非位置索引
+ * 標示中文段落——這個專案已經吃過偏移的虧（見上方挖空題位移的測試）。
+ */
+test('混排題幹只標註日文段落，中文標籤原樣輸出', () => {
+  // 「例」必須在詞典裡，否則這條測試會因為查不到而假性通過——實際語料中
+  // 例→れい 正是唯一被誤標的字。
+  const mixedLex = buildLexicon({ auto: { 手紙: 'てがみ', 書: 'か', 例: 'れい' } });
+  const item = {
+    id: 'drill:x:0', covers: [],
+    prompt: { text: '例：手紙を書きます\n用這個提示造句：手紙', zhParts: ['例：', '用這個提示造句：'] },
+  };
+  const opts = presentOptsFor(item, { lex: mixedLex, sentenceMarks: new Map() });
+  const rubies = opts.rubyTokens.filter((t) => t.t === 'ruby').map((t) => t.base);
+  assert.deepEqual(rubies, ['手紙', '書', '手紙'], '日文段落必須保有振假名');
+  const flat = opts.rubyTokens.map((t) => (t.t === 'ruby' ? t.base : t.s)).join('');
+  assert.equal(flat, '例：手紙を書きます\n用這個提示造句：手紙', '拼回去必須與原文一字不差');
+});

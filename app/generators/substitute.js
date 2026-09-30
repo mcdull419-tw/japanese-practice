@@ -15,6 +15,10 @@ import { skillOf } from '../core/concepts.js';
 
 export const ENGINE = 'substitute';
 
+// 題幹裡的中文標籤。拼字串與 prompt.zhParts 共用，避免兩邊改歪。
+const ZH_EXAMPLE = '例：';
+const ZH_CUE = '用這些詞造句：';
+
 const SLOT = /\{([A-Z])\}/g;
 
 function fillRow(pattern, row) {
@@ -60,8 +64,11 @@ export function* generate(patterns, patternConcepts) {
         skills,
         prompt: {
           type: 'text',
-          text: `例：${example.filled}\n用這些詞造句：${cur.cues.join(' ／ ')}`,
+          text: `${ZH_EXAMPLE}${example.filled}\n${ZH_CUE}${cur.cues.join(' ／ ')}`,
           hint: '照範例的句型造句',
+          // 題幹是中日混排。列出中文標籤讓 ui/present.js 只標註日文段落——
+          // 否則「例」會被配上日文讀音 れい。與上面用同一組常數，改不歪。
+          zhParts: [ZH_EXAMPLE, ZH_CUE],
         },
         answer: cur.filled,
         alternatives: [],

@@ -77,3 +77,13 @@ test('真實題庫產出 200 題以上，且每題答案非空、id 不重複', 
     assert.ok(it.prompt.text.includes(it.answer) === false, `${it.id} 題幹洩漏答案`);
   }
 });
+
+// 見 test_substitute.js 同名測試。ask 型只有「例：」一個標籤。
+test('宣告的中文標籤都真的出現在題幹裡', () => {
+  for (const it of [...generate(sample, null)]) {
+    assert.ok((it.prompt.zhParts || []).length > 0, `${it.id} 沒有宣告中文標籤`);
+    for (const lit of it.prompt.zhParts) {
+      assert.ok(it.prompt.text.includes(lit), `${it.id} 宣告了「${lit}」但題幹裡沒有`);
+    }
+  }
+});

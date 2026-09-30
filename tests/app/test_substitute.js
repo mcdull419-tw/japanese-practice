@@ -75,3 +75,13 @@ test('id 決定性且唯一', () => {
   assert.deepEqual(a, b);
   assert.equal(new Set(a).size, a.length);
 });
+
+// zhParts 的字串若與題幹拼接處改歪，ui/present.js 會切不出中文段落，
+// 「例」又會被標回 れい——而且畫面上只差一個小假名，不容易注意到。
+test('宣告的中文標籤都真的出現在題幹裡', () => {
+  for (const it of [...generate(patterns, concepts)]) {
+    for (const lit of it.prompt.zhParts || []) {
+      assert.ok(it.prompt.text.includes(lit), `${it.id} 宣告了「${lit}」但題幹裡沒有`);
+    }
+  }
+});

@@ -16,6 +16,10 @@ import { skillOf } from '../core/concepts.js';
 
 export const ENGINE = 'substitute';
 
+// 題幹裡的中文標籤。拼字串與 prompt.zhParts 共用，避免兩邊改歪。
+const ZH_EXAMPLE = '例：';
+const ZH_CUE = '用這個提示造句：';
+
 export function* generate(drills, patternConcepts) {
   for (const [id, d] of Object.entries(drills || {})) {
     // 概念對應不到時退回以該則 id 當概念，讓這則練習仍然累積熟悉度。
@@ -31,8 +35,8 @@ export function* generate(drills, patternConcepts) {
 
       // ask 型：題幹本身就是問句，要求的是答句（規格 §13 決定 7 第 4 點）。
       const text = d.ask
-        ? `例：${d.model_cue}\n　→ ${d.model_answer}\n\n${row.cue}`
-        : `例：${d.model_cue}\n　→ ${d.model_answer}\n\n用這個提示造句：${row.cue}`;
+        ? `${ZH_EXAMPLE}${d.model_cue}\n　→ ${d.model_answer}\n\n${row.cue}`
+        : `${ZH_EXAMPLE}${d.model_cue}\n　→ ${d.model_answer}\n\n${ZH_CUE}${row.cue}`;
 
       yield {
         id: `drill:${id}:${i}`,
@@ -45,6 +49,9 @@ export function* generate(drills, patternConcepts) {
           type: 'text',
           text,
           hint: d.ask ? '照範例回答問題' : '照範例的句型造句',
+          // 題幹是中日混排。列出中文標籤讓 ui/present.js 只標註日文段落——
+          // 否則「例」會被配上日文讀音 れい。ask 型沒有第二個標籤。
+          zhParts: d.ask ? [ZH_EXAMPLE] : [ZH_EXAMPLE, ZH_CUE],
         },
         answer: row.answer,
         alternatives: [],

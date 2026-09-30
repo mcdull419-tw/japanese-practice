@@ -38,11 +38,22 @@
   .skill-fill { background: #2d6cdf; height: 100%; }
   .skill-pct { position: absolute; right: 6px; top: 0; line-height: 20px; font-size: .78rem; color: #333; }
   .skill-count { width: 7em; text-align: right; color: #888; font-size: .78rem; flex-shrink: 0; }
+  ruby { ruby-position: over; }
+  rt { font-size: .5em; color: #666; }
+  .prompt.multiline { white-space: pre-line; }
+  .choices { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+  button.choice { background: #fff; color: #1a1a1a; border: 1px solid #ccc; text-align: left;
+    font-size: 1.05rem; padding: 12px; margin: 0; }
+  button.choice.picked { background: #2d6cdf; color: #fff; }
+  .listening { color: #2d6cdf; }
+  #replay { background: #6b7280; }
   @media (prefers-color-scheme: dark) {
     body { background: #14161a; color: #eee; }
     section { background: #1f2229; box-shadow: none; }
     input#ans { background: #14161a; color: #eee; border-color: #444; }
     .skill-bar { background: #2a2d35; }
+    rt { color: #aaa; }
+    button.choice { background: #1f2229; color: #eee; border-color: #444; }
   }
 </style>
 </head>

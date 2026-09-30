@@ -15,6 +15,8 @@ import { openStore, makeEvent, userAlternativesFrom } from './core/store.js';
 import { replay } from './core/srs.js';
 import { pickItems } from './core/scheduler.js';
 import { aggregateSkills } from './core/concepts.js';
+import { buildLexicon } from './core/ruby.js';
+import { presentOptsFor } from './ui/present.js';
 
 // 舊版把「我這樣寫也對」的寫法存在這個 localStorage 鍵，違反規格 §9.2.1
 // （應與事件日誌同一個 Store）。現已改存事件的 `a` 欄位，此鍵只剩遷移用途。
@@ -115,14 +117,21 @@ export async function boot(doc = document, win = window) {
     // 課次範圍只需載入到 maxLesson（動詞表本身是全量的 71 筆，不受課次範圍影響，
     // 而 requires_lesson 的過濾才是決定哪些題目可用的關鍵，見下方 filter）。
     const lessonNumbers = [...Array(settings.maxLesson)].map((_, i) => i + 1);
-    const [lessonsMap, verbsTable, adjTable, conceptDefs, particleMarks] = await Promise.all([
-      loadLessons(lessonNumbers, fetchLesson),
-      fetchVerbs(),
-      fetchJson('data/adjectives.json'),
-      fetchJson('data/concepts.json'),
-      fetchJson('data/particles.json'),
-    ]);
+    const [lessonsMap, verbsTable, adjTable, conceptDefs, particleMarks, rubyJson] =
+      await Promise.all([
+        loadLessons(lessonNumbers, fetchLesson),
+        fetchVerbs(),
+        fetchJson('data/adjectives.json'),
+        fetchJson('data/concepts.json'),
+        fetchJson('data/particles.json'),
+        fetchJson('data/ruby-lexicon.json'),
+      ]);
     const idx = buildIndex(lessonsMap);
+    const lex = buildLexicon(rubyJson);
+
+    // 規格 §9.3：句子有課本的精確標註時優先使用，練習Ａ／Ｂ 才退回詞典。
+    const sentenceMarks = new Map();
+    for (const s of idx.sentences) if (s.ruby?.length) sentenceMarks.set(s.id, s.ruby);
 
     // 懶生成：每次啟動／換設定即時展開題目，不預先寫成檔案（規格 §5.4）。
     const allItems = [];
@@ -232,6 +241,7 @@ export async function boot(doc = document, win = window) {
       medianRt,
       acceptAlternative,
       onAnswered,
+      presentOpts: (it) => presentOptsFor(it, { lex, sentenceMarks }),
       onDone: () => runSession(settings),
     });
   }

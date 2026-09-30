@@ -46,6 +46,7 @@ export function* generate(sentences, particleMarks, vocabList) {
       const covers = [m.c];
       yield {
         id: `cloze:${sid}:${m.at}`,
+        source_id: s.id,
         engine: ENGINE,
         lesson: s.lesson,
         // 助詞用法的解鎖課次就是它所在句子的課次——課本在哪一課用這個句型，
@@ -109,6 +110,7 @@ function* generatePhrases(sentences, vocabList) {
         const covers = [conceptsForVocab(v)[0]];
         yield {
           id: `cloze:${s.id}:${pos}:phrase`,
+          source_id: s.id,
           engine: ENGINE,
           lesson: s.lesson,
           requires_lesson: Math.max(s.lesson, v.lesson),

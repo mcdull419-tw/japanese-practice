@@ -15,6 +15,7 @@ import { conceptsByPattern } from './core/conceptdefs.js';
 import { openStore, makeEvent, makeFlagEvent, userAlternativesFrom, flaggedFrom }
   from './core/store.js';
 import { exportFlagged, applyCorrections } from './core/corrections.js';
+import { makeSpeaker } from './core/tts.js';
 import { replay } from './core/srs.js';
 import { pickItems } from './core/scheduler.js';
 import { aggregateSkills } from './core/concepts.js';
@@ -107,6 +108,7 @@ export async function boot(doc = document, win = window) {
 
   const deviceId = getDeviceId(win.localStorage);
   const store = await openStore(win.indexedDB);
+  const speaker = makeSpeaker(win.speechSynthesis, win.SpeechSynthesisUtterance);
 
   // 舊版的自訂答案存在 localStorage，補寫成事件後刪除該鍵（規格 §9.2.1）。
   const existing = await store.allEvents();
@@ -265,7 +267,12 @@ export async function boot(doc = document, win = window) {
       medianRt,
       acceptAlternative,
       onAnswered,
-      presentOpts: (it) => presentOptsFor(it, { lex, sentenceMarks }),
+      presentOpts: (it) => ({
+        ...presentOptsFor(it, { lex, sentenceMarks }),
+        // 語音不可用時自動退回文字，不讓沒有日文語音的裝置卡在空白題幹。
+        listening: settings.listening && speaker.available(),
+        speak: (text) => speaker.speak(text),
+      }),
       flagItem,
       onDone: () => runSession(settings),
     });

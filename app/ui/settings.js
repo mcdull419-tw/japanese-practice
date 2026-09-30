@@ -14,6 +14,7 @@ export const DEFAULT_SETTINGS = {
   engines: Object.keys(ENGINE_LABELS),
   skills: [...SKILLS],
   sessionSize: 20,
+  listening: false,
 };
 
 const STORAGE_KEY = 'jp-practice-settings';
@@ -65,6 +66,9 @@ export function renderSettings(host, settings, onChange, deps = {}) {
       ${engineBoxes}
       <div class="group-title">練習技能</div>
       ${skillBoxes}
+      <div class="group-title">呈現</div>
+      <label><input id="listening" type="checkbox" ${settings.listening ? 'checked' : ''}>
+        聽力模式（題幹改為語音播放）</label>
       <label>每次題數
         <input id="sessionSize" type="number" min="1" max="100" value="${settings.sessionSize}">
       </label>
@@ -105,6 +109,7 @@ export function renderSettings(host, settings, onChange, deps = {}) {
       engines: engines.length ? engines : DEFAULT_SETTINGS.engines,
       skills: skills.length ? skills : DEFAULT_SETTINGS.skills,
       sessionSize,
+      listening: host.querySelector('#listening').checked,
     });
   };
 }

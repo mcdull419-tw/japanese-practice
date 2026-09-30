@@ -1,582 +1,649 @@
 {
-  "g:wa_desu": {
-    "label": "名詞は 名詞です",
-    "requires_lesson": 1,
-    "source_ref": "第1課 文法1",
-    "patterns": [
-      "L01-A1",
-      "L01-A6",
-      "L03-A6"
-    ]
-  },
-  "p:wa:topic": {
-    "label": "助詞 は（主題）",
-    "requires_lesson": 1,
-    "source_ref": "第1課 文法1"
-  },
-  "g:ja_arimasen": {
-    "label": "名詞は 名詞じゃ ありません",
-    "requires_lesson": 1,
-    "source_ref": "第1課 文法2",
-    "patterns": [
-      "L01-A2"
-    ]
-  },
-  "g:ka_question": {
-    "label": "句末 か（疑問句）",
-    "requires_lesson": 1,
-    "source_ref": "第1課 文法3",
-    "patterns": [
-      "L01-A3"
-    ]
-  },
-  "p:mo:also": {
-    "label": "助詞 も（也）",
-    "requires_lesson": 1,
-    "source_ref": "第1課 文法4",
-    "patterns": [
-      "L01-A4"
-    ]
-  },
-  "p:no:possessive": {
-    "label": "助詞 の（所屬）",
-    "requires_lesson": 1,
-    "source_ref": "第1課 文法5",
-    "patterns": [
-      "L01-A5",
-      "L02-A4"
-    ]
-  },
-  "g:kore_sore_are": {
-    "label": "これ／それ／あれ（指示代名詞）",
-    "requires_lesson": 2,
-    "source_ref": "第2課 文法1",
-    "patterns": [
-      "L02-A1"
-    ]
-  },
-  "g:kono_sono_ano": {
-    "label": "この／その／あの 名詞（指示連體詞）",
-    "requires_lesson": 2,
-    "source_ref": "第2課 文法2",
-    "patterns": [
-      "L02-A6"
-    ]
-  },
-  "g:sou_desu": {
-    "label": "そうです／そうじゃ ありません",
-    "requires_lesson": 2,
-    "source_ref": "第2課 文法3"
-  },
-  "g:ka_ka_choice": {
-    "label": "句子か、句子か（選擇疑問）",
-    "requires_lesson": 2,
-    "source_ref": "第2課 文法4",
-    "patterns": [
-      "L02-A2"
-    ]
-  },
-  "p:no:attribute": {
-    "label": "助詞 の（內容、屬性）",
-    "requires_lesson": 2,
-    "source_ref": "第2課 文法5",
-    "patterns": [
-      "L02-A3"
-    ]
-  },
-  "g:no_pronoun": {
-    "label": "名詞の（代替名詞的の）",
-    "requires_lesson": 2,
-    "source_ref": "第2課 文法5",
-    "patterns": [
-      "L02-A5"
-    ]
-  },
-  "g:koko_soko_asoko": {
-    "label": "ここ／そこ／あそこ／こちら（場所指示詞）",
-    "requires_lesson": 3,
-    "source_ref": "第3課 文法1",
-    "patterns": [
-      "L03-A1"
-    ]
-  },
-  "g:place_desu": {
-    "label": "名詞は 名詞（場所）です",
-    "requires_lesson": 3,
-    "source_ref": "第3課 文法2",
-    "patterns": [
-      "L03-A2",
-      "L03-A3",
-      "L03-A4"
-    ]
-  },
-  "p:no:origin": {
-    "label": "助詞 の（產地、製造者）",
-    "requires_lesson": 3,
-    "source_ref": "第3課 文法4",
-    "patterns": [
-      "L03-A5"
-    ]
-  },
-  "g:time_desu": {
-    "label": "今 …時…分です",
-    "requires_lesson": 4,
-    "source_ref": "第4課 文法1",
-    "patterns": [
-      "L04-A1"
-    ]
-  },
-  "g:masu_form": {
-    "label": "動詞ます（禮貌形）",
-    "requires_lesson": 4,
-    "source_ref": "第4課 文法2"
-  },
-  "g:masu_tense": {
-    "label": "ます／ません／ました／ませんでした（時態）",
-    "requires_lesson": 4,
-    "source_ref": "第4課 文法3",
-    "patterns": [
-      "L04-A6"
-    ]
-  },
-  "p:ni:time": {
-    "label": "助詞 に（時間點）",
-    "requires_lesson": 4,
-    "source_ref": "第4課 文法4",
-    "patterns": [
-      "L04-A5"
-    ]
-  },
-  "g:kara_made": {
-    "label": "名詞から 名詞まで（範圍）",
-    "requires_lesson": 4,
-    "source_ref": "第4課 文法5",
-    "patterns": [
-      "L04-A2",
-      "L04-A4"
-    ]
-  },
-  "p:kara:from": {
-    "label": "助詞 から（起點）",
-    "requires_lesson": 4,
-    "source_ref": "第4課 文法5"
-  },
-  "p:made:to": {
-    "label": "助詞 まで（終點）",
-    "requires_lesson": 4,
-    "source_ref": "第4課 文法5"
-  },
-  "p:to:and": {
-    "label": "助詞 と（名詞並列）",
-    "requires_lesson": 4,
-    "source_ref": "第4課 文法6",
-    "patterns": [
-      "L04-A3"
-    ]
-  },
-  "p:ne:agreement": {
-    "label": "句末 ね（確認、同感）",
-    "requires_lesson": 4,
-    "source_ref": "第4課 文法7"
-  },
-  "p:e:direction": {
-    "label": "助詞 へ（方向）",
-    "requires_lesson": 5,
-    "source_ref": "第5課 文法1",
-    "patterns": [
-      "L05-A1",
-      "L05-A4"
-    ]
-  },
-  "p:ni:destination": {
-    "label": "助詞 に（歸著點）",
-    "requires_lesson": 5,
-    "source_ref": "第5課 文法1"
-  },
-  "g:interrogative_mo_neg": {
-    "label": "疑問詞も＋否定（どこも／何も）",
-    "requires_lesson": 5,
-    "source_ref": "第5課 文法2",
-    "patterns": [
-      "L06-A2"
-    ]
-  },
-  "p:de:means": {
-    "label": "助詞 で（工具、手段、交通工具）",
-    "requires_lesson": 5,
-    "source_ref": "第5課 文法3",
-    "patterns": [
-      "L05-A2",
-      "L07-A1",
-      "L07-A2"
-    ]
-  },
-  "p:to:together": {
-    "label": "助詞 と（共同動作的對象）",
-    "requires_lesson": 5,
-    "source_ref": "第5課 文法4",
-    "patterns": [
-      "L05-A3"
-    ]
-  },
-  "p:yo:assertion": {
-    "label": "句末 よ（告知、強調）",
-    "requires_lesson": 5,
-    "source_ref": "第5課 文法6"
-  },
-  "p:wo:object": {
-    "label": "助詞 を（動作對象）",
-    "requires_lesson": 6,
-    "source_ref": "第6課 文法1",
-    "patterns": [
-      "L06-A1"
-    ]
-  },
-  "g:wo_shimasu": {
-    "label": "名詞を します",
-    "requires_lesson": 6,
-    "source_ref": "第6課 文法2"
-  },
-  "p:de:place": {
-    "label": "助詞 で（動作場所）",
-    "requires_lesson": 6,
-    "source_ref": "第6課 文法5",
-    "patterns": [
-      "L06-A3"
-    ]
-  },
-  "g:masenka": {
-    "label": "動詞ませんか（邀請）",
-    "requires_lesson": 6,
-    "source_ref": "第6課 文法6",
-    "patterns": [
-      "L06-A4"
-    ]
-  },
-  "g:mashou": {
-    "label": "動詞ましょう（提議）",
-    "requires_lesson": 6,
-    "source_ref": "第6課 文法7"
-  },
-  "g:go_de_nan_desu": {
-    "label": "～は ～語で 何ですか",
-    "requires_lesson": 7,
-    "source_ref": "第7課 文法2",
-    "patterns": [
-      "L07-A3"
-    ]
-  },
-  "p:ni:recipient": {
-    "label": "助詞 に（授予、動作的對象）",
-    "requires_lesson": 7,
-    "source_ref": "第7課 文法3",
-    "patterns": [
-      "L07-A4"
-    ]
-  },
-  "g:ageru": {
-    "label": "名詞（人）に あげます 等（給予）",
-    "requires_lesson": 7,
-    "source_ref": "第7課 文法3"
-  },
-  "p:ni:source": {
-    "label": "助詞 に（授受的來源）",
-    "requires_lesson": 7,
-    "source_ref": "第7課 文法4",
-    "patterns": [
-      "L07-A5"
-    ]
-  },
-  "p:kara:source": {
-    "label": "助詞 から（授受的來源）",
-    "requires_lesson": 7,
-    "source_ref": "第7課 文法4"
-  },
-  "g:morau": {
-    "label": "名詞（人）に もらいます 等（接受）",
-    "requires_lesson": 7,
-    "source_ref": "第7課 文法4"
-  },
-  "g:mou_mashita": {
-    "label": "もう 動詞ました",
-    "requires_lesson": 7,
-    "source_ref": "第7課 文法5",
-    "patterns": [
-      "L07-A6"
-    ]
-  },
-  "g:adj_predicate": {
-    "label": "名詞は 形容詞です（形容詞述語）",
-    "requires_lesson": 8,
-    "source_ref": "第8課 文法2",
-    "patterns": [
-      "L08-A1"
-    ]
-  },
-  "g:adj_modify": {
-    "label": "形容詞＋名詞（形容詞修飾名詞）",
-    "requires_lesson": 8,
-    "source_ref": "第8課 文法3",
-    "patterns": [
-      "L08-A3"
-    ]
-  },
-  "g:totemo_amari": {
-    "label": "とても／あまり（程度副詞）",
-    "requires_lesson": 8,
-    "source_ref": "第8課 文法4"
-  },
-  "g:dou_desu_ka": {
-    "label": "名詞は どうですか",
-    "requires_lesson": 8,
-    "source_ref": "第8課 文法5"
-  },
-  "g:donna": {
-    "label": "どんな 名詞",
-    "requires_lesson": 8,
-    "source_ref": "第8課 文法6"
-  },
-  "p:ga:but": {
-    "label": "接續 が（但是）",
-    "requires_lesson": 8,
-    "source_ref": "第8課 文法7"
-  },
-  "p:ga:subject": {
-    "label": "助詞 が（主語、好惡能力存在的對象）",
-    "requires_lesson": 9,
-    "source_ref": "第9課 文法1",
-    "patterns": [
-      "L09-A1",
-      "L09-A2",
-      "L09-A3",
-      "L09-A4"
-    ]
-  },
-  "g:degree_adverbs": {
-    "label": "よく／だいたい／たくさん／少し／あまり／全然",
-    "requires_lesson": 9,
-    "source_ref": "第9課 文法3"
-  },
-  "g:kara_reason": {
-    "label": "句子から、句子（原因）",
-    "requires_lesson": 9,
-    "source_ref": "第9課 文法4",
-    "patterns": [
-      "L09-A5"
-    ]
-  },
-  "g:arimasu_imasu": {
-    "label": "あります／います（存在）",
-    "requires_lesson": 10,
-    "source_ref": "第10課 文法1",
-    "patterns": [
-      "L10-A1",
-      "L10-A2"
-    ]
-  },
-  "p:ni:existence": {
-    "label": "助詞 に（存在的場所）",
-    "requires_lesson": 10,
-    "source_ref": "第10課 文法2"
-  },
-  "g:ni_ga_arimasu": {
-    "label": "名詞（場所）に 名詞が あります／います",
-    "requires_lesson": 10,
-    "source_ref": "第10課 文法2"
-  },
-  "g:wa_ni_arimasu": {
-    "label": "名詞は 名詞（場所）に あります／います",
-    "requires_lesson": 10,
-    "source_ref": "第10課 文法3",
-    "patterns": [
-      "L10-A4"
-    ]
-  },
-  "g:position": {
-    "label": "名詞の 上／下／中…（位置）",
-    "requires_lesson": 10,
-    "source_ref": "第10課 文法4",
-    "patterns": [
-      "L10-A3",
-      "L10-A5"
-    ]
-  },
-  "p:ya:examples": {
-    "label": "助詞 や（舉例並列）",
-    "requires_lesson": 10,
-    "source_ref": "第10課 文法5"
-  },
-  "g:quantity": {
-    "label": "數量詞的用法（數量、期間）",
-    "requires_lesson": 11,
-    "source_ref": "第11課 文法1",
-    "patterns": [
-      "L11-A1",
-      "L11-A2",
-      "L11-A3",
-      "L11-A5",
-      "L11-A6"
-    ]
-  },
-  "g:frequency": {
-    "label": "期間に 回（頻率）",
-    "requires_lesson": 11,
-    "source_ref": "第11課 文法2",
-    "patterns": [
-      "L11-A4"
-    ]
-  },
-  "p:ni:frequency": {
-    "label": "助詞 に（頻率的期間）",
-    "requires_lesson": 11,
-    "source_ref": "第11課 文法2"
-  },
-  "g:dake": {
-    "label": "～だけ（只有）",
-    "requires_lesson": 11,
-    "source_ref": "第11課 文法3"
-  },
-  "g:past_noun_na": {
-    "label": "名詞、な形容詞的過去式",
-    "requires_lesson": 12,
-    "source_ref": "第12課 文法1",
-    "patterns": [
-      "L12-A1"
-    ]
-  },
-  "g:past_iadj": {
-    "label": "い形容詞的過去式",
-    "requires_lesson": 12,
-    "source_ref": "第12課 文法2"
-  },
-  "g:yori": {
-    "label": "名詞は 名詞より 形容詞です（比較）",
-    "requires_lesson": 12,
-    "source_ref": "第12課 文法3",
-    "patterns": [
-      "L12-A4"
-    ]
-  },
-  "g:dochira_ga": {
-    "label": "名詞と 名詞と どちらが 形容詞ですか",
-    "requires_lesson": 12,
-    "source_ref": "第12課 文法4",
-    "patterns": [
-      "L12-A5"
-    ]
-  },
-  "g:ichiban": {
-    "label": "名詞で 何が いちばん 形容詞ですか（最高級）",
-    "requires_lesson": 12,
-    "source_ref": "第12課 文法5",
-    "patterns": [
-      "L12-A6"
-    ]
-  },
-  "p:de:scope": {
-    "label": "助詞 で（範圍）",
-    "requires_lesson": 12,
-    "source_ref": "第12課 文法5"
-  },
-  "g:hoshii": {
-    "label": "名詞が 欲しいです",
-    "requires_lesson": 13,
-    "source_ref": "第13課 文法1",
-    "patterns": [
-      "L13-A1"
-    ]
-  },
-  "g:tai": {
-    "label": "動詞ます形たいです",
-    "requires_lesson": 13,
-    "source_ref": "第13課 文法2",
-    "patterns": [
-      "L13-A2"
-    ]
-  },
-  "g:ni_ikimasu": {
-    "label": "名詞（地點）へ 動詞ます形／名詞に 行きます（目的）",
-    "requires_lesson": 13,
-    "source_ref": "第13課 文法3",
-    "patterns": [
-      "L13-A4"
-    ]
-  },
-  "p:ni:purpose": {
-    "label": "助詞 に（目的）",
-    "requires_lesson": 13,
-    "source_ref": "第13課 文法3"
-  },
-  "p:wo:leave": {
-    "label": "助詞 を（離開的場所）",
-    "requires_lesson": 13,
-    "source_ref": "第13課 文法4"
-  },
-  "g:dokoka_nanika": {
-    "label": "どこか／何か",
-    "requires_lesson": 13,
-    "source_ref": "第13課 文法5"
-  },
-  "g:te_form": {
-    "label": "動詞て形",
-    "requires_lesson": 14,
-    "source_ref": "第14課 文法3"
-  },
-  "g:te_kudasai": {
-    "label": "動詞て形 ください（請求）",
-    "requires_lesson": 14,
-    "source_ref": "第14課 文法4",
-    "patterns": [
-      "L14-A2",
-      "L14-A3"
-    ]
-  },
-  "g:te_imasu_progressive": {
-    "label": "動詞て形 います（正在進行）",
-    "requires_lesson": 14,
-    "source_ref": "第14課 文法5",
-    "patterns": [
-      "L14-A5"
-    ]
-  },
-  "g:mashou_ka": {
-    "label": "動詞ましょうか（提議幫忙）",
-    "requires_lesson": 14,
-    "source_ref": "第14課 文法6",
-    "patterns": [
-      "L14-A4"
-    ]
-  },
-  "g:te_mo_ii": {
-    "label": "動詞て形も いいです（許可）",
-    "requires_lesson": 15,
-    "source_ref": "第15課 文法1",
-    "patterns": [
-      "L15-A1"
-    ]
-  },
-  "g:te_wa_ikemasen": {
-    "label": "動詞て形は いけません（禁止）",
-    "requires_lesson": 15,
-    "source_ref": "第15課 文法2",
-    "patterns": [
-      "L15-A2"
-    ]
-  },
-  "g:te_imasu_state": {
-    "label": "動詞て形 います（狀態）",
-    "requires_lesson": 15,
-    "source_ref": "第15課 文法3",
-    "patterns": [
-      "L15-A3"
-    ]
-  },
-  "g:te_imasu_habit": {
-    "label": "動詞て形 います（習慣、職業）",
-    "requires_lesson": 15,
-    "source_ref": "第15課 文法4",
-    "patterns": [
-      "L15-A4"
-    ]
-  }
+ "g:wa_desu": {
+  "label": "名詞は 名詞です",
+  "requires_lesson": 1,
+  "source_ref": "第1課 文法1",
+  "patterns": [
+   "L01-A1",
+   "L01-A6",
+   "L03-A6"
+  ]
+ },
+ "p:wa:topic": {
+  "label": "助詞 は（主題）",
+  "requires_lesson": 1,
+  "source_ref": "第1課 文法1"
+ },
+ "g:ja_arimasen": {
+  "label": "名詞は 名詞じゃ ありません",
+  "requires_lesson": 1,
+  "source_ref": "第1課 文法2",
+  "patterns": [
+   "L01-A2",
+   "L01-B3"
+  ]
+ },
+ "g:ka_question": {
+  "label": "句末 か（疑問句）",
+  "requires_lesson": 1,
+  "source_ref": "第1課 文法3",
+  "patterns": [
+   "L01-A3",
+   "L01-B4"
+  ]
+ },
+ "p:mo:also": {
+  "label": "助詞 も（也）",
+  "requires_lesson": 1,
+  "source_ref": "第1課 文法4",
+  "patterns": [
+   "L01-A4"
+  ]
+ },
+ "p:no:possessive": {
+  "label": "助詞 の（所屬）",
+  "requires_lesson": 1,
+  "source_ref": "第1課 文法5",
+  "patterns": [
+   "L01-A5",
+   "L02-A4"
+  ]
+ },
+ "g:kore_sore_are": {
+  "label": "これ／それ／あれ（指示代名詞）",
+  "requires_lesson": 2,
+  "source_ref": "第2課 文法1",
+  "patterns": [
+   "L02-A1"
+  ]
+ },
+ "g:kono_sono_ano": {
+  "label": "この／その／あの 名詞（指示連體詞）",
+  "requires_lesson": 2,
+  "source_ref": "第2課 文法2",
+  "patterns": [
+   "L02-A6"
+  ]
+ },
+ "g:sou_desu": {
+  "label": "そうです／そうじゃ ありません",
+  "requires_lesson": 2,
+  "source_ref": "第2課 文法3"
+ },
+ "g:ka_ka_choice": {
+  "label": "句子か、句子か（選擇疑問）",
+  "requires_lesson": 2,
+  "source_ref": "第2課 文法4",
+  "patterns": [
+   "L02-A2",
+   "L02-B4"
+  ]
+ },
+ "p:no:attribute": {
+  "label": "助詞 の（內容、屬性）",
+  "requires_lesson": 2,
+  "source_ref": "第2課 文法5",
+  "patterns": [
+   "L02-A3"
+  ]
+ },
+ "g:no_pronoun": {
+  "label": "名詞の（代替名詞的の）",
+  "requires_lesson": 2,
+  "source_ref": "第2課 文法5",
+  "patterns": [
+   "L02-A5"
+  ]
+ },
+ "g:koko_soko_asoko": {
+  "label": "ここ／そこ／あそこ／こちら（場所指示詞）",
+  "requires_lesson": 3,
+  "source_ref": "第3課 文法1",
+  "patterns": [
+   "L03-A1",
+   "L03-B4"
+  ]
+ },
+ "g:place_desu": {
+  "label": "名詞は 名詞（場所）です",
+  "requires_lesson": 3,
+  "source_ref": "第3課 文法2",
+  "patterns": [
+   "L03-A2",
+   "L03-A3",
+   "L03-A4",
+   "L03-B3"
+  ]
+ },
+ "p:no:origin": {
+  "label": "助詞 の（產地、製造者）",
+  "requires_lesson": 3,
+  "source_ref": "第3課 文法4",
+  "patterns": [
+   "L03-A5"
+  ]
+ },
+ "g:time_desu": {
+  "label": "今 …時…分です",
+  "requires_lesson": 4,
+  "source_ref": "第4課 文法1",
+  "patterns": [
+   "L04-A1"
+  ]
+ },
+ "g:masu_form": {
+  "label": "動詞ます（禮貌形）",
+  "requires_lesson": 4,
+  "source_ref": "第4課 文法2"
+ },
+ "g:masu_tense": {
+  "label": "ます／ません／ました／ませんでした（時態）",
+  "requires_lesson": 4,
+  "source_ref": "第4課 文法3",
+  "patterns": [
+   "L04-A6",
+   "L04-B6",
+   "L04-B7",
+   "L06-B2"
+  ]
+ },
+ "p:ni:time": {
+  "label": "助詞 に（時間點）",
+  "requires_lesson": 4,
+  "source_ref": "第4課 文法4",
+  "patterns": [
+   "L04-A5",
+   "L04-B8",
+   "L05-B5"
+  ]
+ },
+ "g:kara_made": {
+  "label": "名詞から 名詞まで（範圍）",
+  "requires_lesson": 4,
+  "source_ref": "第4課 文法5",
+  "patterns": [
+   "L04-A2",
+   "L04-A4",
+   "L04-B3",
+   "L04-B4"
+  ]
+ },
+ "p:kara:from": {
+  "label": "助詞 から（起點）",
+  "requires_lesson": 4,
+  "source_ref": "第4課 文法5"
+ },
+ "p:made:to": {
+  "label": "助詞 まで（終點）",
+  "requires_lesson": 4,
+  "source_ref": "第4課 文法5"
+ },
+ "p:to:and": {
+  "label": "助詞 と（名詞並列）",
+  "requires_lesson": 4,
+  "source_ref": "第4課 文法6",
+  "patterns": [
+   "L04-A3"
+  ]
+ },
+ "p:ne:agreement": {
+  "label": "句末 ね（確認、同感）",
+  "requires_lesson": 4,
+  "source_ref": "第4課 文法7"
+ },
+ "p:e:direction": {
+  "label": "助詞 へ（方向）",
+  "requires_lesson": 5,
+  "source_ref": "第5課 文法1",
+  "patterns": [
+   "L05-A1",
+   "L05-A4",
+   "L05-B6"
+  ]
+ },
+ "p:ni:destination": {
+  "label": "助詞 に（歸著點）",
+  "requires_lesson": 5,
+  "source_ref": "第5課 文法1"
+ },
+ "g:interrogative_mo_neg": {
+  "label": "疑問詞も＋否定（どこも／何も）",
+  "requires_lesson": 5,
+  "source_ref": "第5課 文法2",
+  "patterns": [
+   "L06-A2"
+  ]
+ },
+ "p:de:means": {
+  "label": "助詞 で（工具、手段、交通工具）",
+  "requires_lesson": 5,
+  "source_ref": "第5課 文法3",
+  "patterns": [
+   "L05-A2",
+   "L07-A1",
+   "L07-A2"
+  ]
+ },
+ "p:to:together": {
+  "label": "助詞 と（共同動作的對象）",
+  "requires_lesson": 5,
+  "source_ref": "第5課 文法4",
+  "patterns": [
+   "L05-A3",
+   "L05-B4"
+  ]
+ },
+ "p:yo:assertion": {
+  "label": "句末 よ（告知、強調）",
+  "requires_lesson": 5,
+  "source_ref": "第5課 文法6"
+ },
+ "p:wo:object": {
+  "label": "助詞 を（動作對象）",
+  "requires_lesson": 6,
+  "source_ref": "第6課 文法1",
+  "patterns": [
+   "L06-A1",
+   "L06-B3"
+  ]
+ },
+ "g:wo_shimasu": {
+  "label": "名詞を します",
+  "requires_lesson": 6,
+  "source_ref": "第6課 文法2",
+  "patterns": [
+   "L06-B6"
+  ]
+ },
+ "p:de:place": {
+  "label": "助詞 で（動作場所）",
+  "requires_lesson": 6,
+  "source_ref": "第6課 文法5",
+  "patterns": [
+   "L06-A3",
+   "L06-B5"
+  ]
+ },
+ "g:masenka": {
+  "label": "動詞ませんか（邀請）",
+  "requires_lesson": 6,
+  "source_ref": "第6課 文法6",
+  "patterns": [
+   "L06-A4"
+  ]
+ },
+ "g:mashou": {
+  "label": "動詞ましょう（提議）",
+  "requires_lesson": 6,
+  "source_ref": "第6課 文法7"
+ },
+ "g:go_de_nan_desu": {
+  "label": "～は ～語で 何ですか",
+  "requires_lesson": 7,
+  "source_ref": "第7課 文法2",
+  "patterns": [
+   "L07-A3"
+  ]
+ },
+ "p:ni:recipient": {
+  "label": "助詞 に（授予、動作的對象）",
+  "requires_lesson": 7,
+  "source_ref": "第7課 文法3",
+  "patterns": [
+   "L07-A4"
+  ]
+ },
+ "g:ageru": {
+  "label": "名詞（人）に あげます 等（給予）",
+  "requires_lesson": 7,
+  "source_ref": "第7課 文法3",
+  "patterns": [
+   "L07-B6"
+  ]
+ },
+ "p:ni:source": {
+  "label": "助詞 に（授受的來源）",
+  "requires_lesson": 7,
+  "source_ref": "第7課 文法4",
+  "patterns": [
+   "L07-A5"
+  ]
+ },
+ "p:kara:source": {
+  "label": "助詞 から（授受的來源）",
+  "requires_lesson": 7,
+  "source_ref": "第7課 文法4"
+ },
+ "g:morau": {
+  "label": "名詞（人）に もらいます 等（接受）",
+  "requires_lesson": 7,
+  "source_ref": "第7課 文法4"
+ },
+ "g:mou_mashita": {
+  "label": "もう 動詞ました",
+  "requires_lesson": 7,
+  "source_ref": "第7課 文法5",
+  "patterns": [
+   "L07-A6",
+   "L07-B7"
+  ]
+ },
+ "g:adj_predicate": {
+  "label": "名詞は 形容詞です（形容詞述語）",
+  "requires_lesson": 8,
+  "source_ref": "第8課 文法2",
+  "patterns": [
+   "L08-A1",
+   "L08-B2"
+  ]
+ },
+ "g:adj_modify": {
+  "label": "形容詞＋名詞（形容詞修飾名詞）",
+  "requires_lesson": 8,
+  "source_ref": "第8課 文法3",
+  "patterns": [
+   "L08-A3",
+   "L08-B5",
+   "L08-B7",
+   "L08-B8"
+  ]
+ },
+ "g:totemo_amari": {
+  "label": "とても／あまり（程度副詞）",
+  "requires_lesson": 8,
+  "source_ref": "第8課 文法4",
+  "patterns": [
+   "L08-B3"
+  ]
+ },
+ "g:dou_desu_ka": {
+  "label": "名詞は どうですか",
+  "requires_lesson": 8,
+  "source_ref": "第8課 文法5",
+  "patterns": [
+   "L12-B4"
+  ]
+ },
+ "g:donna": {
+  "label": "どんな 名詞",
+  "requires_lesson": 8,
+  "source_ref": "第8課 文法6",
+  "patterns": [
+   "L08-B6"
+  ]
+ },
+ "p:ga:but": {
+  "label": "接續 が（但是）",
+  "requires_lesson": 8,
+  "source_ref": "第8課 文法7",
+  "patterns": [
+   "L08-B4"
+  ]
+ },
+ "p:ga:subject": {
+  "label": "助詞 が（主語、好惡能力存在的對象）",
+  "requires_lesson": 9,
+  "source_ref": "第9課 文法1",
+  "patterns": [
+   "L09-A1",
+   "L09-A2",
+   "L09-A3",
+   "L09-A4",
+   "L09-B1"
+  ]
+ },
+ "g:degree_adverbs": {
+  "label": "よく／だいたい／たくさん／少し／あまり／全然",
+  "requires_lesson": 9,
+  "source_ref": "第9課 文法3",
+  "patterns": [
+   "L09-B4"
+  ]
+ },
+ "g:kara_reason": {
+  "label": "句子から、句子（原因）",
+  "requires_lesson": 9,
+  "source_ref": "第9課 文法4",
+  "patterns": [
+   "L09-A5",
+   "L09-B7"
+  ]
+ },
+ "g:arimasu_imasu": {
+  "label": "あります／います（存在）",
+  "requires_lesson": 10,
+  "source_ref": "第10課 文法1",
+  "patterns": [
+   "L10-A1",
+   "L10-A2",
+   "L10-B2"
+  ]
+ },
+ "p:ni:existence": {
+  "label": "助詞 に（存在的場所）",
+  "requires_lesson": 10,
+  "source_ref": "第10課 文法2"
+ },
+ "g:ni_ga_arimasu": {
+  "label": "名詞（場所）に 名詞が あります／います",
+  "requires_lesson": 10,
+  "source_ref": "第10課 文法2"
+ },
+ "g:wa_ni_arimasu": {
+  "label": "名詞は 名詞（場所）に あります／います",
+  "requires_lesson": 10,
+  "source_ref": "第10課 文法3",
+  "patterns": [
+   "L10-A4"
+  ]
+ },
+ "g:position": {
+  "label": "名詞の 上／下／中…（位置）",
+  "requires_lesson": 10,
+  "source_ref": "第10課 文法4",
+  "patterns": [
+   "L10-A3",
+   "L10-A5"
+  ]
+ },
+ "p:ya:examples": {
+  "label": "助詞 や（舉例並列）",
+  "requires_lesson": 10,
+  "source_ref": "第10課 文法5"
+ },
+ "g:quantity": {
+  "label": "數量詞的用法（數量、期間）",
+  "requires_lesson": 11,
+  "source_ref": "第11課 文法1",
+  "patterns": [
+   "L11-A1",
+   "L11-A2",
+   "L11-A3",
+   "L11-A5",
+   "L11-A6",
+   "L11-B6",
+   "L11-B7"
+  ]
+ },
+ "g:frequency": {
+  "label": "期間に 回（頻率）",
+  "requires_lesson": 11,
+  "source_ref": "第11課 文法2",
+  "patterns": [
+   "L11-A4",
+   "L11-B5"
+  ]
+ },
+ "p:ni:frequency": {
+  "label": "助詞 に（頻率的期間）",
+  "requires_lesson": 11,
+  "source_ref": "第11課 文法2"
+ },
+ "g:dake": {
+  "label": "～だけ（只有）",
+  "requires_lesson": 11,
+  "source_ref": "第11課 文法3"
+ },
+ "g:past_noun_na": {
+  "label": "名詞、な形容詞的過去式",
+  "requires_lesson": 12,
+  "source_ref": "第12課 文法1",
+  "patterns": [
+   "L12-A1",
+   "L12-B2"
+  ]
+ },
+ "g:past_iadj": {
+  "label": "い形容詞的過去式",
+  "requires_lesson": 12,
+  "source_ref": "第12課 文法2",
+  "patterns": [
+   "L12-B1",
+   "L12-B3"
+  ]
+ },
+ "g:yori": {
+  "label": "名詞は 名詞より 形容詞です（比較）",
+  "requires_lesson": 12,
+  "source_ref": "第12課 文法3",
+  "patterns": [
+   "L12-A4",
+   "L12-B5"
+  ]
+ },
+ "g:dochira_ga": {
+  "label": "名詞と 名詞と どちらが 形容詞ですか",
+  "requires_lesson": 12,
+  "source_ref": "第12課 文法4",
+  "patterns": [
+   "L12-A5",
+   "L12-B6"
+  ]
+ },
+ "g:ichiban": {
+  "label": "名詞で 何が いちばん 形容詞ですか（最高級）",
+  "requires_lesson": 12,
+  "source_ref": "第12課 文法5",
+  "patterns": [
+   "L12-A6"
+  ]
+ },
+ "p:de:scope": {
+  "label": "助詞 で（範圍）",
+  "requires_lesson": 12,
+  "source_ref": "第12課 文法5"
+ },
+ "g:hoshii": {
+  "label": "名詞が 欲しいです",
+  "requires_lesson": 13,
+  "source_ref": "第13課 文法1",
+  "patterns": [
+   "L13-A1",
+   "L13-B2"
+  ]
+ },
+ "g:tai": {
+  "label": "動詞ます形たいです",
+  "requires_lesson": 13,
+  "source_ref": "第13課 文法2",
+  "patterns": [
+   "L13-A2",
+   "L13-B4"
+  ]
+ },
+ "g:ni_ikimasu": {
+  "label": "名詞（地點）へ 動詞ます形／名詞に 行きます（目的）",
+  "requires_lesson": 13,
+  "source_ref": "第13課 文法3",
+  "patterns": [
+   "L13-A4",
+   "L13-B6",
+   "L13-B7",
+   "L13-B8"
+  ]
+ },
+ "p:ni:purpose": {
+  "label": "助詞 に（目的）",
+  "requires_lesson": 13,
+  "source_ref": "第13課 文法3"
+ },
+ "p:wo:leave": {
+  "label": "助詞 を（離開的場所）",
+  "requires_lesson": 13,
+  "source_ref": "第13課 文法4"
+ },
+ "g:dokoka_nanika": {
+  "label": "どこか／何か",
+  "requires_lesson": 13,
+  "source_ref": "第13課 文法5"
+ },
+ "g:te_form": {
+  "label": "動詞て形",
+  "requires_lesson": 14,
+  "source_ref": "第14課 文法3"
+ },
+ "g:te_kudasai": {
+  "label": "動詞て形 ください（請求）",
+  "requires_lesson": 14,
+  "source_ref": "第14課 文法4",
+  "patterns": [
+   "L14-A2",
+   "L14-A3",
+   "L14-B2"
+  ]
+ },
+ "g:te_imasu_progressive": {
+  "label": "動詞て形 います（正在進行）",
+  "requires_lesson": 14,
+  "source_ref": "第14課 文法5",
+  "patterns": [
+   "L14-A5"
+  ]
+ },
+ "g:mashou_ka": {
+  "label": "動詞ましょうか（提議幫忙）",
+  "requires_lesson": 14,
+  "source_ref": "第14課 文法6",
+  "patterns": [
+   "L14-A4",
+   "L14-B3",
+   "L14-B4"
+  ]
+ },
+ "g:te_mo_ii": {
+  "label": "動詞て形も いいです（許可）",
+  "requires_lesson": 15,
+  "source_ref": "第15課 文法1",
+  "patterns": [
+   "L15-A1",
+   "L15-B1"
+  ]
+ },
+ "g:te_wa_ikemasen": {
+  "label": "動詞て形は いけません（禁止）",
+  "requires_lesson": 15,
+  "source_ref": "第15課 文法2",
+  "patterns": [
+   "L15-A2"
+  ]
+ },
+ "g:te_imasu_state": {
+  "label": "動詞て形 います（狀態）",
+  "requires_lesson": 15,
+  "source_ref": "第15課 文法3",
+  "patterns": [
+   "L15-A3",
+   "L15-B4"
+  ]
+ },
+ "g:te_imasu_habit": {
+  "label": "動詞て形 います（習慣、職業）",
+  "requires_lesson": 15,
+  "source_ref": "第15課 文法4",
+  "patterns": [
+   "L15-A4",
+   "L15-B5",
+   "L15-B6"
+  ]
+ }
 }

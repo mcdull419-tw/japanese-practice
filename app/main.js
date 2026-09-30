@@ -10,6 +10,7 @@ import * as transform from './generators/transform.js';
 import * as substitute from './generators/substitute.js';
 import * as cloze from './generators/cloze.js';
 import * as quantity from './generators/quantity.js';
+import * as drillGen from './generators/drills.js';
 import { conceptsByPattern } from './core/conceptdefs.js';
 import { openStore, makeEvent, userAlternativesFrom } from './core/store.js';
 import { replay } from './core/srs.js';
@@ -117,7 +118,8 @@ export async function boot(doc = document, win = window) {
     // 課次範圍只需載入到 maxLesson（動詞表本身是全量的 71 筆，不受課次範圍影響，
     // 而 requires_lesson 的過濾才是決定哪些題目可用的關鍵，見下方 filter）。
     const lessonNumbers = [...Array(settings.maxLesson)].map((_, i) => i + 1);
-    const [lessonsMap, verbsTable, adjTable, conceptDefs, particleMarks, rubyJson] =
+    const [lessonsMap, verbsTable, adjTable, conceptDefs, particleMarks, rubyJson,
+      drillsJson] =
       await Promise.all([
         loadLessons(lessonNumbers, fetchLesson),
         fetchVerbs(),
@@ -125,6 +127,7 @@ export async function boot(doc = document, win = window) {
         fetchJson('data/concepts.json'),
         fetchJson('data/particles.json'),
         fetchJson('data/ruby-lexicon.json'),
+        fetchJson('data/drills.json'),
       ]);
     const idx = buildIndex(lessonsMap);
     const lex = buildLexicon(rubyJson);
@@ -145,7 +148,11 @@ export async function boot(doc = document, win = window) {
       allItems.push(...transform.generate(idx.vocab, verbsTable, adjTable));
     }
     if (settings.engines.includes('substitute')) {
-      allItems.push(...substitute.generate(idx.patterns, conceptsByPattern(conceptDefs)));
+      const byPattern = conceptsByPattern(conceptDefs);
+      allItems.push(...substitute.generate(idx.patterns, byPattern));
+      // 練習Ｂ 的素材結構與練習Ａ 不同（逐列人工書寫，非代入表，見規格 §13
+      // 決定 11），故走自己的生成器；作答形式相同，仍是 substitute 引擎。
+      allItems.push(...drillGen.generate(drillsJson, byPattern));
     }
     if (settings.engines.includes('cloze')) {
       allItems.push(...cloze.generate(idx.sentences, particleMarks, idx.vocab));

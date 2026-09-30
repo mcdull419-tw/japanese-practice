@@ -50,6 +50,10 @@ test('patterns 反查表的每個 pattern id 都真的存在於課本資料中',
     const d = JSON.parse(readFileSync(new URL(`../../data/lessons/${String(n).padStart(2, '0')}.json`, import.meta.url)));
     for (const p of d.patterns || []) real.add(p.id);
   }
+  // 練習Ｂ（data/drills.json）也走同一張反查表——它與練習Ａ 的素材結構不同，
+  // 但「這則練習考哪個概念」的對應關係是同一件事，不另立第二份對照表。
+  const drills = JSON.parse(readFileSync(new URL('../../data/drills.json', import.meta.url)));
+  for (const id of Object.keys(drills)) real.add(id);
   for (const [id, d] of Object.entries(defs)) {
     for (const pid of d.patterns || []) {
       assert.ok(real.has(pid), `概念 ${id} 引用了不存在的代入表 ${pid}`);

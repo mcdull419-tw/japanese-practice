@@ -12,7 +12,9 @@ import * as cloze from './generators/cloze.js';
 import * as quantity from './generators/quantity.js';
 import * as drillGen from './generators/drills.js';
 import { conceptsByPattern } from './core/conceptdefs.js';
-import { openStore, makeEvent, userAlternativesFrom } from './core/store.js';
+import { openStore, makeEvent, makeFlagEvent, userAlternativesFrom, flaggedFrom }
+  from './core/store.js';
+import { exportFlagged, applyCorrections } from './core/corrections.js';
 import { replay } from './core/srs.js';
 import { pickItems } from './core/scheduler.js';
 import { aggregateSkills } from './core/concepts.js';
@@ -119,7 +121,7 @@ export async function boot(doc = document, win = window) {
     // 而 requires_lesson 的過濾才是決定哪些題目可用的關鍵，見下方 filter）。
     const lessonNumbers = [...Array(settings.maxLesson)].map((_, i) => i + 1);
     const [lessonsMap, verbsTable, adjTable, conceptDefs, particleMarks, rubyJson,
-      drillsJson] =
+      drillsJson, correctionsJson] =
       await Promise.all([
         loadLessons(lessonNumbers, fetchLesson),
         fetchVerbs(),
@@ -128,6 +130,7 @@ export async function boot(doc = document, win = window) {
         fetchJson('data/particles.json'),
         fetchJson('data/ruby-lexicon.json'),
         fetchJson('data/drills.json'),
+        fetchJson('data/corrections.json').catch(() => ({})),
       ]);
     const idx = buildIndex(lessonsMap);
     const lex = buildLexicon(rubyJson);
@@ -165,7 +168,10 @@ export async function boot(doc = document, win = window) {
 
     // 規格 §9.2.1：自訂答案由事件日誌重建，不讀 localStorage。
     const userAlts = userAlternativesFrom(events);
-    const items = allItems
+    // 題庫更正先套（靜態檔，記的是題庫本身錯了），使用者的自訂答案後套，
+    // 兩者疊加而非互相取代（規格 §9.2.1）。
+    const correctedItems = applyCorrections(allItems, correctionsJson);
+    const items = correctedItems
       .filter((it) => it.lesson >= settings.minLesson
         && it.requires_lesson <= settings.maxLesson
         && (it.skills || []).some((s) => settings.skills.includes(s)))
@@ -239,6 +245,17 @@ export async function boot(doc = document, win = window) {
       onAnswered(ev);
     }
 
+    /** 「這題怪怪的」：補記一筆 flag 事件。必須 await，理由同 acceptAlternative。 */
+    async function flagItem(itemId) {
+      const ev = makeFlagEvent(deviceId, nextSeq(), itemId, Math.floor(Date.now() / 1000));
+      await store.appendEvents([ev]);
+      events.push(ev);
+    }
+
+    // 待確認清單掛在 window 上供設定區的匯出鈕取用：題庫是每輪重新展開的，
+    // 匯出時需要的是「這一輪的 itemsById」，不是模組載入時的快照。
+    win.__jpExportFlagged = () => exportFlagged(flaggedFrom(events), itemsById);
+
     renderSession(sessionHost, {
       items: sessionItems,
       store,
@@ -249,6 +266,7 @@ export async function boot(doc = document, win = window) {
       acceptAlternative,
       onAnswered,
       presentOpts: (it) => presentOptsFor(it, { lex, sentenceMarks }),
+      flagItem,
       onDone: () => runSession(settings),
     });
   }
@@ -257,6 +275,10 @@ export async function boot(doc = document, win = window) {
   renderSettings(settingsHost, settings, (newSettings) => {
     saveSettings(win.localStorage, newSettings);
     runSession(newSettings);
+  }, {
+    // 每輪練習會重建題庫，因此這裡取的是「當下那一輪」的匯出函式，
+    // 不是模組載入時的快照。
+    exportFlagged: () => (win.__jpExportFlagged ? win.__jpExportFlagged() : []),
   });
 
   await runSession(settings);

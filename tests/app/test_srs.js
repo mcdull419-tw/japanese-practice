@@ -100,3 +100,21 @@ test('舊事件（{d,n,i,t,g,r,m} 格式）可直接餵進新的 replay，不拋
 test('SRS_CONST.HISTORY_WINDOW 為具名常數，非散落的魔術數字', () => {
   assert.equal(SRS_CONST.HISTORY_WINDOW, 10);
 });
+
+// ── 標記事件不得影響熟悉度與排程 ─────────────────────────────
+import { makeFlagEvent } from '../../app/core/store.js';
+
+test('重放略過 flag 事件：不算複習、不動 A、不更新 lastSec', () => {
+  const items = new Map([['x', { id: 'x', covers: ['w:A'] }]]);
+  const answered = [{ d: 'd', n: 1, i: 'x', t: 100, g: 3, r: 10, m: 'text' }];
+  const withFlag = [...answered, makeFlagEvent('d', 2, 'x', 999)];
+
+  const a = replay(answered, 1000, items);
+  const b = replay(withFlag, 1000, items);
+
+  assert.equal(b.itemStates.get('x').reps, a.itemStates.get('x').reps,
+    'flag 不該被算成一次複習');
+  assert.equal(b.itemStates.get('x').lastSec, 100,
+    'flag 不該更新 lastSec——否則標記題目反而讓它更少出現');
+  assert.equal(b.conceptStates.get('w:A').A, a.conceptStates.get('w:A').A);
+});

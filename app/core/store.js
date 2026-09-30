@@ -21,6 +21,27 @@ export function makeEvent(deviceId, seq, itemId, grade, rtMs, mode, nowSec, alt)
 }
 
 /**
+ * 「這題怪怪的」標記。與作答事件同一個日誌（因此匯出、同步都自動帶著走），
+ * 以 m='flag' 區分——重放時略過，不影響任何熟悉度計算（見 srs.js 的 replay）。
+ *
+ * g 與 r 補 0 只是為了讓事件形狀一致；這兩個欄位對標記沒有意義。
+ */
+export function makeFlagEvent(deviceId, seq, itemId, nowSec) {
+  return { d: deviceId, n: seq, i: itemId, t: nowSec, g: 0, r: 0, m: 'flag' };
+}
+
+/** 從事件日誌重建「被標記過的題目 → 最後一次標記的時戳」。 */
+export function flaggedFrom(events) {
+  const out = new Map();
+  for (const e of events) {
+    if (e.m !== 'flag') continue;
+    const prev = out.get(e.i);
+    if (prev == null || e.t > prev) out.set(e.i, e.t);
+  }
+  return out;
+}
+
+/**
  * 規格 §9.2.1／§10.1：從事件日誌重建每題的自訂 alternatives。
  *
  * 使用者認可的寫法是事件的一部分（欄位 `a`），不存 localStorage——localStorage

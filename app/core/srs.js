@@ -53,6 +53,11 @@ export function replay(events, nowSec, itemsById = new Map()) {
   const queues = new Map(); // conceptId -> { history: boolean[]（先進先出，最多 10 筆）, reps }
 
   for (const ev of sorted) {
+    // 「這題怪怪的」標記與作答無關：它不是一次複習，計進去會讓被標記的題目
+    // 看起來剛練過（ΔT 歸零）而被排到後面——標記題目反而讓它更少出現，
+    // 與標記的用意完全相反。
+    if (ev.m === 'flag') continue;
+
     const prevItem = itemStates.get(ev.i);
     itemStates.set(ev.i, { lastSec: ev.t, reps: (prevItem?.reps ?? 0) + 1 });
 

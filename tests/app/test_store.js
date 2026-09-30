@@ -50,3 +50,27 @@ test('匯出後匯入還原（含去重，不會因重複匯入而膨脹）', as
   await s.importJSON(json);
   assert.equal((await s.allEvents()).length, 1, '重複匯入不得產生重複事件');
 });
+
+// ── 「這題怪怪的」標記（題庫更正迴路的第一步）──────────────────
+import { makeFlagEvent, flaggedFrom } from '../../app/core/store.js';
+
+test('makeFlagEvent 產生 m=flag 的事件', () => {
+  const ev = makeFlagEvent('devA', 7, 'drill:L08-B2:1', 1700000000);
+  assert.equal(ev.m, 'flag');
+  assert.equal(ev.i, 'drill:L08-B2:1');
+  assert.equal(ev.d, 'devA');
+  assert.equal(ev.n, 7);
+});
+
+test('flaggedFrom 取每題最後一次標記的時戳', () => {
+  const evs = [
+    makeFlagEvent('d', 1, 'x', 100),
+    makeFlagEvent('d', 2, 'y', 200),
+    makeFlagEvent('d', 3, 'x', 300),
+    { d: 'd', n: 4, i: 'z', t: 400, g: 3, r: 10, m: 'text' },
+  ];
+  const f = flaggedFrom(evs);
+  assert.equal(f.get('x'), 300);
+  assert.equal(f.get('y'), 200);
+  assert.equal(f.has('z'), false, '一般作答事件不該被當成標記');
+});

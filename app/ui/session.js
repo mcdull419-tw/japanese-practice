@@ -56,6 +56,7 @@ export function renderSession(host, deps) {
       <div class="answer">正解：${escapeHtml(it.answer)}</div>
       <div class="source">出處：${escapeHtml(it.source_ref)}</div>
       ${correct || it.choices ? '' : '<button id="also-ok">我這樣寫也對</button>'}
+      <button id="flag">這題怪怪的</button>
       <button id="next">下一題</button>`;
 
     let advanced = false;
@@ -95,6 +96,17 @@ export function renderSession(host, deps) {
       host.removeEventListener('keydown', onKeydown);
       goNext();
     });
+
+    // 題庫更正迴路的入口：標記可疑題目，之後從設定區匯出查證。
+    // 這一筆不影響 SRS（srs.js 的 replay 會略過 m='flag' 的事件）。
+    const flagBtn = host.querySelector('#flag');
+    if (flagBtn) {
+      flagBtn.onclick = async () => {
+        flagBtn.disabled = true;
+        await deps.flagItem(it.id);
+        flagBtn.textContent = '已標記待確認';
+      };
+    }
 
     const alsoOk = host.querySelector('#also-ok');
     if (alsoOk) {

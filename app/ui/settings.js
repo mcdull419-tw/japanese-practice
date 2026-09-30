@@ -44,7 +44,7 @@ function clampLesson(v, fallback) {
   return Math.min(15, Math.max(1, n));
 }
 
-export function renderSettings(host, settings, onChange) {
+export function renderSettings(host, settings, onChange, deps = {}) {
   const engineBoxes = Object.entries(ENGINE_LABELS).map(([id, label]) =>
     `<label><input id="eng-${id}" type="checkbox" ${settings.engines.includes(id) ? 'checked' : ''}> ${label}</label>`
   ).join('');
@@ -69,7 +69,27 @@ export function renderSettings(host, settings, onChange) {
         <input id="sessionSize" type="number" min="1" max="100" value="${settings.sessionSize}">
       </label>
       <button id="apply">套用並開始新的一組</button>
+      <button id="export-flagged">匯出待確認題目</button>
+      <textarea id="flagged-out" rows="8" hidden readonly></textarea>
     </div>`;
+
+  /**
+   * 匯出「這題怪怪的」標記過的題目。輸出到 textarea 而不是觸發下載：
+   * 這個網站要能離線用（PWA），而沙箱環境對程式觸發的下載限制不一，
+   * 顯示出來讓使用者自行複製最可靠，也方便直接貼給別的工具查證。
+   */
+  const exportBtn = host.querySelector('#export-flagged');
+  if (exportBtn) {
+    exportBtn.onclick = () => {
+      const out = host.querySelector('#flagged-out');
+      const rows = typeof deps.exportFlagged === 'function' ? deps.exportFlagged() : [];
+      out.value = rows.length
+        ? JSON.stringify(rows, null, 1)
+        : '目前沒有標記為待確認的題目。';
+      out.hidden = false;
+      out.select?.();
+    };
+  }
 
   host.querySelector('#apply').onclick = () => {
     const min = clampLesson(host.querySelector('#minLesson').value, DEFAULT_SETTINGS.minLesson);

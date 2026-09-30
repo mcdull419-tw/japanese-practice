@@ -16,6 +16,7 @@ OUT = ROOT / "data/ruby-lexicon.json"
 
 
 KANJI = re.compile(r"[\u4e00-\u9fff]")
+KANA = re.compile(r"[\u3040-\u30ff]")
 
 
 def collect():
@@ -29,7 +30,9 @@ def collect():
                 # 一是 annotateWithLexicon 只掃漢字段，數字永遠匹配不到，收了也是死條目；
                 # 二是數字讀音高度依賴後接的量詞（3つ みっつ／3人 さんにん／3階 さんがい），
                 # 用詞典硬套必錯。數量的讀音由 lang/numbers.js 與 counters.js 負責。
-                if base and kana and KANJI.search(base):
+                # base 夾著假名者（「読み方」「生け花」）也排除：annotateWithLexicon
+                # 只掃連續漢字段，這種鍵永遠匹配不到，留著只會讓詞典看起來比實際有用。
+                if base and kana and KANJI.search(base) and not KANA.search(base):
                     readings[base][kana] += 1
     auto, ambiguous = {}, {}
     for base, counter in sorted(readings.items()):

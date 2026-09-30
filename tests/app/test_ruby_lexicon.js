@@ -57,3 +57,54 @@ test('加注後移除 rt 必須還原成原文（絕不改動句子本身）', (
     }
   }
 });
+
+// ── 覆蓋率（規格 §13 決定 9：人工補足到接近全覆蓋）────────────────
+const KANJI_RUN = /[\u4e00-\u9fff]+/g;
+
+function pdTexts() {
+  const texts = [];
+  for (const d of allLessons()) {
+    for (const p of d.patterns || []) {
+      texts.push(p.template || '');
+      for (const vals of Object.values(p.slots || {})) {
+        for (const v of vals) if (typeof v === 'string') texts.push(v);
+      }
+    }
+    for (const dr of d.drills || []) {
+      texts.push(dr.model_answer || '', dr.model_cue || '');
+      for (const it of dr.items || []) if (typeof it === 'string') texts.push(it);
+    }
+  }
+  return texts;
+}
+
+test('練習Ａ／Ｂ 文字的漢字覆蓋率達 97% 以上', () => {
+  const lex = buildLexicon(lexJson);
+  const ambiguous = new Set(Object.keys(lexJson.ambiguous || {}));
+  let covered = 0, total = 0;
+  const missing = new Map();
+  for (const text of pdTexts()) {
+    for (const token of annotateWithLexicon(text, lex)) {
+      if (token.t === 'ruby') { covered += token.base.length; total += token.base.length; continue; }
+      for (const run of token.s.match(KANJI_RUN) || []) {
+        total += run.length;
+        for (const ch of run) {
+          // 多讀音字是「刻意不加注」，不算進缺口（規格 §13 決定 9）
+          if (ambiguous.has(ch)) covered += 1;
+          else missing.set(ch, (missing.get(ch) || 0) + 1);
+        }
+      }
+    }
+  }
+  const rate = covered / total;
+  const worst = [...missing.entries()].sort((a, b) => b[1] - a[1]).slice(0, 20);
+  assert.ok(rate >= 0.97,
+    `覆蓋率 ${(rate * 100).toFixed(1)}% 未達 97%，待補：${JSON.stringify(worst)}`);
+});
+
+test('詞典的鍵必須是純漢字（夾假名的鍵永遠匹配不到，留著會誤導）', () => {
+  for (const base of buildLexicon(lexJson).keys()) {
+    assert.ok(!/[\u3040-\u30ff]/.test(base),
+      `${base} 夾有假名，annotateWithLexicon 只掃連續漢字段，這個鍵匹配不到`);
+  }
+});

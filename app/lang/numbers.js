@@ -73,3 +73,50 @@ export function readMonth(m) {
   need(m, 1, 12, 'readMonth');
   return MONTH_IRREGULAR[m] || readNumber(m) + 'がつ';
 }
+
+/** 0 有兩種讀法，講義第一個是ゼロ。 */
+export function readZero() {
+  return ['ゼロ', 'れい'];
+}
+
+/**
+ * 一萬以上。位值只有「萬」「億」兩個，其餘用 readNumber（<10000）接上去：
+ * 10000 いちまん（萬位的 1 要唸出來，不像百、千可省）、100000 じゅうまん、
+ * 1000000 ひゃくまん、10000000 せんまん、100000000 いちおく。
+ */
+export function readBig(n) {
+  need(n, 10000, 999999999, 'readBig');
+  if (n >= 100000000) {
+    const o = Math.floor(n / 100000000);
+    const rest = n % 100000000;
+    return readNumber(o) + 'おく' + (rest ? readBig(rest) : '');
+  }
+  const m = Math.floor(n / 10000);
+  const rest = n % 10000;
+  return readNumber(m) + 'まん' + (rest ? readNumber(rest) : '');
+}
+
+const DIGIT_KANA = ['れい', 'いち', 'に', 'さん', 'よん', 'ご', 'ろく', 'なな', 'はち', 'きゅう'];
+
+/** 小數：整數部 + てん + 逐位數字（17.5 → じゅうななてんご）。整數部為 0 讀れい。 */
+export function readDecimal(str) {
+  const [i, f] = String(str).split('.');
+  if (!/^\d+$/.test(i) || !/^\d+$/.test(f || '')) {
+    throw new Error(`readDecimal: 不是小數 ${JSON.stringify(str)}`);
+  }
+  const head = Number(i) === 0 ? 'れい' : readNumber(Number(i));
+  return head + 'てん' + [...f].map((c) => DIGIT_KANA[Number(c)]).join('');
+}
+
+/** 分數：分母＋ぶんの＋分子（1/2 → にぶんのいち）。 */
+export function readFraction(num, den) {
+  need(num, 1, 99, 'readFraction');
+  need(den, 2, 99, 'readFraction');
+  return readNumber(den) + 'ぶんの' + readNumber(num);
+}
+
+/** 講義列出的並列讀法（key 同 data/supplements/numbers.json）。第一讀法由函式產生。 */
+export const NUMBER_ALTS = {
+  0: ['れい'], 4: ['し'], 7: ['しち'], 9: ['く'],
+  14: ['じゅうし'], 17: ['じゅうしち'], 19: ['じゅうく'], 70: ['しちじゅう'],
+};

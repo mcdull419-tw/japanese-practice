@@ -48,11 +48,67 @@ export const COUNTERS = {
                         6: 'ろくにん', 7: 'ななにん', 8: 'はちにん', 9: 'きゅうにん', 10: 'じゅうにん' } },
   mai:       { kana: 'まい', label: '枚', lesson: 11, table: PLAIN },
   dai:       { kana: 'だい', label: '台', lesson: 11, table: PLAIN },
+  // 補充講義第 IV 節（IMAG0809）新增的量詞。lesson 取課本詞彙表第一次教到的課次；
+  // 第 1~15 課詞彙裡找不到者（個、足、軒、杯、着）暫排 15，待確認課本實際教到哪一課。
+  // 10 是とお，沒有「10つ」這種寫法，題幹只寫 10。
+  tsu:       { kana: 'つ', label: 'つ', prompts: { 10: '10' }, lesson: 11,
+               table: { 1: 'ひとつ', 2: 'ふたつ', 3: 'みっつ', 4: 'よっつ', 5: 'いつつ',
+                        6: 'むっつ', 7: 'ななつ', 8: 'やっつ', 9: 'ここのつ', 10: 'とお' } },
+  ban:       { kana: 'ばん', label: '番', lesson: 4, table: PLAIN },
+  chaku:     { kana: 'ちゃく', label: '着', lesson: 15, table: S_SERIES('ちゃく') },
+  ko:        { kana: 'こ', label: '個', lesson: 15, table: K_SERIES('こ', 'こ') },
+  // 足：3 が ぞく（さんぞく）、6 は ろく（ろっ にならない）。K_SERIES とも S_SERIES とも違うので明表。
+  soku:      { kana: 'そく', label: '足', lesson: 15,
+               table: { 1: 'いっそく', 2: 'にそく', 3: 'さんぞく', 4: 'よんそく', 5: 'ごそく',
+                        6: 'ろくそく', 7: 'ななそく', 8: 'はっそく', 9: 'きゅうそく', 10: 'じゅっそく' } },
+  ken:       { kana: 'けん', label: '軒', lesson: 15, table: K_SERIES('けん', 'げん') },
+  hai:       { kana: 'はい', label: '杯', lesson: 15, table: H_SERIES('はい', 'ぱい', 'ばい') },
   en:        { kana: 'えん', label: '円', lesson: 3,  table: withNumberOverrides('えん', { 4: 'よ' }) },
+  // 7 時間：講義第一讀法是ななじかん，しちじかん 是並列（alts）。9 時間只有くじかん。
   jikan:     { kana: 'じかん', label: '時間', lesson: 11,
-               table: withNumberOverrides('じかん', { 4: 'よ', 7: 'しち', 9: 'く' }) },
-  nen:       { kana: 'ねん', label: '年', lesson: 11, table: withNumberOverrides('ねん', { 4: 'よ' }) },
+               table: withNumberOverrides('じかん', { 4: 'よ', 9: 'く' }),
+               alts: { 7: ['しちじかん'] }, q: 'なんじかん' },
+  nen:       { kana: 'ねん', label: '年', lesson: 11, table: withNumberOverrides('ねん', { 4: 'よ' }),
+               alts: { 7: ['しちねん'], 9: ['くねん'] }, q: 'なんねん' },
+  // 期間的日數：1 日是いちにち，與日期的ついたち不同；2~10 與日期同讀。
+  nichi_span: { kana: 'にち', label: '日', promptNote: '（天數）', lesson: 5,
+                table: { 1: 'いちにち', 2: 'ふつか', 3: 'みっか', 4: 'よっか', 5: 'いつか',
+                         6: 'むいか', 7: 'なのか', 8: 'ようか', 9: 'ここのか', 10: 'とおか' },
+                q: 'なんにち' },
+  shuukan:   { kana: 'しゅうかん', label: '週間', lesson: 11,
+               table: { 1: 'いっしゅうかん', 2: 'にしゅうかん', 3: 'さんしゅうかん', 4: 'よんしゅうかん',
+                        5: 'ごしゅうかん', 6: 'ろくしゅうかん', 7: 'ななしゅうかん', 8: 'はっしゅうかん',
+                        9: 'きゅうしゅうかん', 10: 'じゅっしゅうかん' },
+               alts: { 7: ['しちしゅうかん'], 10: ['じっしゅうかん'] }, q: 'なんしゅうかん' },
+  kagetsu:   { kana: 'かげつ', label: 'か月', lesson: 11,
+               table: { 1: 'いっかげつ', 2: 'にかげつ', 3: 'さんかげつ', 4: 'よんかげつ', 5: 'ごかげつ',
+                        6: 'ろっかげつ', 7: 'ななかげつ', 8: 'はちかげつ', 9: 'きゅうかげつ', 10: 'じゅっかげつ' },
+               alts: { 7: ['しちかげつ'], 8: ['はっかげつ'], 10: ['じっかげつ'] },
+               q: 'なんかげつ' },
 };
+
+/**
+ * 疑問詞（何＋量詞）。連濁（なんぼん、なんびき、なんがい、なんぞく、なんげん、なんばい）
+ * 沒有規律可推，直接列明表。時間類（じかん、ねん、…）的 q 已寫在各自條目裡。
+ */
+const COUNTER_Q = {
+  tsu: 'いくつ', nin: 'なんにん', ban: 'なんばん', mai: 'なんまい', dai: 'なんだい',
+  sai: 'なんさい', satsu: 'なんさつ', chaku: 'なんちゃく', kai_times: 'なんかい', ko: 'なんこ',
+  soku: 'なんぞく', ken: 'なんげん', kai_floor: 'なんがい', hon: 'なんぼん', hai: 'なんばい',
+  hiki: 'なんびき',
+};
+
+for (const [key, q] of Object.entries(COUNTER_Q)) COUNTERS[key].q = q;
+
+// 講義 10 的並列讀法：じゅっ… 與 じっ… 都對（本、歳、冊、着、回、個、足、軒、階、杯、匹）。
+for (const c of Object.values(COUNTERS)) {
+  const ten = c.table && c.table[10];
+  if (ten && ten.startsWith('じゅっ') && !(c.alts && c.alts[10])) {
+    c.alts = { ...c.alts, 10: ['じっ' + ten.slice(3)] };
+  }
+}
+// 人：7 人 ななにん／しちにん 都對。
+COUNTERS.nin.alts = { 7: ['しちにん'] };
 
 export function readCounter(n, key) {
   const c = COUNTERS[key];
@@ -63,3 +119,20 @@ export function readCounter(n, key) {
   if (!c.table) return readNumber(n) + c.kana;
   return c.table[n];
 }
+
+/** 講義同格列出的其他讀法（第一讀法以外）。沒有則回空陣列。 */
+export function readCounterAlts(n, key) {
+  const c = COUNTERS[key];
+  if (!c) throw new Error(`readCounterAlts: 未知的量詞 ${JSON.stringify(key)}`);
+  return (c.alts && c.alts[n]) || [];
+}
+
+/** 疑問詞（何＋量詞）。連濁等不規則直接列明表。 */
+export function readCounterQ(key) {
+  const c = COUNTERS[key];
+  if (!c || !c.q) throw new Error(`readCounterQ: ${JSON.stringify(key)} 沒有疑問詞`);
+  return c.q;
+}
+
+/** 半年。講義把它並列在 6か月 欄旁，但它是另一個詞，不是 6か月 的讀音，分開出題。 */
+export const HALF_YEAR = 'はんとし';

@@ -12,7 +12,7 @@ import {
   readHour, readMinute, readDayOfMonth, readMonth, readNumber, readBig, readDecimal, readFraction,
   readZero, NUMBER_ALTS, CLOCK_ALTS, CLOCK_Q,
 } from '../lang/numbers.js';
-import { readCounter, readCounterAlts, readCounterQ, COUNTERS } from '../lang/counters.js';
+import { readCounter, readCounterAlts, readCounterQ, COUNTERS, HALF_YEAR } from '../lang/counters.js';
 import { TIMEWORDS } from '../lang/timewords.js';
 import { conceptsForNumber, conceptsForCounter, skillOf } from '../core/concepts.js';
 
@@ -96,6 +96,16 @@ export function* generate() {
     promptText: '半',
     hint: '30分の言い方',
     answer: CLOCK_Q.half,
+    sourceRef: SUPP,
+  });
+
+  yield makeItem({
+    id: 'qty:c:kagetsu:half',
+    lesson: COUNTERS.kagetsu.lesson,
+    covers: conceptsForCounter('kagetsu'),
+    promptText: '半年',
+    hint: '半年的唸法',
+    answer: HALF_YEAR,
     sourceRef: SUPP,
   });
 

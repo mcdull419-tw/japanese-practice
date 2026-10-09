@@ -83,7 +83,7 @@ export const COUNTERS = {
   kagetsu:   { kana: 'かげつ', label: 'か月', lesson: 11,
                table: { 1: 'いっかげつ', 2: 'にかげつ', 3: 'さんかげつ', 4: 'よんかげつ', 5: 'ごかげつ',
                         6: 'ろっかげつ', 7: 'ななかげつ', 8: 'はちかげつ', 9: 'きゅうかげつ', 10: 'じゅっかげつ' },
-               alts: { 6: ['はんとし'], 7: ['しちかげつ'], 8: ['はっかげつ'], 10: ['じっかげつ'] },
+               alts: { 7: ['しちかげつ'], 8: ['はっかげつ'], 10: ['じっかげつ'] },
                q: 'なんかげつ' },
 };
 
@@ -133,3 +133,6 @@ export function readCounterQ(key) {
   if (!c || !c.q) throw new Error(`readCounterQ: ${JSON.stringify(key)} 沒有疑問詞`);
   return c.q;
 }
+
+/** 半年。講義把它並列在 6か月 欄旁，但它是另一個詞，不是 6か月 的讀音，分開出題。 */
+export const HALF_YEAR = 'はんとし';

@@ -83,7 +83,7 @@ test('17日、27日 唸 しち，19日、29日 唸 く（不是なな、きゅ�
   assert.equal(readDayOfMonth(29), 'にじゅうくにち');
 });
 
-import { readCounter, readCounterAlts, readCounterQ } from '../../app/lang/counters.js';
+import { readCounter, readCounterAlts, readCounterQ, HALF_YEAR } from '../../app/lang/counters.js';
 
 test('periods.json 格式正確', () => checkShape(load('periods')));
 
@@ -101,6 +101,7 @@ test('periods.json 與 counters.js／numbers.js 一致', () => {
     }
     const key = map[kind];
     if (v === 'q') { assert.equal(readCounterQ(key), r.read[0], `${r.key}: 疑問詞`); continue; }
+    if (v === 'half') { assert.equal(HALF_YEAR, r.read[0], '半年 不符'); continue; }
     assert.equal(readCounter(Number(v), key), r.read[0], `${r.key}: 講義 ${r.read[0]}`);
     assert.deepEqual(readCounterAlts(Number(v), key), r.read.slice(1), `${r.key}: 並列讀法與 alts 不符`);
   }

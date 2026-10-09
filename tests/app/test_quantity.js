@@ -64,7 +64,7 @@ test('題數與資料表大小相符', () => {
   // 時12 ＋ 分14 ＋ 日31 ＋ 月12 ＝ 69；疑問詞 4、半 1、零 1；百千音變 14、萬億 5、小數 2、分數 2；
   // 時間詞每列一題；量詞每種 1~10 加疑問詞 ＝ 11 題（つ 與 円 沒有疑問詞題，少 2；円不在補充講義）
   const expected = 69 + 4 + 1 + 1 + 14 + 5 + 2 + 2 + TIMEWORDS.length
-    + Object.keys(COUNTERS).length * 11 - 2;
+    + Object.keys(COUNTERS).length * 11 - 2 + 1; // +1：半年
   assert.equal(items.length, expected);
 });
 
@@ -158,4 +158,10 @@ test('同一題幹不會有兩種不同的正解（避免出題自相矛盾）',
     }
     seen.set(key, it);
   }
+});
+
+test('6か月 與 半年 分開出題：はんとし 不是 6か月 的讀音', () => {
+  assert.deepEqual(byId.get('qty:c:kagetsu:6').alternatives, []);
+  assert.equal(byId.get('qty:c:kagetsu:half').prompt.text, '半年');
+  assert.equal(byId.get('qty:c:kagetsu:half').answer, 'はんとし');
 });

@@ -41,3 +41,21 @@ test('並列讀法都被接受（NUMBER_ALTS 涵蓋講義的其餘讀法）', ()
     assert.deepEqual(alts, r.read.slice(1), `${r.key} 的並列讀法與 NUMBER_ALTS 不符`);
   }
 });
+
+import { TIMEWORDS } from '../../app/lang/timewords.js';
+
+test('timewords.json 格式正確', () => checkShape(load('timewords')));
+
+test('timewords.json 與 timewords.js 逐筆一致', () => {
+  const byKey = new Map(TIMEWORDS.map((t) => [t.key, t]));
+  const rows = load('timewords').rows;
+  for (const r of rows) {
+    const t = byKey.get(r.key);
+    assert.ok(t, `timewords.js 缺 ${r.key}（${r.label}）`);
+    assert.equal(t.label, r.label, `${r.key}: 書寫不符`);
+    assert.equal(t.zh, r.note, `${r.key}: 中文不符`);
+    assert.equal(t.kana, r.read[0], `${r.key}: 第一讀法不符`);
+    assert.deepEqual(t.alts, r.read.slice(1), `${r.key}: 並列讀法不符`);
+  }
+  assert.equal(TIMEWORDS.length, rows.length, 'timewords.js 多出講義沒有的條目');
+});

@@ -43,6 +43,7 @@ const PRECACHE = [
   'app/lang/counters.js',
   'app/lang/kana.js',
   'app/lang/numbers.js',
+  'app/lang/timewords.js',
   'app/main.js',
   'app/ui/dashboard.js',
   'app/ui/html.js',

@@ -59,3 +59,26 @@ test('timewords.json 與 timewords.js 逐筆一致', () => {
   }
   assert.equal(TIMEWORDS.length, rows.length, 'timewords.js 多出講義沒有的條目');
 });
+
+import { readHour, readMinute, readDayOfMonth, readMonth, CLOCK_ALTS, CLOCK_Q } from '../../app/lang/numbers.js';
+
+test('clock-date.json 格式正確', () => checkShape(load('clock-date')));
+
+test('clock-date.json 與 numbers.js 一致', () => {
+  const fn = { hour: readHour, minute: readMinute, month: readMonth, day: readDayOfMonth };
+  for (const r of load('clock-date').rows) {
+    const [kind, v] = r.key.split(':');
+    if (v === 'q') { assert.equal(CLOCK_Q[kind], r.read[0], `${r.key}: 疑問詞不符`); continue; }
+    if (v === 'half') { assert.equal(CLOCK_Q.half, r.read[0], '半 不符'); continue; }
+    const got = fn[kind](Number(v));
+    assert.equal(got, r.read[0], `${r.key}: 講義 ${r.read[0]}，程式 ${got}`);
+    assert.deepEqual(CLOCK_ALTS[r.key] || [], r.read.slice(1), `${r.key}: 並列讀法與 CLOCK_ALTS 不符`);
+  }
+});
+
+test('17日、27日 唸 しち，19日、29日 唸 く（不是なな、きゅう）', () => {
+  assert.equal(readDayOfMonth(17), 'じゅうしちにち');
+  assert.equal(readDayOfMonth(27), 'にじゅうしちにち');
+  assert.equal(readDayOfMonth(19), 'じゅうくにち');
+  assert.equal(readDayOfMonth(29), 'にじゅうくにち');
+});

@@ -60,6 +60,8 @@ const DAY_IRREGULAR = {
   1: 'ついたち', 2: 'ふつか', 3: 'みっか', 4: 'よっか', 5: 'いつか',
   6: 'むいか', 7: 'なのか', 8: 'ようか', 9: 'ここのか', 10: 'とおか',
   14: 'じゅうよっか', 20: 'はつか', 24: 'にじゅうよっか',
+  // 7 と 9 は日付では しち／く（readNumber の なな／きゅう ではない）。補充講義で判明。
+  17: 'じゅうしちにち', 19: 'じゅうくにち', 27: 'にじゅうしちにち', 29: 'にじゅうくにち',
 };
 
 export function readDayOfMonth(d) {
@@ -119,4 +121,16 @@ export function readFraction(num, den) {
 export const NUMBER_ALTS = {
   0: ['れい'], 4: ['し'], 7: ['しち'], 9: ['く'],
   14: ['じゅうし'], 17: ['じゅうしち'], 19: ['じゅうく'], 70: ['しちじゅう'],
+};
+
+/** 講義同格列出的並列讀法（key 同 data/supplements/clock-date.json）。第一讀法由 readHour 等產生。 */
+export const CLOCK_ALTS = {
+  'minute:7': ['しちふん'],
+  'minute:10': ['じっぷん'],
+  'minute:30': ['さんじっぷん'],
+};
+
+/** 疑問詞與「半」。不規則連濁（なんぷん）與特例，明表。 */
+export const CLOCK_Q = {
+  hour: 'なんじ', minute: 'なんぷん', month: 'なんがつ', day: 'なんにち', half: 'はん',
 };

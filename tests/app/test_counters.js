@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readCounter, COUNTERS } from '../../app/lang/counters.js';
+import { readCounter, COUNTERS, readCounterAlts } from '../../app/lang/counters.js';
 
 test('ほん：1 3 6 8 10 音變', () => {
   assert.equal(readCounter(1, 'hon'), 'いっぽん');
@@ -61,12 +61,13 @@ test('かい（次數）：6 為ろっかい，與樓層不同在 3 不濁化', 
   assert.equal(readCounter(10, 'kai_times'), 'じゅっかい');
 });
 
-test('えん、ねん、じかん：4 為よ、じかん 的 7 9 同時刻', () => {
+test('えん、ねん、じかん：4 為よ；じかん 的 9 為く、7 以講義為準（なな 為正解、しち 並列）', () => {
   assert.equal(readCounter(4, 'en'), 'よえん');
   assert.equal(readCounter(3, 'en'), 'さんえん');
   assert.equal(readCounter(4, 'nen'), 'よねん');
   assert.equal(readCounter(4, 'jikan'), 'よじかん');
-  assert.equal(readCounter(7, 'jikan'), 'しちじかん');
+  assert.equal(readCounter(7, 'jikan'), 'ななじかん');
+  assert.deepEqual(readCounterAlts(7, 'jikan'), ['しちじかん']);
   assert.equal(readCounter(9, 'jikan'), 'くじかん');
 });
 

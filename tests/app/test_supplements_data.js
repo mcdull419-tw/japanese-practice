@@ -82,3 +82,35 @@ test('17日、27日 唸 しち，19日、29日 唸 く（不是なな、きゅ�
   assert.equal(readDayOfMonth(19), 'じゅうくにち');
   assert.equal(readDayOfMonth(29), 'にじゅうくにち');
 });
+
+import { readCounter, readCounterAlts, readCounterQ } from '../../app/lang/counters.js';
+
+test('periods.json 格式正確', () => checkShape(load('periods')));
+
+test('periods.json 與 counters.js／numbers.js 一致', () => {
+  const map = { jikan: 'jikan', nen: 'nen', shuukan: 'shuukan', kagetsu: 'kagetsu', nichi: 'nichi_span' };
+  for (const r of load('periods').rows) {
+    const [kind, v] = r.key.split(':');
+    if (kind === 'fun') {                             // 分鐘與時刻的分同表
+      if (v === 'q') assert.equal(CLOCK_Q.minute, r.read[0]);
+      else {
+        assert.equal(readMinute(Number(v)), r.read[0], `${r.key}`);
+        assert.deepEqual(CLOCK_ALTS[`minute:${v}`] || [], r.read.slice(1), `${r.key}: 並列讀法`);
+      }
+      continue;
+    }
+    const key = map[kind];
+    if (v === 'q') { assert.equal(readCounterQ(key), r.read[0], `${r.key}: 疑問詞`); continue; }
+    assert.equal(readCounter(Number(v), key), r.read[0], `${r.key}: 講義 ${r.read[0]}`);
+    assert.deepEqual(readCounterAlts(Number(v), key), r.read.slice(1), `${r.key}: 並列讀法與 alts 不符`);
+  }
+});
+
+test('4時間是よじかん、不是よんじかん', () => {
+  assert.equal(readCounter(4, 'jikan'), 'よじかん');
+});
+
+test('1天（期間）是いちにち，與日期的ついたち不同', () => {
+  assert.equal(readCounter(1, 'nichi_span'), 'いちにち');
+  assert.equal(readCounter(2, 'nichi_span'), 'ふつか');
+});

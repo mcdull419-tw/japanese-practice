@@ -49,9 +49,27 @@ export const COUNTERS = {
   mai:       { kana: 'まい', label: '枚', lesson: 11, table: PLAIN },
   dai:       { kana: 'だい', label: '台', lesson: 11, table: PLAIN },
   en:        { kana: 'えん', label: '円', lesson: 3,  table: withNumberOverrides('えん', { 4: 'よ' }) },
+  // 7 時間：講義第一讀法是ななじかん，しちじかん 是並列（alts）。9 時間只有くじかん。
   jikan:     { kana: 'じかん', label: '時間', lesson: 11,
-               table: withNumberOverrides('じかん', { 4: 'よ', 7: 'しち', 9: 'く' }) },
-  nen:       { kana: 'ねん', label: '年', lesson: 11, table: withNumberOverrides('ねん', { 4: 'よ' }) },
+               table: withNumberOverrides('じかん', { 4: 'よ', 9: 'く' }),
+               alts: { 7: ['しちじかん'] }, q: 'なんじかん' },
+  nen:       { kana: 'ねん', label: '年', lesson: 11, table: withNumberOverrides('ねん', { 4: 'よ' }),
+               alts: { 7: ['しちねん'], 9: ['くねん'] }, q: 'なんねん' },
+  // 期間的日數：1 日是いちにち，與日期的ついたち不同；2~10 與日期同讀。
+  nichi_span: { kana: 'にち', label: '日間', lesson: 5,
+                table: { 1: 'いちにち', 2: 'ふつか', 3: 'みっか', 4: 'よっか', 5: 'いつか',
+                         6: 'むいか', 7: 'なのか', 8: 'ようか', 9: 'ここのか', 10: 'とおか' },
+                q: 'なんにち' },
+  shuukan:   { kana: 'しゅうかん', label: '週間', lesson: 11,
+               table: { 1: 'いっしゅうかん', 2: 'にしゅうかん', 3: 'さんしゅうかん', 4: 'よんしゅうかん',
+                        5: 'ごしゅうかん', 6: 'ろくしゅうかん', 7: 'ななしゅうかん', 8: 'はっしゅうかん',
+                        9: 'きゅうしゅうかん', 10: 'じゅっしゅうかん' },
+               alts: { 7: ['しちしゅうかん'], 10: ['じっしゅうかん'] }, q: 'なんしゅうかん' },
+  kagetsu:   { kana: 'かげつ', label: 'か月', lesson: 11,
+               table: { 1: 'いっかげつ', 2: 'にかげつ', 3: 'さんかげつ', 4: 'よんかげつ', 5: 'ごかげつ',
+                        6: 'ろっかげつ', 7: 'ななかげつ', 8: 'はちかげつ', 9: 'きゅうかげつ', 10: 'じゅっかげつ' },
+               alts: { 6: ['はんとし'], 7: ['しちかげつ'], 8: ['はっかげつ'], 10: ['じっかげつ'] },
+               q: 'なんかげつ' },
 };
 
 export function readCounter(n, key) {
@@ -62,4 +80,18 @@ export function readCounter(n, key) {
   }
   if (!c.table) return readNumber(n) + c.kana;
   return c.table[n];
+}
+
+/** 講義同格列出的其他讀法（第一讀法以外）。沒有則回空陣列。 */
+export function readCounterAlts(n, key) {
+  const c = COUNTERS[key];
+  if (!c) throw new Error(`readCounterAlts: 未知的量詞 ${JSON.stringify(key)}`);
+  return (c.alts && c.alts[n]) || [];
+}
+
+/** 疑問詞（何＋量詞）。連濁等不規則直接列明表。 */
+export function readCounterQ(key) {
+  const c = COUNTERS[key];
+  if (!c || !c.q) throw new Error(`readCounterQ: ${JSON.stringify(key)} 沒有疑問詞`);
+  return c.q;
 }

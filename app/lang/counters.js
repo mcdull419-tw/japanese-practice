@@ -50,7 +50,8 @@ export const COUNTERS = {
   dai:       { kana: 'だい', label: '台', lesson: 11, table: PLAIN },
   // 補充講義第 IV 節（IMAG0809）新增的量詞。lesson 取課本詞彙表第一次教到的課次；
   // 第 1~15 課詞彙裡找不到者（個、足、軒、杯、着）暫排 15，待確認課本實際教到哪一課。
-  tsu:       { kana: 'つ', label: 'つ', lesson: 11,
+  // 10 是とお，沒有「10つ」這種寫法，題幹只寫 10。
+  tsu:       { kana: 'つ', label: 'つ', prompts: { 10: '10' }, lesson: 11,
                table: { 1: 'ひとつ', 2: 'ふたつ', 3: 'みっつ', 4: 'よっつ', 5: 'いつつ',
                         6: 'むっつ', 7: 'ななつ', 8: 'やっつ', 9: 'ここのつ', 10: 'とお' } },
   ban:       { kana: 'ばん', label: '番', lesson: 4, table: PLAIN },
@@ -70,7 +71,7 @@ export const COUNTERS = {
   nen:       { kana: 'ねん', label: '年', lesson: 11, table: withNumberOverrides('ねん', { 4: 'よ' }),
                alts: { 7: ['しちねん'], 9: ['くねん'] }, q: 'なんねん' },
   // 期間的日數：1 日是いちにち，與日期的ついたち不同；2~10 與日期同讀。
-  nichi_span: { kana: 'にち', label: '日間', lesson: 5,
+  nichi_span: { kana: 'にち', label: '日', promptNote: '（天數）', lesson: 5,
                 table: { 1: 'いちにち', 2: 'ふつか', 3: 'みっか', 4: 'よっか', 5: 'いつか',
                          6: 'むいか', 7: 'なのか', 8: 'ようか', 9: 'ここのか', 10: 'とおか' },
                 q: 'なんにち' },

@@ -89,11 +89,18 @@ test('17日、27日 出題且唸しち；19日 唸く', () => {
   assert.equal(byId.get('qty:day:19').answer, 'じゅうくにち');
 });
 
-test('期間題與日期題的題幹可分辨：1日（ついたち）vs 1日間（いちにち）', () => {
+test('期間題與日期題的題幹可分辨：1日（ついたち）vs 1日（天數）（いちにち）', () => {
   assert.equal(byId.get('qty:day:1').prompt.text, '1日');
   assert.equal(byId.get('qty:day:1').answer, 'ついたち');
-  assert.equal(byId.get('qty:c:nichi_span:1').prompt.text, '1日間');
+  assert.equal(byId.get('qty:c:nichi_span:1').prompt.text, '1日（天數）');
   assert.equal(byId.get('qty:c:nichi_span:1').answer, 'いちにち');
+  // 「2日間」是ふつかかん，講義的欄位是「天」（2日＝ふつか），不能把題幹寫成日間。
+  assert.ok(![...byId.values()].some((it) => /日間/.test(it.prompt.text)), '題幹不得出現日間');
+});
+
+test('「つ」的 10 是とお：題幹不寫成「10つ」（沒有這種寫法）', () => {
+  assert.equal(byId.get('qty:c:tsu:10').answer, 'とお');
+  assert.notEqual(byId.get('qty:c:tsu:10').prompt.text, '10つ');
 });
 
 test('並列讀法進 alternatives：10分 じっぷん、7人 しちにん、10本 じっぽん 也算對', () => {

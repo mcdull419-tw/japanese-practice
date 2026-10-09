@@ -114,3 +114,35 @@ test('1天（期間）是いちにち，與日期的ついたち不同', () => {
   assert.equal(readCounter(1, 'nichi_span'), 'いちにち');
   assert.equal(readCounter(2, 'nichi_span'), 'ふつか');
 });
+
+import { COUNTERS } from '../../app/lang/counters.js';
+
+test('counters.json 格式正確', () => checkShape(load('counters')));
+
+test('counters.json 與 counters.js 逐筆一致，且 alts 與講義並列讀法相同', () => {
+  for (const r of load('counters').rows) {
+    const [key, v] = r.key.split(':');
+    if (v === 'q') { assert.equal(readCounterQ(key), r.read[0], `${r.key}: 疑問詞`); continue; }
+    assert.equal(readCounter(Number(v), key), r.read[0], `${r.key}: 講義 ${r.read[0]}`);
+    assert.deepEqual(readCounterAlts(Number(v), key), r.read.slice(1), `${r.key}: 並列讀法與 alts 不符`);
+  }
+});
+
+test('講義上每種量詞在程式裡都有，且程式沒有多收講義沒有的量詞（en 除外）', () => {
+  const inJson = new Set(load('counters').rows.map((r) => r.key.split(':')[0]));
+  for (const k of inJson) assert.ok(COUNTERS[k], `COUNTERS 缺 ${k}`);
+  const periods = new Set(load('periods').rows.map((r) => r.key.split(':')[0]));
+  const known = new Set(['en', 'jikan', 'nen', 'nichi_span', 'shuukan', 'kagetsu']);
+  for (const k of Object.keys(COUNTERS)) {
+    assert.ok(inJson.has(k) || known.has(k) || periods.has(k), `COUNTERS 多出講義沒有的 ${k}`);
+  }
+});
+
+test('疑問詞連濁：なんぼん／なんびき／なんがい／なんぞく／なんげん／なんばい', () => {
+  assert.equal(readCounterQ('hon'), 'なんぼん');
+  assert.equal(readCounterQ('hiki'), 'なんびき');
+  assert.equal(readCounterQ('kai_floor'), 'なんがい');
+  assert.equal(readCounterQ('soku'), 'なんぞく');
+  assert.equal(readCounterQ('ken'), 'なんげん');
+  assert.equal(readCounterQ('hai'), 'なんばい');
+});

@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { generate } from '../../app/generators/quantity.js';
+import { COUNTERS } from '../../app/lang/counters.js';
 
 const items = [...generate()];
 const byId = new Map(items.map((it) => [it.id, it]));
@@ -58,9 +59,9 @@ test('每題欄位齊備', () => {
   }
 });
 
-test('題數在預期範圍', () => {
-  // 時12 ＋ 分14 ＋ 日31 ＋ 月12 ＝ 69，量詞 12 種 × 10 ＝ 120
-  assert.ok(items.length >= 150 && items.length <= 220, `題數 ${items.length} 不如預期`);
+test('題數與量詞種類數相符', () => {
+  // 時12 ＋ 分14 ＋ 日31 ＋ 月12 ＝ 69，每種量詞 1~10 各一題
+  assert.equal(items.length, 69 + Object.keys(COUNTERS).length * 10);
 });
 
 // 這些題目問的就是唸法，答案是讀音。振假名若照常顯示，等於把答案印在題幹上

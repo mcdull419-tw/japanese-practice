@@ -6,11 +6,11 @@
 
 把課本附錄的五張表（照片 `IMAG0805`~`IMAG0809`）逐列轉寫成 `data/supplements/*.json`，
 作為測試的對照基準；`app/lang/` 的讀音表與轉寫檔逐筆比對，不一致就紅燈。
-數量題由 252 題增為 382 題（新增 130 題），快取版本升為 `jp-practice-v2`。
+數量題由 189 題增為 382 題（新增 193 題），快取版本升為 `jp-practice-v2`。
 
 | 轉寫檔 | 照片 | 列數 |
 |---|---|---|
-| `numbers.json` | 0805 | 56 |
+| `numbers.json` | 0805 | 55 |
 | `timewords.json` | 0806 | 44 |
 | `clock-date.json` | 0807 | 72 |
 | `periods.json` | 0808 | 66 |

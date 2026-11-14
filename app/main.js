@@ -23,6 +23,7 @@ import { pickItems } from './core/scheduler.js';
 import { aggregateSkills } from './core/concepts.js';
 import { buildLexicon } from './core/ruby.js';
 import { presentOptsFor } from './ui/present.js';
+import { watchForUpdate, checkWhenVisible, showUpdateBanner } from './ui/update.js';
 
 // 舊版把「我這樣寫也對」的寫法存在這個 localStorage 鍵，違反規格 §9.2.1
 // （應與事件日誌同一個 Store）。現已改存事件的 `a` 欄位，此鍵只剩遷移用途。
@@ -319,7 +320,9 @@ export async function boot(doc = document, win = window) {
 
   // PWA：註冊失敗只代表沒有離線能力，不該讓整個 app 起不來，故不 await、不拋錯。
   if (win.navigator && 'serviceWorker' in win.navigator) {
-    win.navigator.serviceWorker.register('sw.js').catch((err) => {
+    const container = win.navigator.serviceWorker;
+    watchForUpdate(container, () => showUpdateBanner(doc, () => win.location.reload()));
+    container.register('sw.js').then((reg) => checkWhenVisible(doc, reg)).catch((err) => {
       console.warn('Service Worker 註冊失敗，離線功能不可用：', err && err.message);
     });
   }

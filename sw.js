@@ -6,7 +6,7 @@
 // PRECACHE 清單由 tests/app/test_sw.js 把關——app/ 下新增模組而忘了列進來，
 // 測試會紅燈。沒有這道測試的話，離線時會是「某個模組 404、整個頁面空白」的
 // 靜默失敗，而且只在沒網路時才重現。
-const CACHE = 'jp-practice-v4';
+const CACHE = 'jp-practice-v6';
 
 const PRECACHE = [
   './',
@@ -51,6 +51,7 @@ const PRECACHE = [
   'app/ui/player.js',
   'app/ui/present.js',
   'app/ui/session.js',
+  'app/ui/update.js',
   'app/ui/settings.js',
   'data/adjectives.json',
   'data/concepts.json',
@@ -77,7 +78,12 @@ const PRECACHE = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
+  // cache: 'reload' 繞過瀏覽器自己的 HTTP 暫存。GitHub Pages 的檔案帶 10 分鐘的
+  // max-age，直接 addAll 可能把暫存裡的舊檔當成新版存進這個版本的快取，
+  // 結果版本號升了、內容卻還是舊的（手機上實際發生過）。
+  e.waitUntil(caches.open(CACHE)
+    .then((c) => c.addAll(PRECACHE.map((u) => new Request(u, { cache: 'reload' }))))
+    .then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (e) => {

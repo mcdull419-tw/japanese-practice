@@ -99,7 +99,7 @@ test('形容詞變化題：い形', () => {
   assert.ok(past, '應產生過去形題目');
   assert.equal(past.engine, 'transform');
   assert.equal(past.prompt.text, '大きい');
-  assert.equal(past.prompt.hint, '過去形');
+  assert.equal(past.prompt.hint, '過去形（丁寧體）');
   assert.equal(past.answer, '大きかったです');
   assert.ok(past.alternatives.includes('おおきかったです'), '假名形應算對');
   assert.deepEqual(past.covers, ['r:past:iadj', 'w:大きい:group']);

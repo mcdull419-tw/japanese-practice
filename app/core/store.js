@@ -30,6 +30,29 @@ export function makeFlagEvent(deviceId, seq, itemId, nowSec) {
   return { d: deviceId, n: seq, i: itemId, t: nowSec, g: 0, r: 0, m: 'flag' };
 }
 
+/**
+ * 「不要再出現」與它的復原。同樣放在事件日誌裡（跟著匯出、同步走），
+ * 重放時略過；以每題最後一筆 hide／unhide 決定目前狀態。
+ */
+export function makeHideEvent(deviceId, seq, itemId, nowSec, hidden = true) {
+  return { d: deviceId, n: seq, i: itemId, t: nowSec, g: 0, r: 0, m: hidden ? 'hide' : 'unhide' };
+}
+
+/** 不是作答的事件（標記類），重放與反應時間統計都要略過。 */
+export function isMarkerEvent(e) {
+  return e.m === 'flag' || e.m === 'hide' || e.m === 'unhide';
+}
+
+/** 目前被設為「不要再出現」的題目。事件已依時間排序，後到者覆蓋先到者。 */
+export function hiddenFrom(events) {
+  const out = new Set();
+  for (const e of events) {
+    if (e.m === 'hide') out.add(e.i);
+    else if (e.m === 'unhide') out.delete(e.i);
+  }
+  return out;
+}
+
 /** 從事件日誌重建「被標記過的題目 → 最後一次標記的時戳」。 */
 export function flaggedFrom(events) {
   const out = new Map();

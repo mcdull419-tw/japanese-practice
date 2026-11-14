@@ -181,3 +181,14 @@ test('日文題幹不標成中文（否則會失去振假名）', () => {
     assert.notEqual(it.prompt.lang, 'zh', `${it.id} 的題幹是日文，不該標成中文`);
   }
 });
+
+test('同一漢字對應多個讀音（人：ひとり／ふたり）時不出讀音題', () => {
+  const v = (kana, no) => ({ kana, kanji: '人', zh: `人${no}`, lesson: 11, no });
+  const ids = [...generate([v('ひとり', 1), v('ふたり', 2)])].map((x) => x.id);
+  assert.ok(!ids.some((id) => id.endsWith(':kanji2kana')));
+});
+
+test('「…にん」這類接尾詞不必打出「…」也算對', () => {
+  const [zh2jp] = [...generate([{ kana: '…にん', kanji: '人', zh: '…個人', lesson: 11, no: 18 }])];
+  assert.ok(zh2jp.alternatives.includes('にん'));
+});

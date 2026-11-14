@@ -74,3 +74,16 @@ test('flaggedFrom 取每題最後一次標記的時戳', () => {
   assert.equal(f.get('y'), 200);
   assert.equal(f.has('z'), false, '一般作答事件不該被當成標記');
 });
+
+import { makeHideEvent, hiddenFrom, isMarkerEvent } from '../../app/core/store.js';
+
+test('hiddenFrom：以每題最後一筆 hide／unhide 為準', () => {
+  const evs = [
+    makeHideEvent('d', 1, 'a', 100),
+    makeHideEvent('d', 2, 'b', 101),
+    makeHideEvent('d', 3, 'b', 102, false),
+  ];
+  assert.deepEqual([...hiddenFrom(evs)], ['a']);
+  assert.ok(evs.every(isMarkerEvent));
+  assert.equal(isMarkerEvent({ m: 'text' }), false);
+});

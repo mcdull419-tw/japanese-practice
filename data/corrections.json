@@ -1,2 +1,55 @@
 {
+ "adj:甘い:neg": {
+  "fixed_at": "2026-11-14T10:11:42Z"
+ },
+ "recall:エアメール:zh2jp": {
+  "fixed_at": "2026-11-14T10:11:42Z",
+  "prompt": "航空郵件，航空信",
+  "alternatives": [
+   "こうくうびん",
+   "航空便"
+  ]
+ },
+ "recall:ジャパン:zh2jp": {
+  "fixed_at": "2026-11-14T10:11:42Z",
+  "prompt": "Japan（虛構的超級市場名）"
+ },
+ "recall:パーティー:zh2jp": {
+  "fixed_at": "2026-11-14T10:11:42Z",
+  "alternatives": [
+   "パーティ",
+   "ぱーてぃー"
+  ]
+ },
+ "recall:とおい:zh2jp": {
+  "fixed_at": "2026-11-14T10:11:42Z",
+  "prompt": "遠的（距離遠）"
+ },
+ "recall:おねえさん                お:kanji2kana": {
+  "fixed_at": "2026-11-14T10:11:42Z"
+ },
+ "recall:ふたり                    2:kanji2kana": {
+  "fixed_at": "2026-11-14T10:11:42Z"
+ },
+ "recall:．おかえりなさい:zh2jp": {
+  "fixed_at": "2026-11-14T10:11:42Z"
+ },
+ "recall:．せまい:kanji2kana": {
+  "fixed_at": "2026-11-14T10:11:42Z"
+ },
+ "conj:切ります:masu2masendeshita": {
+  "fixed_at": "2026-11-14T10:11:42Z"
+ },
+ "recall:おきます:L15-4:jp2zh": {
+  "fixed_at": "2026-11-14T10:11:42Z"
+ },
+ "recall:とります:L14-10:jp2zh": {
+  "fixed_at": "2026-11-14T10:11:42Z"
+ },
+ "recall:ひろい:zh2jp": {
+  "fixed_at": "2026-11-14T10:11:42Z"
+ },
+ "drill:L11-B6:0": {
+  "fixed_at": "2026-11-14T10:29:22Z"
+ }
 }

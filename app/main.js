@@ -13,9 +13,10 @@ import * as cloze from './generators/cloze.js';
 import * as quantity from './generators/quantity.js';
 import * as drillGen from './generators/drills.js';
 import { conceptsByPattern } from './core/conceptdefs.js';
-import { openStore, makeEvent, makeFlagEvent, userAlternativesFrom, flaggedFrom }
-  from './core/store.js';
-import { exportFlagged, applyCorrections } from './core/corrections.js';
+import { openStore, makeEvent, makeFlagEvent, makeHideEvent, isMarkerEvent,
+  userAlternativesFrom, flaggedFrom } from './core/store.js';
+import { exportFlagged, applyCorrections, unresolvedFlags, excludedItemIds }
+  from './core/corrections.js';
 import { makeSpeaker } from './core/tts.js';
 import { replay } from './core/srs.js';
 import { pickItems } from './core/scheduler.js';
@@ -175,7 +176,11 @@ export async function boot(doc = document, win = window) {
     // 題庫更正先套（靜態檔，記的是題庫本身錯了），使用者的自訂答案後套，
     // 兩者疊加而非互相取代（規格 §9.2.1）。
     const correctedItems = applyCorrections(allItems, correctionsJson);
+    // 不出的題目：使用者按了「不要再出現」的，以及「這題怪怪的」標記後還沒修好的。
+    // 直接從題庫拿掉（連儀表板分母一起），而不是只在抽題時略過。
+    const excluded = excludedItemIds(events, correctionsJson);
     const items = correctedItems
+      .filter((it) => !excluded.has(it.id))
       .filter((it) => it.lesson >= settings.minLesson
         && it.requires_lesson <= settings.maxLesson
         && (it.skills || []).some((s) => settings.skills.includes(s)))
@@ -226,6 +231,8 @@ export async function boot(doc = document, win = window) {
 
     const rtByEngine = new Map();
     for (const ev of events) {
+      // 標記類事件的 r 是補的 0，算進去會把中位數拉低，作答被誤判成「慢」。
+      if (isMarkerEvent(ev)) continue;
       const it = itemsById.get(ev.i);
       if (!it) continue;
       if (!rtByEngine.has(it.engine)) rtByEngine.set(it.engine, []);
@@ -263,9 +270,18 @@ export async function boot(doc = document, win = window) {
       events.push(ev);
     }
 
+    /** 「不要再出現」與復原。必須 await，理由同 acceptAlternative。 */
+    async function hideItem(itemId, hidden) {
+      const ev = makeHideEvent(deviceId, nextSeq(), itemId, Math.floor(Date.now() / 1000), hidden);
+      await store.appendEvents([ev]);
+      events.push(ev);
+    }
+
     // 待確認清單掛在 window 上供設定區的匯出鈕取用：題庫是每輪重新展開的，
     // 匯出時需要的是「這一輪的 itemsById」，不是模組載入時的快照。
-    win.__jpExportFlagged = () => exportFlagged(flaggedFrom(events), itemsById);
+    // 只匯出還沒修好的：已修好的不必再查一次。
+    win.__jpExportFlagged = () =>
+      exportFlagged(unresolvedFlags(flaggedFrom(events), correctionsJson), itemsById);
 
     renderSession(sessionHost, {
       items: sessionItems,
@@ -283,6 +299,8 @@ export async function boot(doc = document, win = window) {
         speak: (text) => speaker.speak(text),
       }),
       flagItem,
+      hideItem,
+      lex,
       onDone: () => runSession(settings),
     });
   }

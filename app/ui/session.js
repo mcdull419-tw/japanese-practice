@@ -3,6 +3,7 @@
 // 不得自行比對字串或評分。
 import { gradeAnswer } from '../core/grading.js';
 import { makeEvent } from '../core/store.js';
+import { hintText } from '../core/hint.js';
 import { escapeHtml } from './html.js';
 import { engineFor } from '../engines/index.js';
 
@@ -56,6 +57,7 @@ export function renderSession(host, deps) {
       <div class="answer">正解：${escapeHtml(it.answer)}</div>
       <div class="source">出處：${escapeHtml(it.source_ref)}</div>
       ${correct || it.choices ? '' : '<button id="also-ok">我這樣寫也對</button>'}
+      <button id="hide">不要再出現</button>
       <button id="flag">這題怪怪的</button>
       <button id="next">下一題</button>`;
 
@@ -104,7 +106,20 @@ export function renderSession(host, deps) {
       flagBtn.onclick = async () => {
         flagBtn.disabled = true;
         await deps.flagItem(it.id);
-        flagBtn.textContent = '已標記待確認';
+        flagBtn.textContent = '已標記，修好前不再出';
+      };
+    }
+
+    // 「不要再出現」可在同一畫面按第二次復原，誤按不必去別處找。
+    const hideBtn = host.querySelector('#hide');
+    if (hideBtn) {
+      let hidden = false;
+      hideBtn.onclick = async () => {
+        hideBtn.disabled = true;
+        await deps.hideItem(it.id, !hidden);
+        hidden = !hidden;
+        hideBtn.textContent = hidden ? '已不再出現（按此復原）' : '不要再出現';
+        hideBtn.disabled = false;
       };
     }
 
@@ -123,7 +138,7 @@ export function renderSession(host, deps) {
   }
 
   function revealHint(it) {
-    host.querySelector('.hint').textContent = `${it.prompt.hint || ''}（開頭：${it.answer.slice(0, 1)}）`;
+    host.querySelector('.hint').textContent = hintText(it, deps.lex);
   }
 
   showItem();

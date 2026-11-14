@@ -17,9 +17,9 @@ const TARGETS = [
 // 形容詞只操練四個時態。て形與副詞形第16課才教，本專案範圍外；
 // 產出來也會被 requires_lesson=16 擋掉，但仍然生成，讓日後擴充課次不必改這裡。
 const ADJ_TARGETS = [
-  { form: 'neg', hint: '否定形' },
-  { form: 'past', hint: '過去形' },
-  { form: 'pastneg', hint: '過去否定形' },
+  { form: 'neg', hint: '否定形（丁寧體）' },
+  { form: 'past', hint: '過去形（丁寧體）' },
+  { form: 'pastneg', hint: '過去否定形（丁寧體）' },
   { form: 'te', hint: 'て形' },
   { form: 'adverb', hint: '副詞形' },
 ];
@@ -81,6 +81,8 @@ function* generateAdjectives(vocabList, adjTable) {
         skills: [...new Set(covers.map(skillOf).filter(Boolean))],
         prompt: { type: 'text', text: cite, hint },
         answer,
+        // 提示用：答案以漢字開頭時，「看提示」給讀音的第一個假名（core/hint.js）。
+        answerKana: kanaAnswer,
         alternatives: [...alternatives],
         source_ref: `第${v.lesson}課 ことば${v.no ? ` ${v.no}` : ''}`,
       };
@@ -156,6 +158,8 @@ export function* generate(vocabList, verbsTable, adjTable) {
         skills: [...new Set(covers.map(skillOf).filter(Boolean))],
         prompt: { type: 'text', text: cite, hint },
         answer,
+        // 提示用：答案以漢字開頭時，「看提示」給讀音的第一個假名（core/hint.js）。
+        answerKana: kanaAnswer,
         alternatives: [...alternatives],
         source_ref: `第${v.lesson}課 ことば${v.no ? ` ${v.no}` : ''}`,
       };

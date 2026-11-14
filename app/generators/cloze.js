@@ -122,6 +122,7 @@ function* generatePhrases(sentences, vocabList) {
             hint: v.zh,
           },
           answer: head,
+          answerKana: v.kana || undefined,
           alternatives: [...new Set([
             ...(v.kanji ? splitForms(v.kanji) : []),
             ...splitKanaForms(v.kana || ''),

@@ -8,10 +8,17 @@
  *   2. 設定區匯出待確認清單 → exportFlagged()，拿去對照課本或別的工具
  *   3. 查證後把更正寫進 data/corrections.json → applyCorrections() 套用
  *
+ *   4. 被標記的題目在修好之前不再出題（unresolvedFlags）。「修好」的判準是
+ *      corrections.json 該題有 fixed_at 且晚於最後一次標記——題目若是改
+ *      產生器程式修好的，也要在 corrections.json 補一筆只有 fixed_at 的項目。
+ *      修好後又被標記，標記時間晚於 fixed_at，就會再次停出。
+ *
  * 更正檔與使用者資料分開存放（規格 §9.2.1）：corrections.json 是隨網站部署的
  * 靜態檔，記的是「題庫本身錯了」；使用者的 flag 與自訂答案是個人資料，存在
  * 事件日誌裡。兩者在載入時合併，更正檔先套、使用者層後套。
  */
+
+import { hiddenFrom, flaggedFrom } from './store.js';
 
 /**
  * 把被標記的題目整理成可讀的清單。帶上題幹與正解，才有辦法離開這個網站
@@ -54,4 +61,25 @@ export function applyCorrections(items, corrections) {
     if (fix.prompt != null) next.prompt = { ...it.prompt, text: fix.prompt };
     return next;
   });
+}
+
+/**
+ * 還沒修好的標記：flagged（題目 → 最後標記時戳，秒）中，corrections.json
+ * 沒有 fixed_at，或 fixed_at 早於最後一次標記者。回傳同形狀的 Map。
+ */
+export function unresolvedFlags(flagged, corrections) {
+  const out = new Map();
+  for (const [itemId, flaggedAt] of flagged) {
+    const fixedAt = Date.parse(corrections?.[itemId]?.fixed_at ?? '');
+    if (Number.isFinite(fixedAt) && fixedAt / 1000 >= flaggedAt) continue;
+    out.set(itemId, flaggedAt);
+  }
+  return out;
+}
+
+/** 不出的題目：「不要再出現」的，加上「這題怪怪的」標記後還沒修好的。 */
+export function excludedItemIds(events, corrections) {
+  const out = hiddenFrom(events);
+  for (const id of unresolvedFlags(flaggedFrom(events), corrections).keys()) out.add(id);
+  return out;
 }

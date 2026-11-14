@@ -118,3 +118,13 @@ test('重放略過 flag 事件：不算複習、不動 A、不更新 lastSec', (
     'flag 不該更新 lastSec——否則標記題目反而讓它更少出現');
   assert.equal(b.conceptStates.get('w:A').A, a.conceptStates.get('w:A').A);
 });
+
+import { makeHideEvent } from '../../app/core/store.js';
+
+test('重放略過 hide／unhide 事件', () => {
+  const items = new Map([['x', { id: 'x', covers: ['w:A'] }]]);
+  const answered = [{ d: 'd', n: 1, i: 'x', t: 100, g: 3, r: 10, m: 'text' }];
+  const b = replay([...answered, makeHideEvent('d', 2, 'x', 500), makeHideEvent('d', 3, 'x', 600, false)], 1000, items);
+  assert.equal(b.itemStates.get('x').reps, 1);
+  assert.equal(b.itemStates.get('x').lastSec, 100);
+});

@@ -72,3 +72,35 @@ test('corrections.json 的每筆更正都對得上實際存在的題目', () => 
       `更正 ${id} 指向不存在的題目——題庫改過之後這筆更正已成孤兒，請清掉`);
   }
 });
+
+import { unresolvedFlags } from '../../app/core/corrections.js';
+
+test('unresolvedFlags：沒有 fixed_at、或修好後又被標記的，都算還沒修好', () => {
+  const t = (iso) => Date.parse(iso) / 1000;
+  const flagged = new Map([
+    ['none', t('2026-11-01T00:00:00Z')],
+    ['fixed', t('2026-11-01T00:00:00Z')],
+    ['reflagged', t('2026-11-10T00:00:00Z')],
+  ]);
+  const corrections = {
+    fixed: { fixed_at: '2026-11-05T00:00:00Z' },
+    reflagged: { fixed_at: '2026-11-05T00:00:00Z' },
+  };
+  assert.deepEqual([...unresolvedFlags(flagged, corrections).keys()], ['none', 'reflagged']);
+});
+
+import { excludedItemIds } from '../../app/core/corrections.js';
+import { makeFlagEvent, makeHideEvent } from '../../app/core/store.js';
+
+test('excludedItemIds：隱藏中的題目與未修好的標記題都不出；復原與已修好的照出', () => {
+  const t = (iso) => Date.parse(iso) / 1000;
+  const evs = [
+    makeHideEvent('d', 1, 'hidden', t('2026-11-01T00:00:00Z')),
+    makeHideEvent('d', 2, 'restored', t('2026-11-01T00:00:00Z')),
+    makeHideEvent('d', 3, 'restored', t('2026-11-01T00:01:00Z'), false),
+    makeFlagEvent('d', 4, 'flagged', t('2026-11-01T00:00:00Z')),
+    makeFlagEvent('d', 5, 'fixed', t('2026-11-01T00:00:00Z')),
+  ];
+  const corrections = { fixed: { fixed_at: '2026-11-02T00:00:00Z' } };
+  assert.deepEqual([...excludedItemIds(evs, corrections)].sort(), ['flagged', 'hidden']);
+});

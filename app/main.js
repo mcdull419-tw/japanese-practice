@@ -23,7 +23,9 @@ import { pickItems } from './core/scheduler.js';
 import { aggregateSkills } from './core/concepts.js';
 import { buildLexicon } from './core/ruby.js';
 import { presentOptsFor } from './ui/present.js';
-import { watchForUpdate, checkWhenVisible, showUpdateBanner } from './ui/update.js';
+import { watchForUpdate, checkWhenVisible, showUpdateBanner, describeVersion, forceRefresh }
+  from './ui/update.js';
+import { APP_VERSION } from './version.js';
 
 // 舊版把「我這樣寫也對」的寫法存在這個 localStorage 鍵，違反規格 §9.2.1
 // （應與事件日誌同一個 Store）。現已改存事件的 `a` 欄位，此鍵只剩遷移用途。
@@ -314,6 +316,9 @@ export async function boot(doc = document, win = window) {
     // 每輪練習會重建題庫，因此這裡取的是「當下那一輪」的匯出函式，
     // 不是模組載入時的快照。
     exportFlagged: () => (win.__jpExportFlagged ? win.__jpExportFlagged() : []),
+    versionText: `版本 ${APP_VERSION}`,
+    versionLine: () => describeVersion(win.caches, APP_VERSION),
+    reloadLatest: () => forceRefresh(win),
   });
 
   await runSession(settings);
@@ -322,6 +327,13 @@ export async function boot(doc = document, win = window) {
   if (win.navigator && 'serviceWorker' in win.navigator) {
     const container = win.navigator.serviceWorker;
     watchForUpdate(container, () => showUpdateBanner(doc, () => win.location.reload()));
+    // 版本行在開機當下畫一次；首次安裝時離線快取還沒建好，等就緒（或換版）後補更新。
+    const refreshVersionLine = () => describeVersion(win.caches, APP_VERSION).then((t) => {
+      const el = doc.querySelector('#version-line');
+      if (el) el.textContent = t;
+    });
+    container.ready.then(refreshVersionLine).catch(() => {});
+    container.addEventListener('controllerchange', () => setTimeout(refreshVersionLine, 500));
     container.register('sw.js').then((reg) => checkWhenVisible(doc, reg)).catch((err) => {
       console.warn('Service Worker 註冊失敗，離線功能不可用：', err && err.message);
     });

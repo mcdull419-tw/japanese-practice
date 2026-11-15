@@ -47,3 +47,33 @@ export function showUpdateBanner(doc, reload) {
   bar.onclick = reload;
   doc.body.appendChild(bar);
 }
+
+/**
+ * 設定區顯示的版本資訊：程式版本，以及這支手機目前存的離線快取版本。
+ * 兩者不同就代表舊檔還留在快取裡。
+ */
+export async function describeVersion(cacheStorage, appVersion) {
+  let keys = [];
+  try { keys = cacheStorage ? await cacheStorage.keys() : []; } catch { /* 沒有快取就當作空 */ }
+  const stored = keys.filter((k) => k.startsWith('jp-practice-')).map((k) => k.replace('jp-practice-', ''));
+  const cacheText = stored.length ? stored.join('、') : '無';
+  const stale = stored.length > 0 && !(stored.length === 1 && stored[0] === appVersion);
+  return `版本 ${appVersion}｜離線快取 ${cacheText}${stale ? '（與程式不符，請按「重新下載最新版」）' : ''}`;
+}
+
+/**
+ * 「重新下載最新版」：解除 Service Worker、清掉所有離線快取、重新載入。
+ * 只動程式快取——學習紀錄在 IndexedDB、設定在 localStorage，這裡完全不碰。
+ * 重新載入後會重新註冊並下載最新版。
+ */
+export async function forceRefresh(win) {
+  try {
+    const regs = await win.navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.map((r) => r.unregister()));
+  } catch { /* 不支援或失敗時，繼續清快取 */ }
+  try {
+    const keys = await win.caches.keys();
+    await Promise.all(keys.map((k) => win.caches.delete(k)));
+  } catch { /* 同上 */ }
+  win.location.reload();
+}

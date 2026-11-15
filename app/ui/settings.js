@@ -1,5 +1,6 @@
 // 設定畫面：課次範圍、題型開關、技能過濾、每次題數。純 DOM／localStorage 存取，不含判斷邏輯。
 import { SKILLS } from '../core/concepts.js';
+import { escapeHtml } from './html.js';
 
 const ENGINE_LABELS = {
   recall: '單字題',
@@ -75,7 +76,26 @@ export function renderSettings(host, settings, onChange, deps = {}) {
       <button id="apply">套用並開始新的一組</button>
       <button id="export-flagged">匯出待確認題目</button>
       <textarea id="flagged-out" rows="8" hidden readonly></textarea>
+      <div>
+        <button id="reload-latest">重新下載最新版</button>
+        <div class="note" id="version-line">${escapeHtml(deps.versionText || '')}</div>
+      </div>
     </div>`;
+
+  // 手機上的版本卡住時的出路：只清程式快取，學習紀錄不受影響。
+  const reloadBtn = host.querySelector('#reload-latest');
+  if (reloadBtn) {
+    reloadBtn.onclick = () => {
+      reloadBtn.disabled = true;
+      reloadBtn.textContent = '重新下載中…';
+      deps.reloadLatest?.();
+    };
+  }
+  // 快取版本要問瀏覽器才知道，是非同步的，所以先畫出來再補上。
+  Promise.resolve(deps.versionLine?.()).then((t) => {
+    const el = host.querySelector('#version-line');
+    if (el && t) el.textContent = t;
+  });
 
   /**
    * 匯出「這題怪怪的」標記過的題目。輸出到 textarea 而不是觸發下載：

@@ -77,3 +77,10 @@ test('index.html 連上 manifest 與圖示', () => {
   assert.match(html, /rel="manifest"/, 'index.html 缺 manifest 連結');
   assert.match(html, /apple-touch-icon/, 'iOS 加入主畫面需要 apple-touch-icon');
 });
+
+test('app/version.js 的版本與 sw.js 的 CACHE 一致（否則畫面上的比對沒有意義）', async () => {
+  const { APP_VERSION } = await import('../../app/version.js');
+  const m = /const CACHE = 'jp-practice-([^']+)'/.exec(sw);
+  assert.ok(m, 'sw.js 找不到 CACHE');
+  assert.equal(m[1], APP_VERSION, '發佈時要一起改 app/version.js 與 sw.js');
+});

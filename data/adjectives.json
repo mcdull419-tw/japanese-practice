@@ -268,5 +268,65 @@
     "type": "i",
     "kana": "せまい",
     "lesson": 13
+  },
+  "若い": {
+    "type": "i",
+    "kana": "わかい",
+    "lesson": 16
+  },
+  "長い": {
+    "type": "i",
+    "kana": "ながい",
+    "lesson": 16
+  },
+  "短い": {
+    "type": "i",
+    "kana": "みじかい",
+    "lesson": 16
+  },
+  "明るい": {
+    "type": "i",
+    "kana": "あかるい",
+    "lesson": 16
+  },
+  "暗い": {
+    "type": "i",
+    "kana": "くらい",
+    "lesson": 16
+  },
+  "大切": {
+    "type": "na",
+    "kana": "たいせつ",
+    "lesson": 17
+  },
+  "大丈夫": {
+    "type": "na",
+    "kana": "だいじょうぶ",
+    "lesson": 17
+  },
+  "危ない": {
+    "type": "i",
+    "kana": "あぶない",
+    "lesson": 17
+  },
+  "眠い": {
+    "type": "i",
+    "kana": "ねむい",
+    "lesson": 19
+  },
+  "強い": {
+    "type": "i",
+    "kana": "つよい",
+    "lesson": 19
+  },
+  "弱い": {
+    "type": "i",
+    "kana": "よわい",
+    "lesson": 19
+  },
+  "無理": {
+    "type": "na",
+    "kana": "むり",
+    "lesson": 19
   }
 }

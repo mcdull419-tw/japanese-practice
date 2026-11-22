@@ -7,7 +7,7 @@ const defs = JSON.parse(readFileSync(new URL('../../data/concepts.json', import.
 
 function allSentences() {
   const out = new Map();
-  for (let n = 1; n <= 15; n++) {
+  for (let n = 1; n <= 20; n++) {
     const d = JSON.parse(readFileSync(new URL(`../../data/lessons/${String(n).padStart(2, '0')}.json`, import.meta.url)));
     for (const s of d.sentences || []) out.set(s.id, { ...s, lesson: n });
   }
@@ -60,5 +60,6 @@ test('只標註 文型 與 例文 段落', () => {
 
 test('標註總數在預期範圍', () => {
   const n = Object.values(marks).reduce((a, l) => a + l.length, 0);
-  assert.ok(n >= 200 && n <= 350, `標註數 ${n} 不如預期（文型＋例文 約 296 個句末助詞）`);
+  // 第1~15課 278 個，第16~20課再加 103 個（文型＋例文，扣掉て形・それから 這類非助詞）。
+  assert.ok(n >= 300 && n <= 450, `標註數 ${n} 不如預期（第1~20課 文型＋例文 約 380 個）`);
 });

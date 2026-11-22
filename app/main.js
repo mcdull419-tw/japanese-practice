@@ -130,7 +130,7 @@ export async function boot(doc = document, win = window) {
     // 而 requires_lesson 的過濾才是決定哪些題目可用的關鍵，見下方 filter）。
     const lessonNumbers = [...Array(settings.maxLesson)].map((_, i) => i + 1);
     const [lessonsMap, verbsTable, adjTable, conceptDefs, particleMarks, rubyJson,
-      drillsJson, correctionsJson] =
+      drillsJson, correctionsJson, vocabFixes, patternFixes] =
       await Promise.all([
         loadLessons(lessonNumbers, fetchLesson),
         fetchVerbs(),
@@ -140,8 +140,10 @@ export async function boot(doc = document, win = window) {
         fetchJson('data/ruby-lexicon.json'),
         fetchJson('data/drills.json'),
         fetchJson('data/corrections.json').catch(() => ({})),
+        fetchJson('data/vocab-fixes.json').catch(() => []),
+        fetchJson('data/pattern-fixes.json').catch(() => ({})),
       ]);
-    const idx = buildIndex(lessonsMap);
+    const idx = buildIndex(lessonsMap, vocabFixes, patternFixes);
     const lex = buildLexicon(rubyJson);
     // 判分用：答案寫假名、使用者寫漢字時，靠單字表認得使用者的漢字（core/reading.js）。
     const readingDicts = {

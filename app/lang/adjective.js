@@ -11,8 +11,11 @@
  */
 export const FORMS = ['plain', 'neg', 'past', 'pastneg', 'te', 'adverb'];
 
-/** 各形態在課本中首次出現的課次（已核對 L08／L12 的 grammar 標題）。 */
-export const FORM_LESSON = { plain: 8, neg: 8, past: 12, pastneg: 12, te: 16, adverb: 16 };
+/**
+ * 各形態在課本中首次出現的課次（已核對 L08／L12／L16／L19 的 grammar 標題）。
+ * 副詞形（～く／～に）是第19課「い形容詞（～い）→～く」，配なります 教，不是第16課。
+ */
+export const FORM_LESSON = { plain: 8, neg: 8, past: 12, pastneg: 12, te: 16, adverb: 19 };
 
 const I_SUFFIX = { plain: 'いです', neg: 'くないです', past: 'かったです',
   pastneg: 'くなかったです', te: 'くて', adverb: 'く' };

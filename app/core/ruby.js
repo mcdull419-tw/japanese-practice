@@ -44,6 +44,24 @@ export function buildLexicon(json) {
   return lex;
 }
 
+/**
+ * 讀音由後面的送假名決定的多讀音字（ruby-lexicon.json 的 ambiguous 區）：
+ * 来ます／来た／来て＝き、来る＝く、来ない＝こ；入れる＝い、入る＝はい；
+ * 出す＝だ、出る／出かける＝で；熱い＝あつ、熱（發燒）＝ねつ。
+ * 只看緊接在後的一個假名，判不出來回 null（照舊不加注，不猜）。
+ */
+const OKURIGANA = {
+  来: [[/^[まただてよ]/, 'き'], [/^[るれ]/, 'く'], [/^[なこい]/, 'こ']],
+  入: [[/^れ/, 'い'], [/^[りっらる]/, 'はい']],
+  出: [[/^[しさすそせ]/, 'だ'], [/^[まてかたるなよらろ]/, 'で']],
+  熱: [[/^[いくかさ]/, 'あつ'], [/^$|^[^ぁ-ん]|^[がをはもで]/, 'ねつ']],
+};
+
+export function okuriganaReading(ch, next) {
+  for (const [re, kana] of OKURIGANA[ch] || []) if (re.test(next || '')) return kana;
+  return null;
+}
+
 /** 相鄰 text token 合併，讓輸出與「沒加注」時完全一致，測試才好寫也好讀。 */
 function pushText(out, s) {
   if (!s) return;
@@ -70,9 +88,14 @@ export function annotateWithLexicon(text, lex) {
         const cand = run.slice(i, i + len);
         if (lex.has(cand)) { hit = cand; break; }
       }
+      const okuri = !hit && i === run.length - 1
+        ? okuriganaReading(run[i], text[m.index + run.length]) : null;
       if (hit) {
         out.push({ t: 'ruby', base: hit, kana: lex.get(hit) });
         i += hit.length;
+      } else if (okuri) {
+        out.push({ t: 'ruby', base: run[i], kana: okuri });
+        i += 1;
       } else {
         pushText(out, run[i]);
         i += 1;

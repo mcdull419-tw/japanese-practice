@@ -8,7 +8,7 @@ const adjectives = JSON.parse(readFileSync(new URL('../../data/adjectives.json',
 
 function allVocab() {
   const out = [];
-  for (let n = 1; n <= 15; n++) {
+  for (let n = 1; n <= 20; n++) {
     const d = JSON.parse(readFileSync(new URL(`../../data/lessons/${String(n).padStart(2, '0')}.json`, import.meta.url)));
     for (const v of d.vocab || []) out.push({ ...v, lesson: n });
   }
@@ -41,7 +41,7 @@ test('每筆欄位齊備且 type 合法', () => {
     assert.equal(typeof info.kana, 'string', `${key} 缺 kana`);
     assert.ok(info.kana.length > 0, `${key} 的 kana 為空`);
     assert.equal(typeof info.lesson, 'number', `${key} 缺 lesson`);
-    assert.ok(info.lesson >= 1 && info.lesson <= 15, `${key} 的 lesson 超出 1~15：${info.lesson}`);
+    assert.ok(info.lesson >= 1 && info.lesson <= 20, `${key} 的 lesson 超出 1~20：${info.lesson}`);
     assert.ok(!key.includes('［'), `${key} 的鍵未去除［な］標記`);
   }
 });

@@ -54,3 +54,15 @@ test('buildIndex 對缺少 patterns／drills 的課次不炸', () => {
   assert.deepEqual(idx.patterns, []);
   assert.deepEqual(idx.drills, []);
 });
+
+test('cleanVocab：漢字欄被切掉的開頭接回去，尾巴的［お］與句點去掉', async () => {
+  const { cleanVocab } = await import('../../app/core/data.js');
+  const c = (kana, kanji) => { const v = cleanVocab({ kana, kanji }); return [v.kana, v.kanji]; };
+  assert.deepEqual(c('このあいだ               この', '間'), ['このあいだ', 'この間']);
+  assert.deepEqual(c('おねえさん                お', '姉さん'), ['おねえさん', 'お姉さん']);
+  assert.deepEqual(c('［お］てら. ［お］', '寺'), ['［お］てら', '［お］寺']);
+  assert.deepEqual(c('［お］くに ［お］', '国'), ['［お］くに', '［お］国']);
+  assert.deepEqual(c('［お］ふろ.', null), ['［お］ふろ', null]);
+  assert.deepEqual(c('とお                      10つ', null), ['とお', null]);
+  assert.deepEqual(c('しずか［な］', '静か［な］'), ['しずか［な］', '静か［な］']);
+});

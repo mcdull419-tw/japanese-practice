@@ -5,7 +5,8 @@
  * （取第一個寫法作引用形查 verbsTable、其餘寫法的變化也算 alternatives）共用，
  * 避免兩處各自維護一份分隔符正規式而漂移。
  */
-const DELIMS = /[、，,／/]/;
+// 數字之間的「、」不是並列寫法而是「2、3日」（兩三天）的一部分，不切。
+const DELIMS = /(?<![0-9０-９])[、，,]|[／/]/;
 
 export function splitForms(s) {
   if (typeof s !== 'string' || s.length === 0) return [];

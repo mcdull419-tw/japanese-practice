@@ -192,3 +192,20 @@ test('「…にん」這類接尾詞不必打出「…」也算對', () => {
   const [zh2jp] = [...generate([{ kana: '…にん', kanji: '人', zh: '…個人', lesson: 11, no: 18 }])];
   assert.ok(zh2jp.alternatives.includes('にん'));
 });
+
+test('同一個中文題幹的不同日文詞互列為 alternatives（規格 §9.2）', async () => {
+  const { generate } = await import('../../app/generators/recall.js');
+  const items = [...generate([
+    { kana: 'はいります', kanji: '入ります', zh: '洗澡', lesson: 17, no: 15 },
+    { kana: '［お］ふろ', kanji: null, zh: '洗澡', lesson: 17, no: 27 },
+  ])].filter((i) => i.id.endsWith(':zh2jp'));
+  assert.ok(items[0].alternatives.includes('［お］ふろ'));
+  assert.ok(items[1].alternatives.includes('入ります'));
+});
+
+test('數字之間的「、」不切：2、3日 不會讓「2」被判對', async () => {
+  const { generate } = await import('../../app/generators/recall.js');
+  const [it] = [...generate([{ kana: '2、3にち', kanji: '2、3日', zh: '兩三天', lesson: 17, no: 31 }])];
+  assert.ok(!it.alternatives.includes('2'));
+  assert.ok(it.alternatives.includes('2、3日'));
+});

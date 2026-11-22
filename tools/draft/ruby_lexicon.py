@@ -21,7 +21,7 @@ KANA = re.compile(r"[\u3040-\u30ff]")
 
 def collect():
     readings = defaultdict(Counter)
-    for n in range(1, 16):
+    for n in range(1, 21):
         data = json.loads((ROOT / f"data/lessons/{n:02d}.json").read_text(encoding="utf-8"))
         for s in data.get("sentences", []):
             for r in s.get("ruby", []):

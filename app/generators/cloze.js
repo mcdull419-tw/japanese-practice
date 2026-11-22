@@ -87,13 +87,23 @@ const PHRASE_TAIL = new Set(['', 'は', 'が', 'を', 'に', 'で', 'と', 'へ'
  */
 function* generatePhrases(sentences, vocabList) {
   // 引用形與假名兩種寫法都建索引：課本句子裡可能寫漢字也可能寫假名。
-  const byForm = new Map();
+  // 同一寫法可能對應多個詞條（降ります＝ふります 第14課／おります 第16課）。
+  // 取「不晚於句子課次的最後一個」：第16課句子裡的降ります 是第16課教的那個。
+  const candidates = new Map();
   for (const v of vocabList) {
     if (!v.zh) continue;
     for (const form of [...(v.kanji ? splitForms(v.kanji) : []), ...splitKanaForms(v.kana || '')]) {
-      if (form && !byForm.has(form)) byForm.set(form, v);
+      if (!form) continue;
+      if (!candidates.has(form)) candidates.set(form, []);
+      candidates.get(form).push(v);
     }
   }
+  const lookup = (form, lesson) => {
+    const list = candidates.get(form);
+    if (!list) return undefined;
+    const upTo = list.filter((v) => v.lesson <= lesson);
+    return upTo.length ? upTo[upTo.length - 1] : list[0];
+  };
 
   for (const s of sentences) {
     if (!PHRASE_SECTIONS.has(s.section)) continue;
@@ -105,7 +115,7 @@ function* generatePhrases(sentences, vocabList) {
       // 取最長的成功比對，避免把「手」當成內容詞。
       for (let cut = body.length; cut >= 1; cut--) {
         const head = body.slice(0, cut);
-        const v = byForm.get(head);
+        const v = lookup(head, s.lesson);
         if (!v || !PHRASE_TAIL.has(body.slice(cut))) continue;
         const covers = [conceptsForVocab(v)[0]];
         yield {

@@ -21,13 +21,16 @@ const VERBS = {
 // 這裡的測試資料每個詞都有 kanji，所以引用形就是 kanji 欄位：
 // 送ります(おくります)、食べます(たべます)、切ります(きります)。
 
-test('每個動詞產生四種變化題', () => {
+test('每個動詞產生七種變化題（含第17~19課的ない形・辞書形・た形）', () => {
   const items = [...generate(V, VERBS)];
   const ids = items.filter((i) => i.id.startsWith('conj:送ります')).map((i) => i.id);
   assert.deepEqual(ids.sort(), [
+    'conj:送ります:masu2dict',
     'conj:送ります:masu2masen',
     'conj:送ります:masu2masendeshita',
     'conj:送ります:masu2mashita',
+    'conj:送ります:masu2nai',
+    'conj:送ります:masu2ta',
     'conj:送ります:masu2te',
   ]);
 });
@@ -118,13 +121,14 @@ test('形容詞變化題：な形的 では 寫法也算對', () => {
   assert.ok(neg.alternatives.includes('きれいではありません'));
 });
 
-test('て形與副詞形的 requires_lesson 為 16（1~15 範圍內不會出現）', () => {
+test('て形第16課、副詞形第19課才解鎖', () => {
   const vocab = [{ kana: 'おおきい', kanji: '大きい', zh: '大', lesson: 8, no: 11 }];
   const adjTable = { '大きい': { type: 'i', kana: 'おおきい', lesson: 8 } };
   const items = [...generate(vocab, {}, adjTable)];
   const te = items.find((it) => it.id === 'adj:大きい:te');
   assert.ok(te);
   assert.equal(te.requires_lesson, 16);
+  assert.equal(items.find((it) => it.id === 'adj:大きい:adverb').requires_lesson, 19);
 });
 
 test('未提供 adjTable 時行為不變（只產動詞題）', () => {
@@ -161,4 +165,21 @@ test('形容詞：並列寫法取第一個為引用形、括號異寫只取括�
   assert.ok(good, 'いい （よい） 應以 いい 為引用形');
   assert.equal(good.answer, 'よかったです');
   assert.equal(good.lesson, 8);
+});
+
+test('同漢字不同動詞：降ります（ふります／おります）各自出題、題幹標讀音', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const verbs = JSON.parse(await readFile('data/verbs.json', 'utf8'));
+  const vocab = [
+    { kana: 'ふります', kanji: '降ります', lesson: 14 },
+    { kana: 'おります', kanji: '降ります', lesson: 16 },
+  ];
+  const items = [...generate(vocab, verbs)];
+  const fu = items.find((i) => i.id === 'conj:降ります:masu2te');
+  const o = items.find((i) => i.id === 'conj:降ります（おります）:masu2te');
+  assert.equal(fu.answer, '降って');
+  assert.equal(fu.prompt.text, '降ります（ふります）');
+  assert.equal(o.answer, '降りて');
+  assert.equal(o.prompt.text, '降ります（おります）');
+  assert.ok(o.alternatives.includes('おりて'));
 });

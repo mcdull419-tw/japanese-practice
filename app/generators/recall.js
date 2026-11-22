@@ -102,6 +102,15 @@ export function* generate(vocabList) {
     kanaByKanji.get(v.kanji).add(v.kana);
   }
 
+  // 規格 §9.2「中文釋義撞詞」：同一個中文題幹對應多個日文詞（洗澡＝はいります／
+  // ［お］ふろ，那裡＝そこ／あそこ）時，題幹分不出要哪一個，互列為 alternatives。
+  const formsByZh = new Map();
+  for (const v of usable) {
+    const forms = [...(v.kanji ? splitForms(v.kanji) : []), ...splitKanaForms(v.kana)];
+    if (!formsByZh.has(v.zh)) formsByZh.set(v.zh, new Set());
+    for (const f of forms) formsByZh.get(v.zh).add(f);
+  }
+
   for (const v of usable) {
     const collides = byKana.get(v.kana).length > 1;
     const key = collides ? `${v.kana}:${disambiguator(v)}` : v.kana;
@@ -122,6 +131,7 @@ export function* generate(vocabList) {
       ...splitKanaForms(v.kana),
       // 「…にん」這類接尾詞：課本的「…」只是「接在數字後」的記號，不必打出來。
       ...(v.kana.startsWith('…') ? [v.kana.replace(/^…+/, '')] : []),
+      ...formsByZh.get(v.zh),
     ])];
     yield makeItem({
       id: `recall:${key}:zh2jp`, v,

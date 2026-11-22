@@ -645,5 +645,206 @@
    "L15-B5",
    "L15-B6"
   ]
+ },
+ "g:te_sequence": {
+  "label": "動詞て形、動詞て形、～（動作接續）",
+  "requires_lesson": 16,
+  "source_ref": "第16課 文法1",
+  "patterns": [
+   "L16-A1",
+   "L16-B1"
+  ]
+ },
+ "g:adj_te": {
+  "label": "い形容詞くて／な形容詞・名詞で、～（形容詞接續）",
+  "requires_lesson": 16,
+  "source_ref": "第16課 文法2",
+  "patterns": [
+   "L16-A4",
+   "L16-B5",
+   "L16-B6",
+   "L16-B7"
+  ]
+ },
+ "g:te_kara": {
+  "label": "動詞て形から、～（之後）",
+  "requires_lesson": 16,
+  "source_ref": "第16課 文法4",
+  "patterns": [
+   "L16-A2",
+   "L16-B3",
+   "L16-B4"
+  ]
+ },
+ "g:wa_ga_adj": {
+  "label": "名詞は 名詞が 形容詞（身體特徵等）",
+  "requires_lesson": 16,
+  "source_ref": "第16課 文法5",
+  "patterns": [
+   "L16-A3"
+  ]
+ },
+ "g:douyatte": {
+  "label": "どうやって（方法）",
+  "requires_lesson": 16,
+  "source_ref": "第16課 文法6"
+ },
+ "g:dono": {
+  "label": "どの 名詞（三者以上選一）",
+  "requires_lesson": 16,
+  "source_ref": "第16課 文法7"
+ },
+ "g:nai_form": {
+  "label": "動詞ない形",
+  "requires_lesson": 17,
+  "source_ref": "第17課 文法1"
+ },
+ "g:naide_kudasai": {
+  "label": "動詞ない形ないで ください（請不要）",
+  "requires_lesson": 17,
+  "source_ref": "第17課 文法2",
+  "patterns": [
+   "L17-A2",
+   "L17-B2"
+  ]
+ },
+ "g:nakereba_narimasen": {
+  "label": "動詞ない形なければ なりません（必須）",
+  "requires_lesson": 17,
+  "source_ref": "第17課 文法3",
+  "patterns": [
+   "L17-A3",
+   "L17-B3",
+   "L17-B4",
+   "L17-B6",
+   "L17-B7"
+  ]
+ },
+ "g:nakutemo_ii": {
+  "label": "動詞ない形なくても いいです（不必）",
+  "requires_lesson": 17,
+  "source_ref": "第17課 文法4",
+  "patterns": [
+   "L17-A4",
+   "L17-B5"
+  ]
+ },
+ "g:object_wa": {
+  "label": "名詞（受詞）は（把受詞提為主題）",
+  "requires_lesson": 17,
+  "source_ref": "第17課 文法5",
+  "patterns": [
+   "L17-A5",
+   "L17-B8"
+  ]
+ },
+ "p:wa:object": {
+  "label": "助詞 は（受詞提為主題）",
+  "requires_lesson": 17,
+  "source_ref": "第17課 文法5"
+ },
+ "p:madeni:deadline": {
+  "label": "助詞 までに（期限）",
+  "requires_lesson": 17,
+  "source_ref": "第17課 文法6"
+ },
+ "g:dict_form": {
+  "label": "動詞字典形",
+  "requires_lesson": 18,
+  "source_ref": "第18課 文法1"
+ },
+ "g:dekimasu": {
+  "label": "名詞／動詞字典形こと が できます（能力、可能）",
+  "requires_lesson": 18,
+  "source_ref": "第18課 文法2",
+  "patterns": [
+   "L18-A2",
+   "L18-A3",
+   "L18-B1",
+   "L18-B3",
+   "L18-B4"
+  ]
+ },
+ "g:shumi_koto": {
+  "label": "わたしの趣味は 名詞／動詞字典形ことです",
+  "requires_lesson": 18,
+  "source_ref": "第18課 文法3",
+  "patterns": [
+   "L18-A4"
+  ]
+ },
+ "g:mae_ni": {
+  "label": "動詞字典形／名詞の／數量詞 まえに、～（之前）",
+  "requires_lesson": 18,
+  "source_ref": "第18課 文法4",
+  "patterns": [
+   "L18-A5",
+   "L18-B7"
+  ]
+ },
+ "g:ta_form": {
+  "label": "動詞た形",
+  "requires_lesson": 19,
+  "source_ref": "第19課 文法1"
+ },
+ "g:ta_koto_ga_aru": {
+  "label": "動詞た形 ことが あります（經驗）",
+  "requires_lesson": 19,
+  "source_ref": "第19課 文法2",
+  "patterns": [
+   "L19-A2",
+   "L19-B2"
+  ]
+ },
+ "g:tari_tari": {
+  "label": "動詞た形り、動詞た形り します（列舉動作）",
+  "requires_lesson": 19,
+  "source_ref": "第19課 文法3",
+  "patterns": [
+   "L19-A3",
+   "L19-B4"
+  ]
+ },
+ "g:naru": {
+  "label": "い形容詞く／な形容詞・名詞に なります（變化）",
+  "requires_lesson": 19,
+  "source_ref": "第19課 文法4",
+  "patterns": [
+   "L19-A4",
+   "L19-B6"
+  ]
+ },
+ "p:ni:result": {
+  "label": "助詞 に（變化的結果：～に なります）",
+  "requires_lesson": 19,
+  "source_ref": "第19課 文法4"
+ },
+ "g:plain_style": {
+  "label": "常體（普通形）",
+  "requires_lesson": 20,
+  "source_ref": "第20課 文法1",
+  "patterns": [
+   "L20-A2",
+   "L20-B1",
+   "L20-B2",
+   "L20-B3",
+   "L20-B4"
+  ]
+ },
+ "g:plain_conversation": {
+  "label": "常體的會話",
+  "requires_lesson": 20,
+  "source_ref": "第20課 文法3",
+  "patterns": [
+   "L20-B5",
+   "L20-B6",
+   "L20-B7",
+   "L20-B8"
+  ]
+ },
+ "p:ni:arrival": {
+  "label": "助詞 に（到達點：乗ります、入ります、止めます）",
+  "requires_lesson": 16,
+  "source_ref": "第13課 文法4"
  }
 }

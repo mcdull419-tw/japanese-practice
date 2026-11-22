@@ -3,10 +3,14 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const verbs = JSON.parse(await readFile('data/verbs.json', 'utf8'));
-const lessons = await Promise.all(
-  [...Array(15)].map((_, i) =>
+import { applyVocabFixes } from '../../app/core/data.js';
+
+const vocabFixes = JSON.parse(await readFile('data/vocab-fixes.json', 'utf8'));
+// 課本範圍 1~20 課；單字先套 data/vocab-fixes.json，與 app 載入時看到的一致。
+const lessons = (await Promise.all(
+  [...Array(20)].map((_, i) =>
     readFile(`data/lessons/${String(i + 1).padStart(2, '0')}.json`, 'utf8').then(JSON.parse))
-);
+)).map((d) => ({ ...d, vocab: d.vocab.map((v) => applyVocabFixes(v, d.lesson, vocabFixes)) }));
 
 // 鍵 = 引用形（kanji || kana）。這樣「起きます」(II) 與「置きます」(I)
 // 這種同假名不同動詞才不會互相覆蓋——見下方「引用形為鍵」測試。
@@ -16,11 +20,14 @@ const lessons = await Promise.all(
 // 對多重寫法的處理）。這裡取第一個寫法，讓涵蓋率測試仍能對得上修正後的鍵。
 function keyOf(v) {
   const cite = v.kanji || v.kana;
-  return cite ? cite.split(/[、，,／/]/)[0].trim() : cite;
+  const k = cite ? cite.split(/[、，,／/]/)[0].trim() : cite;
+  // 同漢字不同動詞（降ります＝ふります／おります）另立「漢字（假名）」鍵。
+  return verbs[`${k}（${v.kana}）`] ? `${k}（${v.kana}）` : k;
 }
 
 test('涵蓋語料中所有 ます 結尾的單字（排除非單一動詞者）', () => {
-  const EXCLUDE = new Set(['しって  います', 'すんで  います', 'いらっしゃいます います']);
+  const EXCLUDE = new Set(['しって  います', 'すんで  います', 'いらっしゃいます います',
+    'もって  いきます', 'もって  きます']);
   const missing = [];
   for (const d of lessons) {
     for (const v of d.vocab) {

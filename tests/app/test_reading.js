@@ -70,3 +70,17 @@ test('輸入端詞典：單字表的漢字段推得讀音；多讀音字不收',
   assert.equal(il.get('茶'), 'ちゃ');
   assert.equal(il.has('人'), false);
 });
+
+test('［ ］內可省略、開頭的…／～不必打', () => {
+  const item = { answer: 'しずか［な］', alternatives: ['静か［な］'] };
+  for (const x of ['しずか', 'しずかな', '静か', '静かな', 'しずか［な］']) {
+    assert.equal(gradeAnswer(x, item, 1, 1, false, { lex, inputLex }).correct, true, x);
+  }
+  const o = { answer: '［お］くに', alternatives: ['［お］国'] };
+  for (const x of ['くに', 'おくに', '国', 'お国']) {
+    assert.equal(gradeAnswer(x, o, 1, 1, false, { lex, inputLex }).correct, true, x);
+  }
+  const n = { answer: '…にん', alternatives: [], strictKana: true };
+  assert.equal(gradeAnswer('にん', n, 1, 1, false, {}).correct, true);
+  assert.equal(gradeAnswer('しずかに', item, 1, 1, false, { lex, inputLex }).correct, false);
+});

@@ -24,7 +24,7 @@ UNAMBIGUOUS = {"を": "p:wo:object", "は": "p:wa:topic", "も": "p:mo:also"}
 
 def main():
     out = {}
-    for n in range(1, 16):
+    for n in range(1, 21):
         data = json.loads((ROOT / f"data/lessons/{n:02d}.json").read_text(encoding="utf-8"))
         for s in data.get("sentences", []):
             if s.get("section") not in SECTIONS:

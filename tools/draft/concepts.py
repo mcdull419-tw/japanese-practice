@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def main():
     out = []
-    for n in range(1, 16):
+    for n in range(1, 21):
         data = json.loads((ROOT / f"data/lessons/{n:02d}.json").read_text(encoding="utf-8"))
         patterns = [p["id"] for p in data.get("patterns", [])]
         for g in data.get("grammar", []):

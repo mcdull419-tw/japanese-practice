@@ -15,6 +15,7 @@
  * 數字一律照打阿拉伯數字；數字後的量詞（時／じ、分／ふん、回／かい…）兩種寫法都收。
  */
 import { toHiragana, stripSpaces } from '../lang/kana.js';
+import { okuriganaReading } from './ruby.js';
 
 const KANJI = /[一-鿿々]/;
 const KATAKANA = /[ァ-ヺー]/;
@@ -51,6 +52,8 @@ const COUNTER_KEYS = [...new Set([
  * 該字只收漢字寫法（與修改前相同，不會更糟）。
  */
 function contextReading(ch, prev, next) {
+  const okuri = okuriganaReading(ch, next);
+  if (okuri) return okuri;
   switch (ch) {
     case '人':
       if (prev && (KATAKANA.test(prev) || KANJI.test(prev))) return 'じん'; // ドイツ人、日本人
@@ -194,7 +197,10 @@ function matchTokens(s, tokens) {
 
 /** 輸入是否與 target 同一句話（每個漢字詞寫漢字或讀音皆可，可混寫）。 */
 export function matchesReading(input, target, lex, inputLex = lex) {
-  const tokens = readingTokens(target, lex);
+  // 答案也用合併詞典切：振假名詞典只收課本句子標過讀音的詞，練習Ｂ 答案裡的
+  // 練習、残業、目、歯 不在其中；只靠它會把「練習」切成 練＋習(なら)。
+  // 合併詞典裡振假名詞典優先，單字表只補缺。
+  const tokens = readingTokens(target, inputLex || lex);
   const raw = toHiragana(prep(input));
   if (raw.length === 0) return false;
   if (matchTokens(raw, tokens)) return true;

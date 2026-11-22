@@ -88,3 +88,11 @@ test('相鄰的 text token 會被合併，不產生碎片', () => {
   const lex = buildLexicon({ auto: {} });
   assert.deepEqual(annotateWithLexicon('あ亜い', lex), [{ t: 'text', s: 'あ亜い' }]);
 });
+
+test('送假名決定讀音的多讀音字：来・入・出・熱', async () => {
+  const { okuriganaReading } = await import('../../app/core/ruby.js');
+  const cases = [['来', 'ました', 'き'], ['来', 'る', 'く'], ['来', 'ない', 'こ'], ['来', 'て', 'き'],
+    ['入', 'れます', 'い'], ['入', 'ります', 'はい'], ['出', 'します', 'だ'], ['出', 'ます', 'で'],
+    ['出', 'かけます', 'で'], ['熱', 'い', 'あつ'], ['熱', 'が', 'ねつ'], ['何', 'を', null]];
+  for (const [ch, next, kana] of cases) assert.equal(okuriganaReading(ch, next), kana, ch + next);
+});

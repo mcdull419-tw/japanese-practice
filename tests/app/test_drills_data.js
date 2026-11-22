@@ -15,7 +15,7 @@ const JP_OK = /^[぀-ヿ一-鿿ｦ-ﾟ0-9A-Za-zＡ-Ｚａ-ｚ０-９、。，？
 
 test('每則都有課次、出處、範例與至少三列', () => {
   for (const [id, d] of Object.entries(drills)) {
-    assert.ok(d.lesson >= 1 && d.lesson <= 15, `${id} 的課次異常`);
+    assert.ok(d.lesson >= 1 && d.lesson <= 20, `${id} 的課次異常`);
     assert.match(d.source_ref, /^第\d+課 練習Ｂ-\d+$/, `${id} 的 source_ref 格式異常`);
     assert.ok(d.model_cue && d.model_cue.length > 0, `${id} 缺範例提示`);
     assert.ok(d.model_answer && d.model_answer.length > 0, `${id} 缺範例答案`);
@@ -72,8 +72,9 @@ test('答案只含日文可用字元（抓貼錯內容與控制字元）', () =>
 test('每一列的答案至少含提示詞中一個詞的詞頭（抓整列錯位）', () => {
   for (const [id, d] of Object.entries(drills)) {
     for (const [i, r] of d.rows.entries()) {
-      const tokens = r.cue
-        .replace(/[（(].*?[）)]/g, ' ')  // 括號內是補充資訊，不一定原樣出現
+      // 括號內是補充資訊，不一定原樣出現；但 ask 型只答括號裡的內容（「（ 車が 多い・
+      // 緑が 少ない ）」→「車が 多くて、緑が 少ないです。」），這時括號才是答案的來源。
+      const tokens = (d.ask ? r.cue.replace(/[（()）]/g, ' ') : r.cue.replace(/[（(].*?[）)]/g, ' '))
         .split(/[\s　・／\/、。]+/)
         .filter((s) => s.length >= 1);  // 單字提示（「魚」）也算一個詞
       assert.ok(tokens.length > 0, `${id} 第 ${i} 列的提示切不出任何詞`);
@@ -89,7 +90,7 @@ test('每一列的答案至少含提示詞中一個詞的詞頭（抓整列錯�
 
 test('id 對得上課本的練習Ｂ', () => {
   const real = new Set();
-  for (let n = 1; n <= 15; n++) {
+  for (let n = 1; n <= 20; n++) {
     const d = JSON.parse(readFileSync(
       new URL(`../../data/lessons/${String(n).padStart(2, '0')}.json`, import.meta.url)));
     for (const dr of d.drills || []) real.add(dr.id);

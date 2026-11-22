@@ -424,5 +424,233 @@
     "dict": "思い出す",
     "kana": "おもいだします",
     "lesson": 15
+  },
+  "乗ります": {
+    "group": "I",
+    "dict": "乗る",
+    "kana": "のります",
+    "lesson": 16
+  },
+  "乗り換えます": {
+    "group": "II",
+    "dict": "乗り換える",
+    "kana": "のりかえます",
+    "lesson": 16
+  },
+  "浴びます": {
+    "group": "II",
+    "dict": "浴びる",
+    "kana": "あびます",
+    "lesson": 16
+  },
+  "入れます": {
+    "group": "II",
+    "dict": "入れる",
+    "kana": "いれます",
+    "lesson": 16
+  },
+  "やめます": {
+    "group": "II",
+    "dict": "やめる",
+    "kana": "やめます",
+    "lesson": 16
+  },
+  "押します": {
+    "group": "I",
+    "dict": "押す",
+    "kana": "おします",
+    "lesson": 16
+  },
+  "覚えます": {
+    "group": "II",
+    "dict": "覚える",
+    "kana": "おぼえます",
+    "lesson": 17
+  },
+  "忘れます": {
+    "group": "II",
+    "dict": "忘れる",
+    "kana": "わすれます",
+    "lesson": 17
+  },
+  "なくします": {
+    "group": "I",
+    "dict": "なくす",
+    "kana": "なくします",
+    "lesson": 17
+  },
+  "払います": {
+    "group": "I",
+    "dict": "払う",
+    "kana": "はらいます",
+    "lesson": 17
+  },
+  "返します": {
+    "group": "I",
+    "dict": "返す",
+    "kana": "かえします",
+    "lesson": 17
+  },
+  "出かけます": {
+    "group": "II",
+    "dict": "出かける",
+    "kana": "でかけます",
+    "lesson": 17
+  },
+  "脱ぎます": {
+    "group": "I",
+    "dict": "脱ぐ",
+    "kana": "ぬぎます",
+    "lesson": 17
+  },
+  "心配します": {
+    "group": "III",
+    "dict": "心配する",
+    "kana": "しんぱいします",
+    "lesson": 17
+  },
+  "残業します": {
+    "group": "III",
+    "dict": "残業する",
+    "kana": "ざんぎょうします",
+    "lesson": 17
+  },
+  "出張します": {
+    "group": "III",
+    "dict": "出張する",
+    "kana": "しゅっちょうします",
+    "lesson": 17
+  },
+  "できます": {
+    "group": "II",
+    "dict": "できる",
+    "kana": "できます",
+    "lesson": 18
+  },
+  "洗います": {
+    "group": "I",
+    "dict": "洗う",
+    "kana": "あらいます",
+    "lesson": 18
+  },
+  "弾きます": {
+    "group": "I",
+    "dict": "弾く",
+    "kana": "ひきます",
+    "lesson": 18
+  },
+  "歌います": {
+    "group": "I",
+    "dict": "歌う",
+    "kana": "うたいます",
+    "lesson": 18
+  },
+  "集めます": {
+    "group": "II",
+    "dict": "集める",
+    "kana": "あつめます",
+    "lesson": 18
+  },
+  "捨てます": {
+    "group": "II",
+    "dict": "捨てる",
+    "kana": "すてます",
+    "lesson": 18
+  },
+  "換えます": {
+    "group": "II",
+    "dict": "換える",
+    "kana": "かえます",
+    "lesson": 18
+  },
+  "運転します": {
+    "group": "III",
+    "dict": "運転する",
+    "kana": "うんてんします",
+    "lesson": 18
+  },
+  "予約します": {
+    "group": "III",
+    "dict": "予約する",
+    "kana": "よやくします",
+    "lesson": 18
+  },
+  "見学します": {
+    "group": "III",
+    "dict": "見学する",
+    "kana": "けんがくします",
+    "lesson": 18
+  },
+  "登ります": {
+    "group": "I",
+    "dict": "登る",
+    "kana": "のぼります",
+    "lesson": 19
+  },
+  "泊まります": {
+    "group": "I",
+    "dict": "泊まる",
+    "kana": "とまります",
+    "lesson": 19
+  },
+  "掃除します": {
+    "group": "III",
+    "dict": "掃除する",
+    "kana": "そうじします",
+    "lesson": 19
+  },
+  "洗濯します": {
+    "group": "III",
+    "dict": "洗濯する",
+    "kana": "せんたくします",
+    "lesson": 19
+  },
+  "練習します": {
+    "group": "III",
+    "dict": "練習する",
+    "kana": "れんしゅうします",
+    "lesson": 19
+  },
+  "なります": {
+    "group": "I",
+    "dict": "なる",
+    "kana": "なります",
+    "lesson": 19
+  },
+  "要ります": {
+    "group": "I",
+    "dict": "要る",
+    "kana": "いります",
+    "lesson": 20
+  },
+  "調べます": {
+    "group": "II",
+    "dict": "調べる",
+    "kana": "しらべます",
+    "lesson": 20
+  },
+  "直します": {
+    "group": "I",
+    "dict": "直す",
+    "kana": "なおします",
+    "lesson": 20
+  },
+  "修理します": {
+    "group": "III",
+    "dict": "修理する",
+    "kana": "しゅうりします",
+    "lesson": 20
+  },
+  "電話します": {
+    "group": "III",
+    "dict": "電話する",
+    "kana": "でんわします",
+    "lesson": 20
+  },
+  "降ります（おります）": {
+    "group": "II",
+    "dict": "降りる",
+    "kana": "おります",
+    "lesson": 16
   }
 }

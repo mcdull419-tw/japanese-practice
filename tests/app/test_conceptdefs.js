@@ -38,7 +38,7 @@ test('每筆定義欄位齊備且無 skills 欄位', () => {
     assert.equal(typeof d.label, 'string', `${id} 缺 label`);
     assert.ok(d.label.length > 0, `${id} 的 label 為空`);
     assert.equal(typeof d.requires_lesson, 'number', `${id} 缺 requires_lesson`);
-    assert.ok(d.requires_lesson >= 1 && d.requires_lesson <= 15, `${id} 的課次超出範圍`);
+    assert.ok(d.requires_lesson >= 1 && d.requires_lesson <= 20, `${id} 的課次超出範圍`);
     assert.equal(typeof d.source_ref, 'string', `${id} 缺 source_ref`);
     assert.equal(d.skills, undefined, `${id} 不得自帶 skills 欄位（技能由 skillOf 推導）`);
   }
@@ -46,7 +46,7 @@ test('每筆定義欄位齊備且無 skills 欄位', () => {
 
 test('patterns 反查表的每個 pattern id 都真的存在於課本資料中', () => {
   const real = new Set();
-  for (let n = 1; n <= 15; n++) {
+  for (let n = 1; n <= 20; n++) {
     const d = JSON.parse(readFileSync(new URL(`../../data/lessons/${String(n).padStart(2, '0')}.json`, import.meta.url)));
     for (const p of d.patterns || []) real.add(p.id);
   }

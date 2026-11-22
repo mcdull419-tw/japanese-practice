@@ -6,7 +6,7 @@
 // PRECACHE 清單由 tests/app/test_sw.js 把關——app/ 下新增模組而忘了列進來，
 // 測試會紅燈。沒有這道測試的話，離線時會是「某個模組 404、整個頁面空白」的
 // 靜默失敗，而且只在沒網路時才重現。
-const CACHE = 'jp-practice-v8';
+const CACHE = 'jp-practice-v9';
 
 const PRECACHE = [
   './',
@@ -58,6 +58,8 @@ const PRECACHE = [
   'data/adjectives.json',
   'data/concepts.json',
   'data/corrections.json',
+  'data/vocab-fixes.json',
+  'data/pattern-fixes.json',
   'data/drills.json',
   'data/particles.json',
   'data/ruby-lexicon.json',
@@ -77,6 +79,11 @@ const PRECACHE = [
   'data/lessons/13.json',
   'data/lessons/14.json',
   'data/lessons/15.json',
+  'data/lessons/16.json',
+  'data/lessons/17.json',
+  'data/lessons/18.json',
+  'data/lessons/19.json',
+  'data/lessons/20.json',
 ];
 
 self.addEventListener('install', (e) => {

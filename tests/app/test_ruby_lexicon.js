@@ -7,7 +7,7 @@ const lexJson = JSON.parse(readFileSync(new URL('../../data/ruby-lexicon.json', 
 
 function allLessons() {
   const out = [];
-  for (let n = 1; n <= 15; n++) {
+  for (let n = 1; n <= 20; n++) {
     out.push(JSON.parse(readFileSync(
       new URL(`../../data/lessons/${String(n).padStart(2, '0')}.json`, import.meta.url))));
   }

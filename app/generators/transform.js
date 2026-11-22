@@ -12,6 +12,9 @@ const TARGETS = [
   { form: 'masen', hint: '否定形' },
   { form: 'mashita', hint: '過去形' },
   { form: 'masendeshita', hint: '過去否定形' },
+  { form: 'nai', hint: 'ない形' },
+  { form: 'dict', hint: '辞書形' },
+  { form: 'ta', hint: 'た形' },
 ];
 
 // 形容詞只操練四個時態。て形與副詞形第16課才教，本專案範圍外；
@@ -21,7 +24,7 @@ const ADJ_TARGETS = [
   { form: 'past', hint: '過去形（丁寧體）' },
   { form: 'pastneg', hint: '過去否定形（丁寧體）' },
   { form: 'te', hint: 'て形' },
-  { form: 'adverb', hint: '副詞形' },
+  { form: 'adverb', hint: '副詞形（接なります）' },
 ];
 
 const NA_MARK = '［な］';
@@ -115,10 +118,17 @@ export function* generate(vocabList, verbsTable, adjTable) {
     // 一般動詞的行為完全不變）。
     const forms = v.kanji ? splitForms(v.kanji) : [];
     const cite = forms[0] || v.kana;
-    if (seen.has(cite)) continue;
-    const info = verbsTable[cite];
+    // 同漢字不同動詞：降ります 是 ふります（第14課，雨が降る，I類）也是 おります
+    // （第16課，電車を降りる，II類）。verbs.json 以「降ります（おります）」另立一筆；
+    // 假名對不上主鍵時改查這個鍵。題幹也要標讀音，否則同一個題幹有兩種正解。
+    const kanaKey = `${cite}（${v.kana}）`;
+    const key = verbsTable[kanaKey] ? kanaKey : cite;
+    if (seen.has(key)) continue;
+    const info = verbsTable[key];
     if (!info) continue; // 未收錄的動詞不猜分類，直接跳過
-    seen.add(cite);
+    seen.add(key);
+    const homograph = key !== cite || Object.keys(verbsTable).some((k) => k.startsWith(`${cite}（`));
+    const promptText = homograph ? `${cite}（${info.kana}）` : cite;
 
     // 修正 D：動詞變化題以漢字出題（cite 就是引用形：漢字優先，沒有漢字才用假名，
     // 與 verbs.json 的鍵一致）。答案也用漢字形算，假名形（以及課本另列的其他
@@ -146,9 +156,9 @@ export function* generate(vocabList, verbsTable, adjTable) {
         }
       }
 
-      const covers = conceptsForConjugation(cite, info.group, form);
+      const covers = conceptsForConjugation(key, info.group, form);
       yield {
-        id: `conj:${cite}:masu2${form}`,
+        id: `conj:${key}:masu2${form}`,
         engine: ENGINE,
         lesson: v.lesson,
         // 規格 §5.3：requires_lesson 取單字課次與目標形態解鎖課次的較大值。
@@ -156,7 +166,7 @@ export function* generate(vocabList, verbsTable, adjTable) {
         requires_lesson: Math.max(v.lesson, FORM_LESSON[form]),
         covers,
         skills: [...new Set(covers.map(skillOf).filter(Boolean))],
-        prompt: { type: 'text', text: cite, hint },
+        prompt: { type: 'text', text: promptText, hint },
         answer,
         // 提示用：答案以漢字開頭時，「看提示」給讀音的第一個假名（core/hint.js）。
         answerKana: kanaAnswer,

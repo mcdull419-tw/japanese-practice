@@ -54,7 +54,8 @@ export function* generate(drills, patternConcepts) {
           zhParts: d.ask ? [ZH_EXAMPLE] : [ZH_EXAMPLE, ZH_CUE],
         },
         answer: row.answer,
-        alternatives: [],
+        // 口語答句（第20課）常有省略動詞的說法（「今月の 終わりごろ。」），逐列列出。
+        alternatives: row.alts || [],
         source_ref: d.source_ref,
       };
     }

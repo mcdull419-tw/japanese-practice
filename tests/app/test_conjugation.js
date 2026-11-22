@@ -49,7 +49,44 @@ test('外形像 II 類的 I 類動詞，依傳入的 group 變化', () => {
 test('無效輸入丟 Error，不得靜默回傳', () => {
   assert.throws(() => conjugate('たべる', 'II', 'te'), /ます/);
   assert.throws(() => conjugate('たべます', 'IV', 'te'), /group/);
-  assert.throws(() => conjugate('たべます', 'II', 'nai'), /form/);
+  assert.throws(() => conjugate('たべます', 'II', 'potential'), /form/);
+});
+
+test('ない形・辞書形・た形（第17~19課）', () => {
+  const cases = [
+    ['かきます', 'I', 'かかない', 'かく', 'かいた'],
+    ['いそぎます', 'I', 'いそがない', 'いそぐ', 'いそいだ'],
+    ['かいます', 'I', 'かわない', 'かう', 'かった'],
+    ['まちます', 'I', 'またない', 'まつ', 'まった'],
+    ['よみます', 'I', 'よまない', 'よむ', 'よんだ'],
+    ['あそびます', 'I', 'あそばない', 'あそぶ', 'あそんだ'],
+    ['はなします', 'I', 'はなさない', 'はなす', 'はなした'],
+    ['いきます', 'I', 'いかない', 'いく', 'いった'],
+    ['あります', 'I', 'ない', 'ある', 'あった'],
+    ['たべます', 'II', 'たべない', 'たべる', 'たべた'],
+    ['かります', 'II', 'かりない', 'かりる', 'かりた'],
+    ['します', 'III', 'しない', 'する', 'した'],
+    ['きます', 'III', 'こない', 'くる', 'きた'],
+    ['来ます', 'III', '来ない', '来る', '来た'],
+    ['べんきょうします', 'III', 'べんきょうしない', 'べんきょうする', 'べんきょうした'],
+  ];
+  for (const [m, g, nai, dict, ta] of cases) {
+    assert.equal(conjugate(m, g, 'nai'), nai, `${m} ない形`);
+    assert.equal(conjugate(m, g, 'dict'), dict, `${m} 辞書形`);
+    assert.equal(conjugate(m, g, 'ta'), ta, `${m} た形`);
+  }
+  assert.equal(FORM_LESSON.nai, 17);
+  assert.equal(FORM_LESSON.dict, 18);
+  assert.equal(FORM_LESSON.ta, 19);
+});
+
+test('verbs.json 每筆的 dict 與 conjugate 算出的辞書形一致', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const verbs = JSON.parse(await readFile('data/verbs.json', 'utf8'));
+  for (const [key, v] of Object.entries(verbs)) {
+    const masu = key.replace(/（.*）$/, '');
+    assert.equal(conjugate(masu, v.group, 'dict'), v.dict, key);
+  }
 });
 
 test('FORM_LESSON 標示各形態的解鎖課次', () => {

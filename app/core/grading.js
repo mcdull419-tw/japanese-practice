@@ -14,13 +14,29 @@ const FAST = 0.6;   // 中位數的倍率，低於此視為「簡單」
 const SLOW = 2.0;   // 高於此視為「困難」
 
 /**
+ * 課本用［ ］標可省略的部分（しずか［な］、［お］くに、［どうも］ありがとう），
+ * 開頭的「…」「～」是「接在別的詞後面」的記號（…にん、～くん）。兩者都不必打出來，
+ * 也可以照打：每個［ ］各自展開成「有」與「沒有」兩種寫法。
+ */
+export function expandOptional(s) {
+  if (typeof s !== 'string') return [];
+  let out = [s.replace(/^[…～〜]+/u, '')];
+  const parts = s.match(/［[^］]*］/gu) || [];
+  for (const p of parts.slice(0, 4)) {
+    const inner = p.slice(1, -1);
+    out = out.flatMap((x) => [x.replace(p, inner), x.replace(p, '')]);
+  }
+  return [...new Set([s, ...out])];
+}
+
+/**
  * 寫漢字或寫假名都算對（可混寫），見 core/reading.js。
  * 例外是 strictKana 的題目：問的就是讀音（看漢字寫讀音、數字唸法），
  * 收漢字等於把題幹照抄就算對。
  */
 function correctAnswer(input, item, { lex, inputLex } = {}) {
-  const targets = [item.answer, ...(item.alternatives || [])];
-  if (isCorrect(input, item.answer, item.alternatives || [])) return true;
+  const targets = [item.answer, ...(item.alternatives || [])].flatMap(expandOptional);
+  if (isCorrect(input, targets[0], targets.slice(1))) return true;
   if (item.strictKana) return false;
   return targets.some((t) => matchesReading(input, t, lex, inputLex || lex));
 }

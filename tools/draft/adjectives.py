@@ -21,7 +21,7 @@ def strip_mark(s):
 
 def main():
     na, i_candidates = {}, {}
-    for n in range(1, 16):
+    for n in range(1, 21):
         data = json.loads((ROOT / f"data/lessons/{n:02d}.json").read_text(encoding="utf-8"))
         for v in data.get("vocab", []):
             kana, kanji = v.get("kana") or "", v.get("kanji")

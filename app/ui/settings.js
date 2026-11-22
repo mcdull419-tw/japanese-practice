@@ -2,6 +2,9 @@
 import { SKILLS } from '../core/concepts.js';
 import { escapeHtml } from './html.js';
 
+// 題庫收錄到的最後一課（data/lessons/ 有到幾課就是幾）。
+export const LAST_LESSON = 20;
+
 const ENGINE_LABELS = {
   recall: '單字題',
   transform: '變化題',
@@ -11,7 +14,7 @@ const ENGINE_LABELS = {
 
 export const DEFAULT_SETTINGS = {
   minLesson: 1,
-  maxLesson: 15,
+  maxLesson: LAST_LESSON,
   engines: Object.keys(ENGINE_LABELS),
   skills: [...SKILLS],
   sessionSize: 20,
@@ -43,7 +46,7 @@ export function saveSettings(storageLike, s) {
 function clampLesson(v, fallback) {
   const n = parseInt(v, 10);
   if (Number.isNaN(n)) return fallback;
-  return Math.min(15, Math.max(1, n));
+  return Math.min(LAST_LESSON, Math.max(1, n));
 }
 
 export function renderSettings(host, settings, onChange, deps = {}) {
@@ -58,10 +61,10 @@ export function renderSettings(host, settings, onChange, deps = {}) {
     <div class="settings">
       <h2>設定</h2>
       <label>起始課次
-        <input id="minLesson" type="number" min="1" max="15" value="${settings.minLesson}">
+        <input id="minLesson" type="number" min="1" max="${LAST_LESSON}" value="${settings.minLesson}">
       </label>
       <label>結束課次
-        <input id="maxLesson" type="number" min="1" max="15" value="${settings.maxLesson}">
+        <input id="maxLesson" type="number" min="1" max="${LAST_LESSON}" value="${settings.maxLesson}">
       </label>
       <div class="group-title">題型</div>
       ${engineBoxes}

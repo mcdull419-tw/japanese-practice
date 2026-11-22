@@ -31,7 +31,7 @@ def split_multi(drill):
 
 def main():
     out = {}
-    for n in range(1, 16):
+    for n in range(1, 21):
         data = json.loads((ROOT / f"data/lessons/{n:02d}.json").read_text(encoding="utf-8"))
         for drill in data.get("drills", []):
             items = [x for x in drill.get("items", []) if x.strip()]

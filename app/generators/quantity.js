@@ -47,6 +47,8 @@ function makeItem({ id, lesson, covers, promptText, hint, answer, alternatives =
     prompt: { type: 'text', text: promptText, hint, hideRuby: true },
     answer,
     alternatives,
+    // 問的是唸法：寫「4時」不能算對（core/grading.js）。
+    strictKana: true,
     source_ref: sourceRef,
   };
 }

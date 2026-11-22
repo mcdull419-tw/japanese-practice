@@ -39,7 +39,7 @@ export function renderSession(host, deps) {
     const input = handle.readValue();
     const rt = Date.now() - shownAt;
     // 判定一律交給 core，ui 不得自行比對字串
-    const { correct, grade } = gradeAnswer(input, it, rt, medianRt(it.engine), usedHint);
+    const { correct, grade } = gradeAnswer(input, it, rt, medianRt(it.engine), usedHint, deps.readingDicts);
     const ev = makeEvent(deviceId, nextSeq(), it.id, grade, rt, 'text', Math.floor(Date.now() / 1000));
     await store.appendEvents([ev]);
     // 規格 §7.6：每答完一題即重畫儀表板。這裡只是回報「已記錄一筆事件」，

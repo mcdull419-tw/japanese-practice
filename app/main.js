@@ -22,6 +22,7 @@ import { replay } from './core/srs.js';
 import { pickItems } from './core/scheduler.js';
 import { aggregateSkills } from './core/concepts.js';
 import { buildLexicon } from './core/ruby.js';
+import { buildInputLexicon } from './core/reading.js';
 import { presentOptsFor } from './ui/present.js';
 import { watchForUpdate, checkWhenVisible, showUpdateBanner, describeVersion, forceRefresh }
   from './ui/update.js';
@@ -142,6 +143,11 @@ export async function boot(doc = document, win = window) {
       ]);
     const idx = buildIndex(lessonsMap);
     const lex = buildLexicon(rubyJson);
+    // 判分用：答案寫假名、使用者寫漢字時，靠單字表認得使用者的漢字（core/reading.js）。
+    const readingDicts = {
+      lex,
+      inputLex: buildInputLexicon(idx.vocab, lex, Object.keys(rubyJson?.ambiguous || {})),
+    };
 
     // 規格 §9.3：句子有課本的精確標註時優先使用，練習Ａ／Ｂ 才退回詞典。
     const sentenceMarks = new Map();
@@ -304,6 +310,7 @@ export async function boot(doc = document, win = window) {
       flagItem,
       hideItem,
       lex,
+      readingDicts,
       onDone: () => runSession(settings),
     });
   }

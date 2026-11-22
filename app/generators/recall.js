@@ -5,12 +5,14 @@ export const ENGINE = 'recall';
 
 // lang 只在題幹不是日文時給值（見 ui/present.js：中文題幹不得加振假名）。
 // 不預設填 'ja' 是為了不動到其他產生器的題目形狀。
-function makeItem({ id, v, promptText, hint, answer, alternatives, covers, lang }) {
+// strictKana：問的就是讀音，漢字寫法不算對（core/grading.js）。
+function makeItem({ id, v, promptText, hint, answer, alternatives, covers, lang, strictKana }) {
   return {
     id, engine: ENGINE, lesson: v.lesson, requires_lesson: v.lesson,
     covers, skills: [...new Set(covers.map(skillOf).filter(Boolean))],
     prompt: { type: 'text', text: promptText, hint, ...(lang ? { lang } : {}) },
     answer, alternatives,
+    ...(strictKana ? { strictKana } : {}),
     source_ref: `第${v.lesson}課 ことば${v.no ? ` ${v.no}` : ''}`,
   };
 }
@@ -132,7 +134,7 @@ export function* generate(vocabList) {
       yield makeItem({
         id: `recall:${key}:kanji2kana`, v,
         promptText: v.kanji, hint: '寫出讀音（平假名）',
-        answer: v.kana, alternatives: [],
+        answer: v.kana, alternatives: [], strictKana: true,
         covers: [readingConcept],
       });
     }

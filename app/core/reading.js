@@ -15,6 +15,7 @@
  * 數字一律照打阿拉伯數字；數字後的量詞（時／じ、分／ふん、回／かい…）兩種寫法都收。
  */
 import { toHiragana, stripSpaces } from '../lang/kana.js';
+import { stripQuotes } from './normalize.js';
 import { okuriganaReading } from './ruby.js';
 
 const KANJI = /[一-鿿々]/;
@@ -79,10 +80,10 @@ function contextReading(ch, prev, next) {
   }
 }
 
-/** 全形英數轉半形、去空白、數字裡的千分位逗號去掉（1,500 與 1500 都算）。 */
+/** 全形英數轉半形、去空白、去引號、數字裡的千分位逗號去掉（1,500 與 1500 都算）。 */
 function prep(s) {
-  return stripSpaces(String(s).replace(/[！-～]/g,
-    (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0)))
+  return stripQuotes(stripSpaces(String(s).replace(/[！-～]/g,
+    (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))))
     .replace(/(\d),(?=\d)/g, '$1')
     .replace(/[。.．]+$/u, '');
 }

@@ -7,11 +7,20 @@ function toHalfWidth(s) {
     String.fromCharCode(ch.charCodeAt(0) - FULLWIDTH_OFFSET));
 }
 
+/**
+ * 引號只是標示（書名、引用的話、外語），打不打都算對。
+ * reading.js 的 prep() 也用這個，兩邊的判分才一致。
+ */
+export function stripQuotes(s) {
+  return s.replace(/[「」『』“”"]/gu, '');
+}
+
 export function normalizeAnswer(s) {
   if (typeof s !== 'string') return '';
   let out = toHalfWidth(s);
   out = toHiragana(out);
   out = stripSpaces(out);
+  out = stripQuotes(out);
   out = out.replace(/[。.．]+$/u, '');   // 只移除結尾的句號
   return out;
 }

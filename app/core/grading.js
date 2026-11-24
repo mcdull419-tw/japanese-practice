@@ -14,14 +14,14 @@ const FAST = 0.6;   // 中位數的倍率，低於此視為「簡單」
 const SLOW = 2.0;   // 高於此視為「困難」
 
 /**
- * 課本用［ ］標可省略的部分（しずか［な］、［お］くに、［どうも］ありがとう），
+ * 課本用［ ］或〔 〕標可省略的部分（しずか［な］、［お］くに、〔どうも〕すみません），
  * 開頭的「…」「～」是「接在別的詞後面」的記號（…にん、～くん）。兩者都不必打出來，
  * 也可以照打：每個［ ］各自展開成「有」與「沒有」兩種寫法。
  */
 export function expandOptional(s) {
   if (typeof s !== 'string') return [];
   let out = [s.replace(/^[…～〜]+/u, '')];
-  const parts = s.match(/［[^］]*］/gu) || [];
+  const parts = s.match(/［[^］]*］|〔[^〕]*〕/gu) || [];
   for (const p of parts.slice(0, 4)) {
     const inner = p.slice(1, -1);
     out = out.flatMap((x) => [x.replace(p, inner), x.replace(p, '')]);

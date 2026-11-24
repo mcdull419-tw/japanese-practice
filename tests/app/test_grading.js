@@ -52,3 +52,22 @@ test('選擇題的中文選項不受假名正規化影響', () => {
   assert.equal(gradeAnswer('接受，得到', item, 1000, 2000, false).correct, true);
   assert.equal(gradeAnswer('給，送', item, 1000, 2000, false).correct, false);
 });
+
+test('〔 〕與［ ］一樣是可省略的部分', () => {
+  const it = { id: 'x', answer: 'いろいろ〔な〕' };
+  assert.equal(gradeAnswer('いろいろ', it, 1000, 0, false).correct, true);
+  assert.equal(gradeAnswer('いろいろな', it, 1000, 0, false).correct, true);
+  const it2 = { id: 'y', answer: '〔どうも〕すみません。' };
+  assert.equal(gradeAnswer('すみません', it2, 1000, 0, false).correct, true);
+  assert.equal(gradeAnswer('どうもすみません', it2, 1000, 0, false).correct, true);
+});
+
+test('引號「」『』“” 打不打都算對', () => {
+  const it = { id: 'x', answer: '「ありがとう」はえいごで“Thank you”です。' };
+  assert.equal(gradeAnswer('ありがとうはえいごでThank youです', it, 1000, 0, false).correct, true);
+  assert.equal(gradeAnswer('「ありがとう」はえいごで“Thank you”です。', it, 1000, 0, false).correct, true);
+  const it2 = { id: 'y', answer: '「七人の 侍」は どんな 映画ですか。 おもしろい 映画です。' };
+  assert.equal(gradeAnswer('七人の侍はどんな映画ですか。おもしろい映画です。', it2, 1000, 0, false).correct, true);
+  const it3 = { id: 'z', answer: '「しちにんのさむらい」', strictKana: true };
+  assert.equal(gradeAnswer('しちにんのさむらい', it3, 1000, 0, false).correct, true);
+});

@@ -74,5 +74,124 @@
    "あの人はどなたですか。",
    "あの方はだれですか。"
   ]
+ },
+ "recall:だれ（ どなた ）:zh2jp": {
+  "fixed_at": "2026-11-24T00:00:00Z",
+  "answer": "だれ",
+  "alternatives": [
+   "どなた",
+   "誰"
+  ]
+ },
+ "recall:トイレ（ おてあらい ） （ お:zh2jp": {
+  "fixed_at": "2026-11-24T00:00:00Z",
+  "answer": "トイレ",
+  "alternatives": [
+   "おてあらい",
+   "お手洗い"
+  ]
+ },
+ "recall:トイレ（ おてあらい ） （ お:kanji2kana": {
+  "fixed_at": "2026-11-24T00:00:00Z",
+  "prompt": "お手洗い",
+  "answer": "おてあらい"
+ },
+ "recall:…かい（ …がい ）:zh2jp": {
+  "fixed_at": "2026-11-24T00:00:00Z",
+  "answer": "かい",
+  "alternatives": [
+   "がい",
+   "階"
+  ]
+ },
+ "recall:…かい（ …がい ）:kanji2kana": {
+  "fixed_at": "2026-11-24T00:00:00Z",
+  "answer": "かい",
+  "alternatives": [
+   "がい"
+  ]
+ },
+ "recall:「～を」みせて  ください。:zh2jp": {
+  "fixed_at": "2026-11-24T00:00:00Z",
+  "answer": "みせて ください",
+  "alternatives": [
+   "をみせてください",
+   "見せてください",
+   "を見せてください"
+  ]
+ },
+ "recall:「～を」みせて  ください。:kanji2kana": {
+  "fixed_at": "2026-11-24T00:00:00Z",
+  "answer": "みせて ください",
+  "alternatives": [
+   "をみせてください"
+  ]
+ },
+ "recall:「～を」ください。:zh2jp": {
+  "fixed_at": "2026-11-24T00:00:00Z",
+  "answer": "ください",
+  "alternatives": [
+   "をください"
+  ]
+ },
+ "recall:…ふん  （ …ぷん ）:zh2jp": {
+  "fixed_at": "2026-11-24T00:00:00Z",
+  "answer": "ふん",
+  "alternatives": [
+   "ぷん",
+   "分"
+  ]
+ },
+ "recall:…ふん  （ …ぷん ）:kanji2kana": {
+  "fixed_at": "2026-11-24T00:00:00Z",
+  "answer": "ふん",
+  "alternatives": [
+   "ぷん"
+  ]
+ },
+ "recall:ばん （ よる ）:zh2jp": {
+  "fixed_at": "2026-11-24T00:00:00Z",
+  "answer": "ばん",
+  "alternatives": [
+   "よる",
+   "晩",
+   "夜"
+  ]
+ },
+ "recall:ばん （ よる ）:kanji2kana": {
+  "fixed_at": "2026-11-24T00:00:00Z",
+  "answer": "ばん",
+  "alternatives": [
+   "よる"
+  ]
+ },
+ "recall:「～、」すてきですね。:zh2jp": {
+  "fixed_at": "2026-11-24T00:00:00Z",
+  "answer": "すてきですね",
+  "alternatives": [
+   "素敵ですね"
+  ]
+ },
+ "recall:「～は」いかがですか。:zh2jp": {
+  "fixed_at": "2026-11-24T00:00:00Z",
+  "answer": "いかがですか",
+  "alternatives": [
+   "はいかがですか"
+  ]
+ },
+ "recall:いい  （よい）:zh2jp": {
+  "fixed_at": "2026-11-24T00:00:00Z",
+  "answer": "いい",
+  "alternatives": [
+   "よい"
+  ]
+ },
+ "recall:～や ～〔など〕:zh2jp": {
+  "fixed_at": "2026-11-24T00:00:00Z",
+  "answer": "～や ～〔など〕",
+  "alternatives": [
+   "や",
+   "やなど"
+  ]
  }
 }

@@ -5,10 +5,13 @@ import { escapeHtml } from './html.js';
 // 題庫收錄到的最後一課（data/lessons/ 有到幾課就是幾）。
 export const LAST_LESSON = 20;
 
+// key 是設定裡的開關，不一定等於題目的 engine：drill（練習Ｂ）作答形式與
+// 代入題相同，題目仍走 substitute 引擎，只是讓使用者能單獨開關。
 const ENGINE_LABELS = {
   recall: '單字題',
   transform: '變化題',
-  substitute: '代入題',
+  substitute: '代入題（練習Ａ：換詞造句）',
+  drill: '改寫題（練習Ｂ：照例句改形）',
   cloze: '挖空題',
 };
 
@@ -28,16 +31,30 @@ export function loadSettings(storageLike) {
     const raw = storageLike.getItem(STORAGE_KEY);
     if (!raw) return { ...DEFAULT_SETTINGS };
     const parsed = JSON.parse(raw);
-    return { ...DEFAULT_SETTINGS, ...parsed };
+    return migrateDrill({ ...DEFAULT_SETTINGS, ...parsed }, parsed);
   } catch {
     // 私密視窗或儲存被封鎖時 getItem/JSON.parse 可能拋錯，回預設值。
     return { ...DEFAULT_SETTINGS };
   }
 }
 
+/**
+ * 練習Ｂ 原本併在「代入題」開關裡。存檔時沒見過 drill 開關的舊設定，
+ * 讓 drill 跟著 substitute 走——否則開著代入題的人會默默少掉練習Ｂ，
+ * 關掉代入題的人則會突然冒出練習Ｂ。knownEngines 記存檔當時有哪些開關，
+ * 之後使用者單獨關掉 drill 才不會被補回來。
+ */
+function migrateDrill(s, parsed) {
+  if (!Array.isArray(parsed.engines)) return s;
+  if ((parsed.knownEngines || []).includes('drill')) return s;
+  const engines = s.engines.filter((e) => e !== 'drill');
+  if (engines.includes('substitute')) engines.splice(engines.indexOf('substitute') + 1, 0, 'drill');
+  return { ...s, engines };
+}
+
 export function saveSettings(storageLike, s) {
   try {
-    storageLike.setItem(STORAGE_KEY, JSON.stringify(s));
+    storageLike.setItem(STORAGE_KEY, JSON.stringify({ ...s, knownEngines: Object.keys(ENGINE_LABELS) }));
   } catch {
     // 寫入失敗（私密視窗、容量已滿）時忽略，設定僅本次有效。
   }

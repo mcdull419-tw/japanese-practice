@@ -166,11 +166,14 @@ export async function boot(doc = document, win = window) {
     if (settings.engines.includes('transform')) {
       allItems.push(...transform.generate(idx.vocab, verbsTable, adjTable));
     }
+    const byPattern = conceptsByPattern(conceptDefs);
     if (settings.engines.includes('substitute')) {
-      const byPattern = conceptsByPattern(conceptDefs);
       allItems.push(...substitute.generate(idx.patterns, byPattern));
-      // 練習Ｂ 的素材結構與練習Ａ 不同（逐列人工書寫，非代入表，見規格 §13
-      // 決定 11），故走自己的生成器；作答形式相同，仍是 substitute 引擎。
+    }
+    // 練習Ｂ 的素材結構與練習Ａ 不同（逐列人工書寫，非代入表，見規格 §13
+    // 決定 11），故走自己的生成器；作答形式相同，仍是 substitute 引擎，
+    // 但設定裡有自己的開關（drill）。
+    if (settings.engines.includes('drill')) {
       allItems.push(...drillGen.generate(drillsJson, byPattern));
     }
     if (settings.engines.includes('cloze')) {

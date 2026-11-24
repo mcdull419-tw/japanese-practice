@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { priority, pickItems, timeFactor, bucketOf, SCHED_CONST } from '../../app/core/scheduler.js';
+import { priority, pickItems, timeFactor, bucketOf, cooldownDays, SCHED_CONST } from '../../app/core/scheduler.js';
 
 const DAY = 86400;
 const near = (a, b, tol = 0.01) => assert.ok(Math.abs(a - b) < tol, `${a} vs ${b}`);
@@ -166,4 +166,66 @@ test('SCHED_CONST 集中常數：k / 分桶切點 / 新題上限', () => {
   assert.equal(SCHED_CONST.BUCKET_HIGH, 1.0);
   assert.equal(SCHED_CONST.BUCKET_MID, 0.4);
   assert.equal(SCHED_CONST.NEW_ITEM_RATIO, 0.3);
+});
+
+test('答對後的冷卻天數：連對 1／2／3／4／5+ 次 → 1／3／7／14／30 天', () => {
+  assert.equal(cooldownDays(0), 0);
+  assert.equal(cooldownDays(1), 1);
+  assert.equal(cooldownDays(2), 3);
+  assert.equal(cooldownDays(3), 7);
+  assert.equal(cooldownDays(4), 14);
+  assert.equal(cooldownDays(5), 30);
+  assert.equal(cooldownDays(12), 30);
+});
+
+test('冷卻中的題目不出：即使概念 A 很低（W 落高桶）', () => {
+  const now = 100 * DAY;
+  // 'cool' 剛答對一次，但同概念別題常錯（A=0）→ W=1.0 高桶。舊行為會一直出它。
+  const items = [mkItem('cool', ['w:weak']), mkItem('fresh', ['w:other'])];
+  const cs = new Map([['w:weak', { A: 0.0, reps: 5 }]]);
+  const st = new Map([['cool', { lastSec: now - 3600, reps: 3, streak: 1 }]]);
+  for (const r of [0.001, 0.5, 0.999]) {
+    const picked = pickItems(items, st, cs, 1, now, () => r);
+    assert.equal(picked[0].id, 'fresh');
+  }
+});
+
+test('冷卻期滿就回到正常抽樣', () => {
+  const now = 100 * DAY;
+  const items = [mkItem('a', ['w:a'])];
+  const cs = new Map([['w:a', { A: 0.5, reps: 4 }]]);
+  const st = new Map([['a', { lastSec: now - 3 * DAY - 60, reps: 4, streak: 2 }]]);
+  // 只有一題也會補進來，所以另放一題對照：冷卻期滿的 a 要能和新題競爭
+  const picked = pickItems([...items, mkItem('n', ['w:n'])], st, cs, 2, now, () => 0.5);
+  assert.deepEqual(picked.map((i) => i.id).sort(), ['a', 'n']);
+});
+
+test('答錯（streak=0）的題目不冷卻，照常出', () => {
+  const now = 100 * DAY;
+  const items = [mkItem('wrong', ['w:a']), mkItem('n', ['w:n'])];
+  const cs = new Map([['w:a', { A: 0.0, reps: 1 }]]);
+  const st = new Map([['wrong', { lastSec: now - 60, reps: 1, streak: 0 }]]);
+  const picked = pickItems(items, st, cs, 2, now, () => 0.5);
+  assert.ok(picked.some((i) => i.id === 'wrong'));
+});
+
+test('新題上限不會逼出冷卻中的舊題：舊題都在冷卻時由新題補滿', () => {
+  const now = 100 * DAY;
+  const fresh = Array.from({ length: 20 }, (_, i) => mkItem('new' + i, ['w:new' + i]));
+  const old = Array.from({ length: 20 }, (_, i) => mkItem('old' + i, ['w:old' + i]));
+  const st = new Map(old.map((it) => [it.id, { lastSec: now - 3600, reps: 1, streak: 1 }]));
+  const cs = new Map(old.map((it) => [it.covers[0], { A: 0.0, reps: 1 }]));
+  const picked = pickItems([...fresh, ...old], st, cs, 10, now, Math.random);
+  assert.equal(picked.length, 10);
+  assert.ok(picked.every((i) => i.id.startsWith('new')));
+});
+
+test('範圍內的題目全在冷卻、湊不滿時，才退而出冷卻中的題（不回傳不足額）', () => {
+  const now = 100 * DAY;
+  const items = [mkItem('a', ['w:a']), mkItem('b', ['w:b'])];
+  const st = new Map([
+    ['a', { lastSec: now - 3600, reps: 1, streak: 1 }],
+    ['b', { lastSec: now - 3600, reps: 1, streak: 1 }],
+  ]);
+  assert.equal(pickItems(items, st, new Map(), 2, now).length, 2);
 });

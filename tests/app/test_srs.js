@@ -128,3 +128,28 @@ test('重放略過 hide／unhide 事件', () => {
   assert.equal(b.itemStates.get('x').reps, 1);
   assert.equal(b.itemStates.get('x').lastSec, 100);
 });
+
+test('itemStates.streak：該題連續答對次數，答錯歸零', () => {
+  const items = new Map([['it1', { id: 'it1', covers: ['w:a'] }]]);
+  assert.equal(replay(mkEvents('it1', [3, 3]), 10 * DAY, items).itemStates.get('it1').streak, 2);
+  assert.equal(replay(mkEvents('it1', [3, 3, 1]), 10 * DAY, items).itemStates.get('it1').streak, 0);
+  assert.equal(replay(mkEvents('it1', [1, 3, 2]), 10 * DAY, items).itemStates.get('it1').streak, 2);
+});
+
+test('streak 以題目為單位：同概念的別題答錯不影響本題', () => {
+  const items = new Map([
+    ['a', { id: 'a', covers: ['w:x'] }],
+    ['b', { id: 'b', covers: ['w:x'] }],
+  ]);
+  const events = [...mkEvents('a', [3, 3]), { d: 'D', n: 9, i: 'b', t: 9 * DAY, g: 1, r: 0, m: 'text' }];
+  assert.equal(replay(events, 10 * DAY, items).itemStates.get('a').streak, 2);
+});
+
+test('「我的答案也對」補記（帶 a 的 g=3）撤銷前一次誤判，不讓 streak 歸零', () => {
+  const items = new Map([['it1', { id: 'it1', covers: ['w:a'] }]]);
+  const events = [
+    ...mkEvents('it1', [3, 3, 1]),
+    { d: 'D', n: 9, i: 'it1', t: 3 * DAY, g: 3, r: 0, m: 'text', a: 'かえります' },
+  ];
+  assert.equal(replay(events, 10 * DAY, items).itemStates.get('it1').streak, 3);
+});

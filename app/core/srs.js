@@ -27,8 +27,9 @@ export function conceptA(conceptStates, conceptId) {
 /**
  * 事件日誌 → { itemStates, conceptStates }。
  *
- * - itemStates:    Map<itemId, { lastSec, reps }>
- *   供排程器（§8.1）計算 ΔT＝距該題目上次被出的天數。
+ * - itemStates:    Map<itemId, { lastSec, reps, streak, ... }>
+ *   供排程器（§8.1）計算 ΔT＝距該題目上次被出的天數；streak＝此題連續答對次數，
+ *   供 §8.2 的答對冷卻使用。
  * - conceptStates: Map<conceptId, { A, reps }>
  *   A 為該概念最近 min(10, reps) 次作答的答對率；reps 為累計作答次數。
  *   從未考過的概念不會出現在這個 map 裡——呼叫端一律以 conceptA() 取值，
@@ -59,11 +60,23 @@ export function replay(events, nowSec, itemsById = new Map()) {
     if (ev.m === 'flag' || ev.m === 'hide' || ev.m === 'unhide') continue;
 
     const prevItem = itemStates.get(ev.i);
-    itemStates.set(ev.i, { lastSec: ev.t, reps: (prevItem?.reps ?? 0) + 1 });
+    const correct = isCorrect(ev.g);
+    // streak：此題連續答對次數，供排程器算「答對後隔多久再出」（§8.2 冷卻）。
+    // 帶 a 的事件是「我的答案也對」補記：前一次是誤判，撤銷那次歸零，接回原本的連對。
+    let streak;
+    if (!correct) streak = 0;
+    else if (ev.a && prevItem && !prevItem.lastCorrect) streak = (prevItem.streakBeforeWrong ?? 0) + 1;
+    else streak = (prevItem?.streak ?? 0) + 1;
+    itemStates.set(ev.i, {
+      lastSec: ev.t,
+      reps: (prevItem?.reps ?? 0) + 1,
+      streak,
+      lastCorrect: correct,
+      streakBeforeWrong: correct ? streak : (prevItem?.streak ?? 0),
+    });
 
     const item = itemsById.get(ev.i);
     const covers = item?.covers || [];
-    const correct = isCorrect(ev.g);
     for (const c of covers) {
       const q = queues.get(c) || { history: [], reps: 0 };
       q.history.push(correct);

@@ -17,6 +17,9 @@ export const SCHED_CONST = {
   BUCKET_MID: 0.4,         // BUCKET_MID <= W < BUCKET_HIGH → 中桶；W < BUCKET_MID → 低桶
   NEW_ITEM_RATIO: 0.3,     // 新題比例上限／session（規格 §8.2）
   SESSION_SEEN_DECAY: 0.05, // 本 session 已出現過的題目，權重乘上此值（規格 §8.2）
+  // 答對冷卻（規格 §8.2）：此題連續答對 n 次後，至少隔 COOLDOWN_DAYS[n-1] 天才再出；
+  // 超過表長沿用最後一格。答錯 streak 歸零 → 不冷卻。
+  COOLDOWN_DAYS: [1, 3, 7, 14, 30],
 };
 
 const SEC_PER_DAY = 86400;
@@ -43,6 +46,26 @@ export function priority(item, itemStates, conceptStates, nowSec) {
   const f = timeFactor(deltaTDays);
 
   return (1 - aItem) + f;
+}
+
+/** 規格 §8.2：連續答對 streak 次之後的冷卻天數；streak=0（沒答過或剛答錯）為 0。 */
+export function cooldownDays(streak) {
+  if (!streak || streak <= 0) return 0;
+  const t = SCHED_CONST.COOLDOWN_DAYS;
+  return t[Math.min(streak, t.length) - 1];
+}
+
+/**
+ * 冷卻中＝此題最近連續答對，且距上次作答還沒滿冷卻天數。
+ *
+ * 為什麼需要：W 看的是「概念」近十次答對率，一次舊錯誤要連續答對五、六次才洗掉，
+ * 同概念的別題答錯也會把本題拉高——結果是剛答對的題目每輪都回來。冷卻以「題目」
+ * 為單位，答對了就先放著，到期再由 W 決定要不要出。
+ */
+function isCooling(item, itemStates, nowSec) {
+  const st = itemStates.get(item.id);
+  if (!st || !st.streak) return false;
+  return (nowSec - st.lastSec) < cooldownDays(st.streak) * SEC_PER_DAY;
 }
 
 /** 規格 §8.2：高＝W≥1.0、中＝0.4≤W<1.0、低＝W<0.4。 */
@@ -74,16 +97,22 @@ function weightedPick(candidates, seen, rng) {
  * - 本 session 已出現過的題目（seenThisSession，跨呼叫維護），W 乘上
  *   SESSION_SEEN_DECAY 強力衰減，避免同一輪重複。
  * - 新題比例上限 NEW_ITEM_RATIO，避免一次灌入過多從未考過的題目。
+ * - 答對冷卻：連續答對的題目在 cooldownDays(streak) 天內不出（見 isCooling）。
  */
 export function pickItems(items, itemStates, conceptStates, count, nowSec, rng = Math.random, seenThisSession = new Set()) {
   const withW = items.map((item) => ({
     item,
     w: priority(item, itemStates, conceptStates, nowSec),
   }));
-  const highMid = withW.filter((x) => bucketOf(x.w) !== 'low');
+  // 冷卻中的題目先排除；只有範圍內其餘題目湊不滿本次題數時才退而納入，
+  // 否則小範圍複習會回傳不足額。
+  const ready = withW.filter((x) => !isCooling(x.item, itemStates, nowSec));
+  const highMid = ready.filter((x) => bucketOf(x.w) !== 'low');
   // W 在整個 pickItems 呼叫期間不變（session-seen 衰減只影響抽樣權重，不影響
   // 桶籍判定），因此桶籍只需算一次，不必在抽樣迴圈中每輪重算。
-  const basePool = highMid.length >= count ? highMid : withW;
+  const basePool = highMid.length >= count ? highMid
+    : ready.length >= count ? ready
+    : withW;
 
   let pool = [...basePool];
   const picked = [];

@@ -11,6 +11,13 @@ import { engineFor } from '../engines/index.js';
 // 呼叫端與測試的 import 路徑。
 export { isImeComposing } from '../engines/text.js';
 
+// 對到其他也算對的答案時要說明：下面印的是課本寫法，跟使用者的不同，
+// 只寫「正確」會讓人以為判錯（例：日本＿来ました 寫 に、課本寫 へ）。
+export function verdictText(correct, viaAlternative) {
+  if (!correct) return '再看一次';
+  return viaAlternative ? '正確（你的寫法也對，課本寫法如下）' : '正確';
+}
+
 export function renderSession(host, deps) {
   const { items, store, deviceId, nextSeq, medianRt, onAnswered, onDone } = deps;
   let idx = 0, shownAt = 0, usedHint = false;
@@ -39,22 +46,22 @@ export function renderSession(host, deps) {
     const input = handle.readValue();
     const rt = Date.now() - shownAt;
     // 判定一律交給 core，ui 不得自行比對字串
-    const { correct, grade } = gradeAnswer(input, it, rt, medianRt(it.engine), usedHint, deps.readingDicts);
+    const { correct, grade, viaAlternative } = gradeAnswer(input, it, rt, medianRt(it.engine), usedHint, deps.readingDicts);
     const ev = makeEvent(deviceId, nextSeq(), it.id, grade, rt, 'text', Math.floor(Date.now() / 1000));
     await store.appendEvents([ev]);
     // 規格 §7.6：每答完一題即重畫儀表板。這裡只是回報「已記錄一筆事件」，
     // 熟悉度怎麼算仍在 core，ui 不碰。
     onAnswered?.(ev);
-    showResult(it, input, correct);
+    showResult(it, input, correct, viaAlternative);
   }
 
-  function showResult(it, input, correct) {
+  function showResult(it, input, correct, viaAlternative) {
     host.innerHTML = `
       <div class="progress">${idx + 1} / ${items.length}</div>
       <div class="recap-prompt">題目：${escapeHtml(it.prompt.text)}</div>
       <div class="recap-input">你的答案：${input ? escapeHtml(input) : '（空白）'}</div>
-      <div class="verdict">${correct ? '正確' : '再看一次'}</div>
-      <div class="answer">正解：${escapeHtml(it.answer)}</div>
+      <div class="verdict">${verdictText(correct, viaAlternative)}</div>
+      <div class="answer">${viaAlternative ? '課本寫法' : '正解'}：${escapeHtml(it.answer)}</div>
       <div class="source">出處：${escapeHtml(it.source_ref)}</div>
       ${correct || it.choices ? '' : '<button id="also-ok">我這樣寫也對</button>'}
       <button id="hide">不要再出現</button>

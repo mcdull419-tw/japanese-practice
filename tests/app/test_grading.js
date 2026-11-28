@@ -71,3 +71,25 @@ test('引號「」『』“” 打不打都算對', () => {
   const it3 = { id: 'z', answer: '「しちにんのさむらい」', strictKana: true };
   assert.equal(gradeAnswer('しちにんのさむらい', it3, 1000, 0, false).correct, true);
 });
+
+// 答案對到「其他也算對的答案」而不是課本答案時，結果畫面要說明，
+// 否則「正確」下面印著「正解：へ」，看起來像判錯（例：日本＿来ました 寫 に）。
+const cloze = { answer: 'へ', alternatives: ['に'] };
+
+test('寫課本答案：不標示為其他寫法', () => {
+  assert.equal(gradeAnswer('へ', cloze, 1, 1, false).viaAlternative, false);
+});
+
+test('寫其他也算對的答案：答對並標示為其他寫法', () => {
+  const r = gradeAnswer('に', cloze, 1, 1, false);
+  assert.equal(r.correct, true);
+  assert.equal(r.viaAlternative, true);
+});
+
+test('答錯時不標示為其他寫法', () => {
+  assert.equal(gradeAnswer('で', cloze, 1, 1, false).viaAlternative, false);
+});
+
+test('課本答案的可省略部分省掉不算其他寫法', () => {
+  assert.equal(gradeAnswer('しずか', { answer: 'しずか［な］' }, 1, 1, false).viaAlternative, false);
+});

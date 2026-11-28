@@ -104,7 +104,7 @@ test('jp2zh 產出四選一，含正解', () => {
   const it = [...generate(jpVocab)].find((x) => x.id === 'recall:きります:jp2zh');
   assert.ok(it, '應產生 recall:きります:jp2zh');
   assert.equal(it.engine, 'recall');
-  assert.equal(it.prompt.text, '切ります');
+  assert.equal(it.prompt.text, 'きります', '切 也出現在正解「剪，切」，題幹改印假名');
   assert.equal(it.answer, '剪，切');
   assert.equal(it.choices.length, 4);
   assert.ok(it.choices.includes('剪，切'));
@@ -208,4 +208,23 @@ test('數字之間的「、」不切：2、3日 不會讓「2」被判對', asyn
   const [it] = [...generate([{ kana: '2、3にち', kanji: '2、3日', zh: '兩三天', lesson: 17, no: 31 }])];
   assert.ok(!it.alternatives.includes('2'));
   assert.ok(it.alternatives.includes('2、3日'));
+});
+
+// 題幹漢字跟中文正解有同一個字（右→右、学生→學生）時，看字就選得出來，
+// 沒有鑑別度。這類改印假名，要讀得懂才選得對。
+test('jp2zh：題幹漢字與正解共用字時改印假名', () => {
+  const v = [...jpVocab, { kana: 'みぎ', kanji: '右', zh: '右（邊）', lesson: 7, no: 6 }];
+  const it = [...generate(v)].find((x) => x.id === 'recall:みぎ:jp2zh');
+  assert.equal(it.answer, '右');
+  assert.equal(it.prompt.text, 'みぎ');
+});
+
+test('jp2zh：舊字體與新字體視為不同字，但共用其他字仍改假名（学生→學生）', () => {
+  const v = [...jpVocab, { kana: 'がくせい', kanji: '学生', zh: '學生', lesson: 7, no: 6 }];
+  assert.equal([...generate(v)].find((x) => x.id === 'recall:がくせい:jp2zh').prompt.text, 'がくせい');
+});
+
+test('jp2zh：題幹漢字與正解沒有共用字時照印漢字', () => {
+  const it = [...generate(jpVocab)].find((x) => x.id === 'recall:かします:jp2zh');
+  assert.equal(it.prompt.text, '貸します');
 });

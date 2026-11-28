@@ -67,6 +67,17 @@ function shortZh(zh) {
 }
 
 /** 以種子決定性地取 n 個不重複元素（洗牌後取前 n 個）。 */
+/**
+ * 題幹漢字跟中文正解有沒有同一個字（右→右、学生→學生、銀行→銀行）。
+ * 有的話看字就選得出來，日→中選擇題就沒有鑑別度，題幹改印假名。
+ * 新舊字體（学／學）不算同一個字：多半另有別的字相同，已足以抓到。
+ */
+function sharesHan(kanji, zh) {
+  const han = (str) => [...str].filter((c) => /\p{Script=Han}/u.test(c));
+  const inKanji = new Set(han(kanji));
+  return han(zh).some((c) => inKanji.has(c));
+}
+
 function pickDeterministic(pool, n, seed) {
   const arr = [...pool];
   let s = seed;
@@ -163,7 +174,8 @@ export function* generate(vocabList) {
       yield {
         ...makeItem({
           id, v,
-          promptText: v.kanji || v.kana, hint: '選出中文意思',
+          promptText: v.kanji && !sharesHan(v.kanji, correct) ? v.kanji : v.kana,
+          hint: '選出中文意思',
           answer: correct, alternatives: [],
           covers: [meaningConcept],
         }),

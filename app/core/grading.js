@@ -34,20 +34,35 @@ export function expandOptional(s) {
  * 例外是 strictKana 的題目：問的就是讀音（看漢字寫讀音、數字唸法），
  * 收漢字等於把題幹照抄就算對。
  */
-function correctAnswer(input, item, { lex, inputLex } = {}) {
-  const targets = [item.answer, ...(item.alternatives || [])].flatMap(expandOptional);
+function matchesAny(input, targets, item, { lex, inputLex } = {}) {
+  if (!targets.length) return false;
   if (isCorrect(input, targets[0], targets.slice(1))) return true;
   if (item.strictKana) return false;
   return targets.some((t) => matchesReading(input, t, lex, inputLex || lex));
 }
 
+/**
+ * 回傳 'answer'（對到課本答案）、'alternative'（對到其他也算對的答案，
+ * 如 へ／に 互換、使用者加的寫法）或 null（答錯）。先比課本答案：
+ * 兩邊都對得上時算課本答案，結果畫面就不必多做說明。
+ */
+function matchKind(input, item, dicts) {
+  if (matchesAny(input, expandOptional(item.answer), item, dicts)) return 'answer';
+  const alts = (item.alternatives || []).flatMap(expandOptional);
+  return matchesAny(input, alts, item, dicts) ? 'alternative' : null;
+}
+
 // dicts：{ lex（振假名詞典）, inputLex（輸入端詞典，見 core/reading.js） }，可省略。
 export function gradeAnswer(input, item, rtMs, medianRtMs, usedHint, dicts) {
-  const correct = correctAnswer(input, item, dicts);
-  if (!correct) return { correct: false, grade: 1 };
-  if (usedHint) return { correct: true, grade: 2 };
-  if (!medianRtMs || medianRtMs <= 0) return { correct: true, grade: 3 };
-  if (rtMs < medianRtMs * FAST) return { correct: true, grade: 4 };
-  if (rtMs > medianRtMs * SLOW) return { correct: true, grade: 2 };
-  return { correct: true, grade: 3 };
+  const kind = matchKind(input, item, dicts);
+  if (!kind) return { correct: false, grade: 1, viaAlternative: false };
+  return { correct: true, grade: gradeFor(rtMs, medianRtMs, usedHint), viaAlternative: kind === 'alternative' };
+}
+
+function gradeFor(rtMs, medianRtMs, usedHint) {
+  if (usedHint) return 2;
+  if (!medianRtMs || medianRtMs <= 0) return 3;
+  if (rtMs < medianRtMs * FAST) return 4;
+  if (rtMs > medianRtMs * SLOW) return 2;
+  return 3;
 }

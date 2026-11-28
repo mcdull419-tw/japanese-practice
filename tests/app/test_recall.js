@@ -228,3 +228,24 @@ test('jp2zh：題幹漢字與正解沒有共用字時照印漢字', () => {
   const it = [...generate(jpVocab)].find((x) => x.id === 'recall:かします:jp2zh');
   assert.equal(it.prompt.text, '貸します');
 });
+
+// 課本的中文〔 〕對應的是用法欄（まがります［右へ～］轉向〔右邊〕）。
+// 題幹只印單字的話，選項裡的〔右邊〕在題目裡找不到出處。
+test('jp2zh：有用法的詞，題幹連用法一起印', () => {
+  const v = [...jpVocab, { kana: 'かけます', kanji: null, zh: '打〔電話〕', lesson: 7, no: 6,
+    usage: { kana: 'でんわを～', kanji: '電話を～' } }];
+  // 電話 與「打〔電話〕」同字，依同字規則印假名
+  assert.equal([...generate(v)].find((x) => x.id === 'recall:かけます:jp2zh').prompt.text, 'でんわを かけます');
+});
+
+test('jp2zh：用法與正解不同字時印漢字版用法', () => {
+  const v = [...jpVocab, { kana: 'すいます', kanji: '吸います', zh: '抽〔煙〕', lesson: 7, no: 6,
+    usage: { kana: 'たばこを～', kanji: null } }];
+  assert.equal([...generate(v)].find((x) => x.id === 'recall:すいます:jp2zh').prompt.text, 'たばこを 吸います');
+});
+
+test('jp2zh：用法欄沒有「～」（抽取殘渣）時不套用', () => {
+  const v = [...jpVocab, { kana: 'かいます', kanji: '買います', zh: '採購', lesson: 7, no: 6,
+    usage: { kana: 'どうぞ よろしく［', kanji: 'お願いします］。' } }];
+  assert.equal([...generate(v)].find((x) => x.id === 'recall:かいます:jp2zh').prompt.text, '買います');
+});

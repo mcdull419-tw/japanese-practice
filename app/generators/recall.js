@@ -72,10 +72,27 @@ function shortZh(zh) {
  * 有的話看字就選得出來，日→中選擇題就沒有鑑別度，題幹改印假名。
  * 新舊字體（学／學）不算同一個字：多半另有別的字相同，已足以抓到。
  */
+function promptFor({ kanji, kana }, correct) {
+  return kanji && !sharesHan(kanji, correct) ? kanji : kana;
+}
+
 function sharesHan(kanji, zh) {
   const han = (str) => [...str].filter((c) => /\p{Script=Han}/u.test(c));
   const inKanji = new Set(han(kanji));
   return han(zh).some((c) => inKanji.has(c));
+}
+
+/**
+ * 日→中題幹：有用法的詞連用法一起印（右へ 曲がります）。課本的中文用〔 〕
+ * 標出用法那部分的意思（轉向〔右邊〕），只印單字的話〔右邊〕在題目裡找不到出處。
+ * 用法欄沒有「～」的是抽取殘渣，不套用。回傳 { kanji, kana } 兩種寫法。
+ */
+function jpPromptForms(v) {
+  const u = v.usage;
+  const word = { kanji: v.kanji || v.kana, kana: v.kana };
+  if (!u || !u.kana || !u.kana.includes('～')) return { kanji: v.kanji ? word.kanji : null, kana: word.kana };
+  const fill = (pattern, w) => pattern.replace('～', ` ${w}`);
+  return { kanji: fill(u.kanji || u.kana, word.kanji), kana: fill(u.kana, word.kana) };
 }
 
 function pickDeterministic(pool, n, seed) {
@@ -174,7 +191,7 @@ export function* generate(vocabList) {
       yield {
         ...makeItem({
           id, v,
-          promptText: v.kanji && !sharesHan(v.kanji, correct) ? v.kanji : v.kana,
+          promptText: promptFor(jpPromptForms(v), correct),
           hint: '選出中文意思',
           answer: correct, alternatives: [],
           covers: [meaningConcept],
